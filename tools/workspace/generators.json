@@ -1,0 +1,9 @@
+{
+  "generators": {
+    "linting": {
+      "factory": "./src/generators/linting/generator",
+      "schema": "./src/generators/linting/schema.json",
+      "description": "linting generator"
+    }
+  }
+}
