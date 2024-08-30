@@ -47,6 +47,5 @@
       "default": true,
       "x-prompt": "Do you want to install and apply prettier rules?"
     }
-  },
-  "required": [""]
+  }
 }

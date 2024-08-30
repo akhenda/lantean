@@ -28,7 +28,20 @@
       "files": ["./package.json", "./generators.json"],
       "parser": "jsonc-eslint-parser",
       "rules": {
-        "@nx/nx-plugin-checks": "error"
+        "@nx/nx-plugin-checks": "error",
+        "@nx/dependency-checks": [
+          "error",
+          {
+            "ignoredDependencies": [
+              "nx",
+              "prettier",
+              "@schemastore/eslintrc",
+              "@schemastore/package",
+              "@schemastore/prettierrc",
+              "@schemastore/tsconfig"
+            ]
+          }
+        ]
       }
     }
   ]
