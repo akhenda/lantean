@@ -1,11 +1,12 @@
-import { join } from 'path';
-import { getProjects, ProjectConfiguration, Tree } from '@nx/devkit';
+import { Tree } from '@nx/devkit';
 import { JSONSchemaForESLintConfigurationFiles } from '@schemastore/eslintrc';
 
 import {
   addEsLintPlugin,
   addEsLintRules,
+  isEsLintPluginPresent,
   readEsLintConfig,
+  updateEsLintProjectConfig,
   writeEsLintConfig,
 } from './eslint-config';
 import {
@@ -16,10 +17,10 @@ import {
   typescriptRule,
   unusedImportsRule,
 } from './rules';
-import { EsLintConfigurationOverrideRule } from './types';
-import { eslintConfigFile } from './constants';
-import { addDevDependencyToPackageJson, joinNormalize } from '../../devkit';
+import { eslintPluginPrettier, prettierPlugin } from './constants';
+import { setPrettierConfig } from './prettier';
 
+import { addDevDependencyToPackageJson, joinNormalize } from '../../devkit';
 
 /**
  * @internal
@@ -121,12 +122,12 @@ export function addImportOrderRules(tree: Tree): void {
   addEsLintRules(tree, importOrderRule);
 }
 
-  /**
-   * @internal
-   * Updates ESLint project configuration by adding `parserOptions.project` with the path to `tsconfig.json` file.
-   *
-   * @param tree The file system tree.
-   */
+/**
+ * @internal
+ * Updates ESLint project configuration by adding `parserOptions.project` with the path to `tsconfig.json` file.
+ *
+ * @param tree The file system tree.
+ */
 export function addParserOptionsToProjects(tree: Tree) {
   updateEsLintProjectConfig(tree, (project) => ({
     files: ['*.ts', '*.tsx'],
@@ -136,24 +137,25 @@ export function addParserOptionsToProjects(tree: Tree) {
   }));
 }
 
-  /**
-   * Updates ESLint project configuration.
-   *
-   * @param tree The file system tree.
-   * @param projectRule A rule that takes a project configuration and returns an ESLint configuration override rule.
-   */
-export function updateEsLintProjectConfig(
-  tree: Tree,
-  projectRule: (
-    project: ProjectConfiguration
-  ) => EsLintConfigurationOverrideRule
-) {
-  const projects = getProjects(tree);
-  projects.forEach((project: ProjectConfiguration) => {
-    const eslintConfigProjectFile = join(project.root, eslintConfigFile);
+/**
+ * @internal
+ * Adds `eslint-plugin-prettier` rules to the root ESLint configuration.
+ *
+ * Requires `eslint-plugin-prettier` to be installed.
+ *
+ * @param tree The file system tree.
+ */
+export function addPrettierRules(tree: Tree) {
+  setPrettierConfig(tree);
 
-    if (!tree.exists(eslintConfigProjectFile)) return;
+  if (isEsLintPluginPresent(tree, prettierPlugin)) return;
 
-    addEsLintRules(tree, projectRule(project), eslintConfigProjectFile);
+  addEsLintPlugin(tree, prettierPlugin, '@nx');
+  addEsLintRules(tree, {
+    files: ['*.ts', '*.tsx', '*.js', '*.jsx', '*.json', '*.html'],
+    extends: ['plugin:prettier/recommended'],
+    rules: {},
   });
+
+  addDevDependencyToPackageJson(tree, eslintPluginPrettier);
 }

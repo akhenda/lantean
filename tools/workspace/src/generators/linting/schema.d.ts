@@ -28,4 +28,9 @@ export interface LintingGeneratorSchema {
    * Applies import.
    */
   importOrder?: boolean;
+
+  /**
+   * Applies prettier.
+   */
+  prettier?: boolean;
 }

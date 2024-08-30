@@ -40,7 +40,13 @@
       "description": "Applies import",
       "default": true,
       "x-prompt": "Do you want to apply import order rules?"
+    },
+    "prettier": {
+      "type": "boolean",
+      "description": "Applies prettier",
+      "default": true,
+      "x-prompt": "Do you want to install and apply prettier rules?"
     }
   },
-  "required": ["name"]
+  "required": [""]
 }
