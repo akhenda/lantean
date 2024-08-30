@@ -6,7 +6,7 @@ import { exec } from '../exec';
 
 jest.mock('../exec');
 
-describe('@lantean/devkit getGitRepo', () => {
+describe('@lantean/workspace devkit getGitRepo', () => {
   let tree: Tree;
   const gitRepo = 'https://github.com/akhenda/lantean';
 

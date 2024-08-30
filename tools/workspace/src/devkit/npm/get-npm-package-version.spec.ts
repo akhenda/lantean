@@ -3,7 +3,7 @@ import { exec } from '../exec';
 
 jest.mock('../exec');
 
-describe('@lantean/devkit getNpmPackageVersion', () => {
+describe('@lantean/workspace devkit getNpmPackageVersion', () => {
   const packageName = 'package';
   const version = '1.0.0';
 

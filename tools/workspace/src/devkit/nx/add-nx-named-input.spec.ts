@@ -4,7 +4,7 @@ import { createTree, createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { addNxNamedInput } from './add-nx-named-input';
 import { nxConfigFile } from './nx';
 
-describe('@lantean/devkit addNxNamedInput', () => {
+describe('@lantean/workspace devkit addNxNamedInput', () => {
   let tree: Tree;
   const exampleNamedInput = { example: ['example.json'] };
 

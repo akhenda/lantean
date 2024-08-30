@@ -4,7 +4,7 @@ import { parse, stringify } from 'yaml';
 
 import { addGitHubCiJobStep, ciFile, existsGitHubCiWorkflow, GitHubActionJobStep } from './github-workflow';
 
-describe('@lantean/devkit addGitHubCiJobStep', () => {
+describe('@lantean/workspace devkit addGitHubCiJobStep', () => {
   let tree: Tree;
 
   beforeEach(() => {

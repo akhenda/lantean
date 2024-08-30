@@ -4,7 +4,7 @@ import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { addScriptToPackageJson } from './add-script-to-package-json';
 import { readPackageJson, writePackageJson } from './package-json';
 
-describe('@lantean/devkit addScriptToPackageJson', () => {
+describe('@lantean/workspace devkit addScriptToPackageJson', () => {
   let tree: Tree;
   const scriptName = 'test';
   const script = 'nx test';

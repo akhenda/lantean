@@ -7,7 +7,7 @@ import { getNpmPackageVersion } from '../npm';
 
 jest.mock('../npm');
 
-describe('@lantean/devkit addDevDependencyToPackageJson', () => {
+describe('@lantean/workspace devkit addDevDependencyToPackageJson', () => {
   let tree: Tree;
   const packageName = 'package';
   const version = '1.0.0';

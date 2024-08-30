@@ -1,6 +1,6 @@
 import { noopTask } from './noop-task';
 
-describe('@lantean/devkit noopTask', () => {
+describe('@lantean/workspace devkit noopTask', () => {
   it('should execute the task', () => {
     expect(noopTask()).toBeFalsy();
   });

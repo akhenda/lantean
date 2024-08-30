@@ -4,7 +4,7 @@ import { JSONSchemaForNPMPackageJsonFiles } from '@schemastore/package';
 
 import { readPackageJson, writePackageJson } from './package-json';
 
-describe('@lantean/devkit packageJsonFile', () => {
+describe('@lantean/workspace devkit packageJsonFile', () => {
   let tree: Tree;
 
   beforeEach(() => {

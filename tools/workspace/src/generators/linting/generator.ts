@@ -1,25 +1,35 @@
-import {
-  addProjectConfiguration,
-  formatFiles,
-  generateFiles,
-  Tree,
-} from '@nx/devkit';
-import * as path from 'path';
-import { LintingGeneratorSchema } from './schema';
+import { formatFiles, installPackagesTask, Tree } from '@nx/devkit';
 
-export async function lintingGenerator(
+import { LintingGeneratorSchema } from './schema';
+import {
+  addDeprecationRules,
+  addEsLintRecommendedRules,
+  addImportOrderRules,
+  addSonarJsRecommendedRules,
+  addTypescriptRecommendedRules,
+  addUnusedImportsRules,
+} from './tasks';
+
+import { lintWorkspaceTask } from '../../devkit';
+
+/**
+ * Nx generator to setup ESLint in a workspace.
+ */
+export default async function eslintGenerator(
   tree: Tree,
   options: LintingGeneratorSchema
 ) {
-  const projectRoot = `libs/${options.name}`;
-  addProjectConfiguration(tree, options.name, {
-    root: projectRoot,
-    projectType: 'library',
-    sourceRoot: `${projectRoot}/src`,
-    targets: {},
-  });
-  generateFiles(tree, path.join(__dirname, 'files'), projectRoot, options);
-  await formatFiles(tree);
-}
+  if (options.eslintRecommended) addEsLintRecommendedRules(tree);
+  if (options.sonarJs) addSonarJsRecommendedRules(tree);
+  if (options.unusedImports) addUnusedImportsRules(tree);
+  if (options.typescriptRecommended) addTypescriptRecommendedRules(tree);
+  if (options.deprecation) addDeprecationRules(tree);
+  if (options.importOrder) addImportOrderRules(tree);
 
-export default lintingGenerator;
+  await formatFiles(tree);
+
+  return () => {
+    installPackagesTask(tree);
+    lintWorkspaceTask(tree);
+  };
+}

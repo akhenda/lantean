@@ -6,7 +6,7 @@ import { exec } from '../exec';
 
 jest.mock('../exec');
 
-describe('@lantean/devkit formatWorkspaceTask', () => {
+describe('@lantean/workspace devkit formatWorkspaceTask', () => {
   let tree: Tree;
 
   beforeEach(() => {

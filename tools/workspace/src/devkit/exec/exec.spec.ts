@@ -7,7 +7,7 @@ import { exec } from './exec';
 jest.mock('child_process');
 jest.mock('which');
 
-describe('@lantean/devkit exec', () => {
+describe('@lantean/workspace devkit exec', () => {
   const output = 'output';
 
   it('should execute command without cwd', () => {

@@ -1,6 +1,6 @@
 import { areSetsEqual, getSet } from './set';
 
-describe('@lantean/devkit set functions', () => {
+describe('@lantean/workspace devkit set functions', () => {
   describe('areSetsEqual', () => {
     it('should consider sets equal', () => {
       expect(areSetsEqual(new Set([1, 1, 2, 3]), new Set([1, 2, 3]))).toBeTruthy();

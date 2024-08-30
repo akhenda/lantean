@@ -1,17 +1,45 @@
 {
   "$schema": "https://json-schema.org/schema",
   "$id": "Linting",
-  "title": "",
+  "title": "Configures Linting",
+  "description": "Configures ESLint & Prettier",
   "type": "object",
   "properties": {
-    "name": {
-      "type": "string",
-      "description": "",
-      "$default": {
-        "$source": "argv",
-        "index": 0
-      },
-      "x-prompt": "What name would you like to use?"
+    "eslintRecommended": {
+      "type": "boolean",
+      "description": "Applies eslint:recommended",
+      "default": true,
+      "x-prompt": "Do you want to apply eslint:recommended rules?"
+    },
+    "sonarJs": {
+      "type": "boolean",
+      "description": "Applies sonarjs:recommended",
+      "default": true,
+      "x-prompt": "Do you want to apply sonarjs:recommended rules?"
+    },
+    "unusedImports": {
+      "type": "boolean",
+      "description": "Applies unused-imports",
+      "default": true,
+      "x-prompt": "Do you want to apply unused-imports rules?"
+    },
+    "typescriptRecommended": {
+      "type": "boolean",
+      "description": "Applies @typescript-eslint/recommended",
+      "default": true,
+      "x-prompt": "Do you want to apply @typescript-eslint/recommended rules?"
+    },
+    "deprecation": {
+      "type": "boolean",
+      "description": "Applies deprecation",
+      "default": true,
+      "x-prompt": "Do you want to apply deprecation rules?"
+    },
+    "importOrder": {
+      "type": "boolean",
+      "description": "Applies import",
+      "default": true,
+      "x-prompt": "Do you want to apply import order rules?"
     }
   },
   "required": ["name"]

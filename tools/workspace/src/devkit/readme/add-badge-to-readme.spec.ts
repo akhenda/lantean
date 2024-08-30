@@ -4,7 +4,7 @@ import { createTree } from '@nx/devkit/testing';
 import { addBadgeToReadme } from './add-badge-to-readme';
 import { readmeFile } from './readme';
 
-describe('@lantean/devkit addBadgeToReadme', () => {
+describe('@lantean/workspace devkit addBadgeToReadme', () => {
   let tree: Tree;
   const badge = 'badge';
   const link = 'link';
