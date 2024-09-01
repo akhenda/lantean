@@ -33,19 +33,34 @@ export interface ExecOptions {
 /**
  * Run an executable file with given arguments.
  */
-export function exec(file: string, args: ReadonlyArray<string>, options?: ExecOptions): ExecResult {
+export function exec(
+  file: string,
+  args: ReadonlyArray<string>,
+  options?: ExecOptions
+): ExecResult {
   let normalizedCwd: string | undefined;
+
   if (options?.cwd != null) {
-    normalizedCwd = joinNormalize(...(Array.isArray(options.cwd) ? options.cwd : [options.cwd]));
+    normalizedCwd = joinNormalize(
+      ...(Array.isArray(options.cwd) ? options.cwd : [options.cwd])
+    );
   }
 
   const resolvedFile = basename(whichSync(file));
 
   try {
-    const result = execFileSync(resolvedFile, args, { cwd: normalizedCwd, shell: true });
+    const result = execFileSync(resolvedFile, args, {
+      cwd: normalizedCwd,
+      shell: true,
+    });
+
     return { output: result.toString() };
   } catch (error) {
     console.error(error);
-    return { output: '', error: error instanceof Error ? error : new Error(error as string) };
+
+    return {
+      output: '',
+      error: error instanceof Error ? error : new Error(error as string),
+    };
   }
 }

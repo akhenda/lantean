@@ -22,12 +22,14 @@ describe('@lantean/workspace devkit addScriptToPackageJson', () => {
 
   it('should not overwrite script in package.json', () => {
     const packageJson = readPackageJson(tree);
+
     packageJson.scripts = { [scriptName]: script };
     writePackageJson(tree, packageJson);
-
     addScriptToPackageJson(tree, scriptName, 'nx test --watch');
 
-    expect(console.log).toHaveBeenCalledWith(`Skipping adding script to package.json: ${scriptName}`);
+    expect(console.log).toHaveBeenCalledWith(
+      `Skipping adding script to package.json: ${scriptName}`
+    );
     expect(readPackageJson(tree).scripts?.[scriptName]).toBe(script);
   });
 });

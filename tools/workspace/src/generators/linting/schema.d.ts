@@ -1,5 +1,10 @@
 export interface LintingGeneratorSchema {
   /**
+   * Generate config lib.
+   */
+  lib?: boolean;
+
+  /**
    * Applies eslint:recommended.
    */
   eslintRecommended?: boolean;

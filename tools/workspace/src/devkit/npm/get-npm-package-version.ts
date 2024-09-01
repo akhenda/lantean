@@ -8,6 +8,7 @@ export function getNpmPackageVersion(packageName: string): string | null {
 
   if (error != null) {
     console.error(`Could not retrieve package version for "${packageName}"`);
+
     return null;
   }
 

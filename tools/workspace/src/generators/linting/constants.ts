@@ -1,4 +1,19 @@
 /**
+ * Name of the workspace ESLint Config library.
+ */
+export const eslintLibName = 'eslint-config';
+
+/**
+ * Directory of the workspace ESLint Config library.
+ */
+export const eslintLibDirectory = 'configs/eslint-config';
+
+/**
+ * Tags of the workspace ESLint Config library.
+ */
+export const eslintLibTags = ['config', 'configs', 'eslint'];
+
+/**
  * Filename of ESLint configuration.
  */
 export const eslintConfigFile = '.eslintrc.json';

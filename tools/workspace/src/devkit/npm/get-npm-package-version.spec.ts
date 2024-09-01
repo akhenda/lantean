@@ -1,4 +1,5 @@
 import { getNpmPackageVersion } from './get-npm-package-version';
+
 import { exec } from '../exec';
 
 jest.mock('../exec');
@@ -23,6 +24,8 @@ describe('@lantean/workspace devkit getNpmPackageVersion', () => {
     (exec as jest.Mock).mockReturnValue({ error: '' });
 
     expect(getNpmPackageVersion(packageName)).toBeNull();
-    expect(console.error).toHaveBeenCalledWith(`Could not retrieve package version for "${packageName}"`);
+    expect(console.error).toHaveBeenCalledWith(
+      `Could not retrieve package version for "${packageName}"`
+    );
   });
 });

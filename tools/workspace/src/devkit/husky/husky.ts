@@ -1,7 +1,10 @@
 import { Tree } from '@nx/devkit';
 
 import { exec } from '../exec';
-import { addDevDependencyToPackageJson, addScriptToPackageJson } from '../package-json';
+import {
+  addDevDependencyToPackageJson,
+  addScriptToPackageJson,
+} from '../package-json';
 import { joinNormalize } from '../path';
 
 /** Husky package name. */
@@ -27,6 +30,7 @@ export function installHuskyTask(tree: Tree) {
     console.log(`Husky already installed, skipping installation.`);
   } else {
     console.log(`Installing husky...`);
+
     const { error } = exec('npx', ['husky', 'init'], { cwd: tree.root });
 
     if (error != null) {
@@ -40,10 +44,12 @@ export function installHuskyTask(tree: Tree) {
  */
 export function addHuskyHook(tree: Tree, hook: HuskyHooks, command: string) {
   const hookPath: string = joinNormalize(huskyPath, hook);
+  const huskyContent: string[] =
+    tree.read(hookPath)?.toString().split('\n') ?? [];
 
-  const huskyContent: string[] = tree.read(hookPath)?.toString().split('\n') ?? [];
   if (huskyContent.includes(command)) {
     console.log(`Command "${command}" already added to ${hook} husky hook.`);
+
     return;
   }
 

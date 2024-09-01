@@ -10,7 +10,9 @@ describe('@lantean/workspace devkit addBadgeToReadme', () => {
   const link = 'link';
   const description = 'description';
   const expectHasBadge = (tree: Tree) => {
-    expect(tree.read(readmeFile)?.toString().includes(`(${badge})`)).toBeTruthy();
+    expect(
+      tree.read(readmeFile)?.toString().includes(`(${badge})`)
+    ).toBeTruthy();
   };
 
   beforeEach(() => {
@@ -20,7 +22,6 @@ describe('@lantean/workspace devkit addBadgeToReadme', () => {
 
   it('should add the badge to an existing README file', () => {
     tree.write(readmeFile, `# README`);
-
     addBadgeToReadme(tree, badge, link, description);
 
     expectHasBadge(tree);
@@ -34,25 +35,28 @@ describe('@lantean/workspace devkit addBadgeToReadme', () => {
 
   it('should ignore adding the badge if already present', () => {
     tree.write(readmeFile, `# README\n[![description](badge)](link)`);
-
     addBadgeToReadme(tree, badge, link, description);
 
-    expect(console.log).toHaveBeenCalledWith(`Badge for description already present in ${readmeFile}`);
+    expect(console.log).toHaveBeenCalledWith(
+      `Badge for description already present in ${readmeFile}`
+    );
   });
 
   it('should add the badge after the main title if there were not any before', () => {
     const readme = `\nSome content\n# README`;
-    tree.write(readmeFile, readme);
 
+    tree.write(readmeFile, readme);
     addBadgeToReadme(tree, badge, link, description);
 
-    expect(tree.read(readmeFile)?.toString()).toBe(`${readme}\n\n[![description](badge)](link)`);
+    expect(tree.read(readmeFile)?.toString()).toBe(
+      `${readme}\n\n[![description](badge)](link)`
+    );
   });
 
   it('should add the badge to the end of an existing line of badges', () => {
     const readme = `# README\n\n[![existing](existing)](existing)`;
-    tree.write(readmeFile, readme);
 
+    tree.write(readmeFile, readme);
     addBadgeToReadme(tree, badge, link, description);
 
     expect(tree.read(readmeFile)?.toString()).toBe(
@@ -62,8 +66,8 @@ describe('@lantean/workspace devkit addBadgeToReadme', () => {
 
   it('should add the badge to the beginning of an existing line of badges', () => {
     const readme = `# README\n\n[![existing](existing)](existing)`;
-    tree.write(readmeFile, readme);
 
+    tree.write(readmeFile, readme);
     addBadgeToReadme(tree, badge, link, description, true);
 
     expect(tree.read(readmeFile)?.toString()).toBe(
@@ -73,8 +77,8 @@ describe('@lantean/workspace devkit addBadgeToReadme', () => {
 
   it('should create a badge without link', () => {
     const readme = `# README\n\n[![existing](existing)](existing)`;
-    tree.write(readmeFile, readme);
 
+    tree.write(readmeFile, readme);
     addBadgeToReadme(tree, badge, null, description);
 
     expect(tree.read(readmeFile)?.toString()).toBe(

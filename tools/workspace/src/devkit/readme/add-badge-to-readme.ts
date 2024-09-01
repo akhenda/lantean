@@ -19,10 +19,13 @@ export function addBadgeToReadme(
   beginning = false
 ) {
   const readme = tree.read(readmeFile)?.toString() ?? '';
-  const badgeMarkdown = link ? `[![${description}](${badgeImg})](${link})` : `![${description}](${badgeImg})`;
+  const badgeMarkdown = link
+    ? `[![${description}](${badgeImg})](${link})`
+    : `![${description}](${badgeImg})`;
 
   if (readme.includes(badgeMarkdown)) {
     console.log(`Badge for ${description} already present in ${readmeFile}`);
+
     return;
   }
 

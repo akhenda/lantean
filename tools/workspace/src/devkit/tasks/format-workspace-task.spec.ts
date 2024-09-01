@@ -2,6 +2,7 @@ import { Tree } from '@nx/devkit';
 import { createTree } from '@nx/devkit/testing';
 
 import { formatWorkspaceTask } from './format-workspace-task';
+
 import { exec } from '../exec';
 
 jest.mock('../exec');
@@ -20,7 +21,9 @@ describe('@lantean/workspace devkit formatWorkspaceTask', () => {
 
     formatWorkspaceTask(tree);
 
-    expect(exec).toHaveBeenCalledWith('npx', ['prettier', '.', '--write'], { cwd: '/virtual' });
+    expect(exec).toHaveBeenCalledWith('npx', ['prettier', '.', '--write'], {
+      cwd: '/virtual',
+    });
   });
 
   it('should not fail if exec sync fails', () => {
@@ -28,6 +31,8 @@ describe('@lantean/workspace devkit formatWorkspaceTask', () => {
 
     formatWorkspaceTask(tree);
 
-    expect(console.error).toHaveBeenCalledWith(`Could not format files in path: /virtual`);
+    expect(console.error).toHaveBeenCalledWith(
+      `Could not format files in path: /virtual`
+    );
   });
 });

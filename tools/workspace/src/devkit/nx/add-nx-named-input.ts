@@ -12,17 +12,23 @@ export function addNxNamedInput(
   newNamedInputs: { [inputName: string]: (string | InputDefinition)[] },
   addToDefault = false
 ) {
-  if (!tree.exists(nxConfigFile)) {
-    return;
-  }
+  if (!tree.exists(nxConfigFile)) return;
 
-  const nxConfig: NxJsonConfiguration = readJson<NxJsonConfiguration>(tree, nxConfigFile);
+  const nxConfig: NxJsonConfiguration = readJson<NxJsonConfiguration>(
+    tree,
+    nxConfigFile
+  );
   const namedInputs = nxConfig.namedInputs ?? {};
+
   nxConfig.namedInputs = { ...namedInputs, ...newNamedInputs };
 
   if (addToDefault) {
     const defaultNamedInputs = namedInputs.default ?? [];
-    nxConfig.namedInputs.default = unique([...defaultNamedInputs, ...Object.keys(newNamedInputs)]);
+
+    nxConfig.namedInputs.default = unique([
+      ...defaultNamedInputs,
+      ...Object.keys(newNamedInputs),
+    ]);
   }
 
   writeJson(tree, nxConfigFile, nxConfig);

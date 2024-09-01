@@ -2,6 +2,7 @@ import { Tree } from '@nx/devkit';
 import { createTree } from '@nx/devkit/testing';
 
 import { getGitRepo, getGitRepoSlug } from './get-git-repo';
+
 import { exec } from '../exec';
 
 jest.mock('../exec');
@@ -20,16 +21,20 @@ describe('@lantean/workspace devkit getGitRepo', () => {
     (exec as jest.Mock).mockReturnValue({ output: `${gitRepo}.git\n` });
 
     expect(getGitRepo(tree)).toBe(gitRepo);
-    expect(exec).toHaveBeenCalledWith('git', ['config', '--get', 'remote.origin.url'], {
-      cwd: '/virtual',
-    });
+    expect(exec).toHaveBeenCalledWith(
+      'git',
+      ['config', '--get', 'remote.origin.url'],
+      { cwd: '/virtual' }
+    );
   });
 
   it('should not fail if exec sync fails', () => {
     (exec as jest.Mock).mockReturnValue({ error: '' });
 
     expect(getGitRepo(tree)).toBeNull();
-    expect(console.error).toHaveBeenCalledWith(`Could not resolve git repo remote url.`);
+    expect(console.error).toHaveBeenCalledWith(
+      `Could not resolve git repo remote url.`
+    );
   });
 
   it('should return git repo slug', () => {

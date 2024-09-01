@@ -8,11 +8,13 @@ describe('@lantean/workspace devkit slash', () => {
 
   it('not convert extended-length paths', () => {
     const path = '\\\\?\\c:\\aaaa\\bbbb';
+
     expect(slash(path)).toBe(path);
   });
 
   it('not convert paths with Unicode', () => {
     const path = 'c:\\aaaa\\bbbb\\★';
+
     expect(slash(path)).toBe(path);
   });
 });

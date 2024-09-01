@@ -1,9 +1,20 @@
 import { Tree } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 
-import { addHuskyHook, addHuskyToPackageJson, husky, HuskyHooks, huskyPath, installHuskyTask } from './husky';
+import {
+  addHuskyHook,
+  addHuskyToPackageJson,
+  husky,
+  HuskyHooks,
+  huskyPath,
+  installHuskyTask,
+} from './husky';
+
 import { exec } from '../exec';
-import { addDevDependencyToPackageJson, addScriptToPackageJson } from '../package-json';
+import {
+  addDevDependencyToPackageJson,
+  addScriptToPackageJson,
+} from '../package-json';
 import { joinNormalize } from '../path';
 
 jest.mock('../exec');
@@ -14,7 +25,9 @@ describe('@lantean/workspace devkit husky', () => {
 
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();
-    (addDevDependencyToPackageJson as jest.Mock).mockImplementation(() => void {});
+    (addDevDependencyToPackageJson as jest.Mock).mockImplementation(
+      () => void {}
+    );
     (addScriptToPackageJson as jest.Mock).mockImplementation(() => void {});
     jest.spyOn(console, 'log').mockImplementation(() => null);
     jest.spyOn(console, 'error').mockImplementation(() => null);
@@ -25,7 +38,11 @@ describe('@lantean/workspace devkit husky', () => {
       addHuskyToPackageJson(tree);
 
       expect(addDevDependencyToPackageJson).toHaveBeenCalledWith(tree, husky);
-      expect(addScriptToPackageJson).toHaveBeenCalledWith(tree, 'prepare', 'husky');
+      expect(addScriptToPackageJson).toHaveBeenCalledWith(
+        tree,
+        'prepare',
+        'husky'
+      );
     });
   });
 
@@ -35,7 +52,9 @@ describe('@lantean/workspace devkit husky', () => {
 
       installHuskyTask(tree);
 
-      expect(exec).toHaveBeenCalledWith(`npx`, ['husky', 'init'], { cwd: '/virtual' });
+      expect(exec).toHaveBeenCalledWith(`npx`, ['husky', 'init'], {
+        cwd: '/virtual',
+      });
     });
 
     it('should skip installation if already installed', () => {
@@ -44,7 +63,9 @@ describe('@lantean/workspace devkit husky', () => {
 
       installHuskyTask(tree);
 
-      expect(console.log).toHaveBeenCalledWith(`Husky already installed, skipping installation.`);
+      expect(console.log).toHaveBeenCalledWith(
+        `Husky already installed, skipping installation.`
+      );
     });
 
     it('should not fail if exec sync fails', () => {
@@ -52,7 +73,9 @@ describe('@lantean/workspace devkit husky', () => {
 
       installHuskyTask(tree);
 
-      expect(console.error).toHaveBeenCalledWith(`Could not install husky in path: /virtual`);
+      expect(console.error).toHaveBeenCalledWith(
+        `Could not install husky in path: /virtual`
+      );
     });
   });
 
@@ -80,7 +103,9 @@ describe('@lantean/workspace devkit husky', () => {
 
       addHuskyHook(tree, hook, command);
 
-      expect(console.log).toHaveBeenCalledWith(`Command "${command}" already added to ${hook} husky hook.`);
+      expect(console.log).toHaveBeenCalledWith(
+        `Command "${command}" already added to ${hook} husky hook.`
+      );
     });
   });
 });

@@ -6,10 +6,15 @@ import { exec } from '../exec';
  * Gets the remote url for current git repo.
  */
 export function getGitRepo(tree: Tree): string | null {
-  const { output, error } = exec('git', ['config', '--get', 'remote.origin.url'], { cwd: tree.root });
+  const { output, error } = exec(
+    'git',
+    ['config', '--get', 'remote.origin.url'],
+    { cwd: tree.root }
+  );
 
   if (error != null) {
     console.error(`Could not resolve git repo remote url.`);
+
     return null;
   }
 

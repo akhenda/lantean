@@ -2,6 +2,7 @@ import { Tree } from '@nx/devkit';
 import { createTree } from '@nx/devkit/testing';
 
 import { gitMakeExecutable } from './git-make-executable';
+
 import { exec } from '../exec';
 
 jest.mock('../exec');
@@ -20,9 +21,11 @@ describe('@lantean/workspace devkit gitMakeExecutable', () => {
     (exec as jest.Mock).mockReturnValue({});
 
     expect(() => gitMakeExecutable(tree, file)).not.toThrow();
-    expect(exec).toHaveBeenCalledWith('git', ['update-index', '--chmod=+x', file], {
-      cwd: '/virtual',
-    });
+    expect(exec).toHaveBeenCalledWith(
+      'git',
+      ['update-index', '--chmod=+x', file],
+      { cwd: '/virtual' }
+    );
   });
 
   it('should throw error if exec fails', () => {

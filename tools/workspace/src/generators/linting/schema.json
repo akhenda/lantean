@@ -5,46 +5,92 @@
   "description": "Configures ESLint & Prettier",
   "type": "object",
   "properties": {
+    "lib": {
+      "type": "boolean",
+      "name": "Config lib",
+      "description": "Generates a dedicated ESLint config project",
+      "default": true,
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "Do you want to generate a config lib? (If not, we install rules in the rule config file)"
+    },
     "eslintRecommended": {
       "type": "boolean",
+      "name": "ESLint Recommended",
       "description": "Applies eslint:recommended",
       "default": true,
+      "$default": {
+        "$source": "argv",
+        "index": 1
+      },
       "x-prompt": "Do you want to apply eslint:recommended rules?"
     },
     "sonarJs": {
       "type": "boolean",
+      "name": "SonarJS",
       "description": "Applies sonarjs:recommended",
       "default": true,
+      "$default": {
+        "$source": "argv",
+        "index": 2
+      },
       "x-prompt": "Do you want to apply sonarjs:recommended rules?"
     },
     "unusedImports": {
       "type": "boolean",
+      "name": "Unused Imports",
       "description": "Applies unused-imports",
       "default": true,
+      "$default": {
+        "$source": "argv",
+        "index": 3
+      },
       "x-prompt": "Do you want to apply unused-imports rules?"
     },
     "typescriptRecommended": {
       "type": "boolean",
+      "name": "TypeScript Recommended",
       "description": "Applies @typescript-eslint/recommended",
       "default": true,
+      "$default": {
+        "$source": "argv",
+        "index": 4
+      },
       "x-prompt": "Do you want to apply @typescript-eslint/recommended rules?"
     },
     "deprecation": {
       "type": "boolean",
+      "name": "Deprecation",
       "description": "Applies deprecation",
       "default": true,
+      "$default": {
+        "$source": "argv",
+        "index": 5
+      },
       "x-prompt": "Do you want to apply deprecation rules?"
     },
     "importOrder": {
       "type": "boolean",
+      "name": "Import Order",
       "description": "Applies import",
       "default": true,
+      "$default": {
+        "$source": "argv",
+        "index": 6
+      },
       "x-prompt": "Do you want to apply import order rules?"
     },
     "prettier": {
       "type": "boolean",
+      "name": "Prettier",
       "description": "Applies prettier",
       "default": true,
+      "$default": {
+        "$source": "argv",
+        "index": 7
+      },
       "x-prompt": "Do you want to install and apply prettier rules?"
     }
   }

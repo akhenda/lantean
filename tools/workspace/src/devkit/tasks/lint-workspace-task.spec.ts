@@ -2,6 +2,7 @@ import { Tree } from '@nx/devkit';
 import { createTree } from '@nx/devkit/testing';
 
 import { lintWorkspaceTask } from './lint-workspace-task';
+
 import { exec } from '../exec';
 
 jest.mock('../exec');
@@ -20,9 +21,11 @@ describe('@lantean/workspace devkit lintWorkspaceTask', () => {
 
     lintWorkspaceTask(tree);
 
-    expect(exec).toHaveBeenCalledWith('npx', ['nx', 'run-many', '--target=lint', '--parallel=2', '--all', '--fix'], {
-      cwd: '/virtual',
-    });
+    expect(exec).toHaveBeenCalledWith(
+      'npx',
+      ['nx', 'run-many', '--target=lint', '--parallel=2', '--all', '--fix'],
+      { cwd: '/virtual' }
+    );
   });
 
   it('should not fail if exec sync fails', () => {
@@ -30,6 +33,8 @@ describe('@lantean/workspace devkit lintWorkspaceTask', () => {
 
     lintWorkspaceTask(tree);
 
-    expect(console.error).toHaveBeenCalledWith(`Could not lint projects in path: /virtual`);
+    expect(console.error).toHaveBeenCalledWith(
+      `Could not lint projects in path: /virtual`
+    );
   });
 });
