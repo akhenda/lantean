@@ -22,22 +22,20 @@ export default async function eslintGenerator(
   tree: Tree,
   options?: LintingGeneratorSchema
 ) {
-  const normalizedOptions = normalizeOptions(tree, options);
-
-  if (normalizedOptions.lib) generateConfigLib(tree, normalizedOptions);
-  if (normalizedOptions.eslintRecommended) addEsLintRecommendedRules(tree);
-  if (normalizedOptions.sonarJs) addSonarJsRecommendedRules(tree);
-  if (normalizedOptions.unusedImports) addUnusedImportsRules(tree);
-  if (normalizedOptions.typescriptRecommended) addTypescriptRecommendedRules(tree);
-  if (normalizedOptions.deprecation) addDeprecationRules(tree);
-  if (normalizedOptions.importOrder) addImportOrderRules(tree);
-  if (normalizedOptions.prettier) addPrettierRules(tree);
+  if (options?.lib) await generateConfigLib(tree, options);
+  if (options?.eslintRecommended) addEsLintRecommendedRules(tree);
+  if (options?.sonarJs) addSonarJsRecommendedRules(tree);
+  if (options?.unusedImports) addUnusedImportsRules(tree);
+  if (options?.typescriptRecommended) addTypescriptRecommendedRules(tree);
+  if (options?.deprecation) addDeprecationRules(tree);
+  if (options?.importOrder) addImportOrderRules(tree);
+  if (options?.prettier) addPrettierRules(tree);
 
   await formatFiles(tree);
 
   return () => {
     installPackagesTask(tree);
-    lintWorkspaceTask(tree);
-    formatWorkspaceTask(tree);
+    // lintWorkspaceTask(tree);
+    // formatWorkspaceTask(tree);
   };
 }

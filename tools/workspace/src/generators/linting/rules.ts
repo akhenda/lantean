@@ -14,7 +14,7 @@ export const esLintRule: EsLintConfigurationOverrideRule = {
  */
 export const sonarJSRule: EsLintConfigurationOverrideRule = {
   files: ['*.ts', '*.tsx', '*.js', '*.jsx'],
-  extends: ['plugin:sonarjs/recommended'],
+  extends: ['plugin:sonarjs/recommended-legacy'],
   rules: {},
 };
 
@@ -39,9 +39,9 @@ export const typescriptRule: EsLintConfigurationOverrideRule = {
       'warn',
       { accessibility: 'no-public' },
     ],
-    '@typescript-eslint/no-explicit-any': ['off'],
-    '@typescript-eslint/explicit-module-boundary-types': ['off'],
-    '@typescript-eslint/ban-types': ['off'],
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/ban-types': 'off',
   },
 };
 
@@ -72,7 +72,8 @@ export const importOrderRule: EsLintConfigurationOverrideRule = {
           'builtin',
           'external',
           'internal',
-          ['parent', 'sibling', 'index'],
+          'parent',
+          ['sibling', 'index'],
         ],
         pathGroupsExcludedImportTypes: [],
         'newlines-between': 'always',

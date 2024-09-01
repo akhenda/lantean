@@ -1,4 +1,4 @@
-import { Tree } from '@nx/devkit';
+import { addDependenciesToPackageJson, Tree } from '@nx/devkit';
 import { JSONSchemaForESLintConfigurationFiles } from '@schemastore/eslintrc';
 
 import {
@@ -17,7 +17,11 @@ import {
   typescriptRule,
   unusedImportsRule,
 } from './rules';
-import { eslintPluginPrettier, prettierPlugin } from './constants';
+import {
+  eslintPluginPrettier,
+  prettierPlugin,
+  prettierVersion,
+} from './constants';
 import { setPrettierConfig } from './prettier';
 
 import { addDevDependencyToPackageJson, joinNormalize } from '../../devkit';
@@ -41,9 +45,13 @@ export function addEsLintRecommendedRules(tree: Tree): void {
   env.node = true;
   env.browser = true;
   env.es2022 = true;
-  eslintConfig.env = env;
 
-  writeEsLintConfig(tree, eslintConfig);
+  writeEsLintConfig(tree, {
+    root: eslintConfig.root,
+    ignorePatterns: eslintConfig.ignorePatterns,
+    env,
+    ...eslintConfig,
+  });
 }
 
 /**
@@ -83,8 +91,12 @@ export function addUnusedImportsRules(tree: Tree): void {
  * @param tree The file system tree.
  */
 export function addTypescriptRecommendedRules(tree: Tree): void {
-  addDevDependencyToPackageJson(tree, '@typescript-eslint/parser');
-  addDevDependencyToPackageJson(tree, '@typescript-eslint/eslint-plugin');
+  addDevDependencyToPackageJson(tree, '@typescript-eslint/parser', '7.18.0');
+  addDevDependencyToPackageJson(
+    tree,
+    '@typescript-eslint/eslint-plugin',
+    '7.18.0'
+  );
   addEsLintPlugin(tree, '@typescript-eslint');
   addEsLintRules(tree, typescriptRule);
   addParserOptionsToProjects(tree);
@@ -99,8 +111,12 @@ export function addTypescriptRecommendedRules(tree: Tree): void {
  * @param tree The file system tree.
  */
 export function addDeprecationRules(tree: Tree): void {
-  addDevDependencyToPackageJson(tree, '@typescript-eslint/parser');
-  addDevDependencyToPackageJson(tree, '@typescript-eslint/eslint-plugin');
+  addDevDependencyToPackageJson(tree, '@typescript-eslint/parser', '7.18.0');
+  addDevDependencyToPackageJson(
+    tree,
+    '@typescript-eslint/eslint-plugin',
+    '7.18.0'
+  );
   addDevDependencyToPackageJson(tree, 'eslint-plugin-deprecation');
   addEsLintPlugin(tree, 'deprecation');
   addEsLintRules(tree, deprecationRule);
@@ -157,5 +173,6 @@ export function addPrettierRules(tree: Tree) {
     rules: {},
   });
 
+  addDependenciesToPackageJson(tree, { prettier: prettierVersion }, {});
   addDevDependencyToPackageJson(tree, eslintPluginPrettier);
 }

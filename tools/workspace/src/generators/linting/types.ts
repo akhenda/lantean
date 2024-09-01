@@ -18,5 +18,8 @@ export interface NormalizedSchema extends LintingGeneratorSchema {
   projectName: string;
   projectRoot: string;
   projectDirectory: string;
+  importPath: string;
+  libsDir: string;
+  appsDir: string;
   parsedTags: string[];
 }

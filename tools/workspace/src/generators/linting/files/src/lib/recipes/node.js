@@ -3,11 +3,11 @@
  */
 module.exports = {
   extends: [
-    './configs/typescript.js',
-    './configs/typescript-type-checking.js',
-    './configs/node.js',
-    './configs/jest.js',
-    './configs/prettier.js',
+    '../configs/typescript.js',
+    '../configs/typescript-type-checking.js',
+    '../configs/node.js',
+    '../configs/jest.js',
+    '../configs/prettier.js',
   ],
   env: { node: true },
   overrides: [

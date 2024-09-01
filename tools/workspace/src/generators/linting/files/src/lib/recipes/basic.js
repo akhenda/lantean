@@ -1,13 +1,11 @@
 /**
- * Default Workspace Config
- *
  * Use this for casual js/typescript projects.
  */
 module.exports = {
   overrides: [
     {
       files: '*.json',
-      extends: ['./configs/prettier.js'],
+      extends: ['../configs/prettier.js'],
       parser: 'jsonc-eslint-parser',
       rules: {},
     },
@@ -16,15 +14,15 @@ module.exports = {
       rules: {},
     },
     {
-      extends: ['./configs/esnext.js', './configs/prettier.js'],
+      extends: ['../configs/esnext.js', '../configs/prettier.js'],
       files: ['*.js', '*.jsx'],
       rules: {},
     },
     {
       extends: [
-        './configs/typescript.js',
-        './configs/typescript-type-checking.js',
-        './configs/prettier.js',
+        '../configs/typescript.js',
+        '../configs/typescript-type-checking.js',
+        '../configs/prettier.js',
       ],
       files: ['*.ts', '*.tsx'],
       settings: {
@@ -47,7 +45,7 @@ module.exports = {
         '**/?(*.)+(spec|test).[jt]s?(x)',
       ],
       env: { jest: true },
-      extends: ['./configs/jest.js'],
+      extends: ['../configs/jest.js'],
     },
   ],
 };

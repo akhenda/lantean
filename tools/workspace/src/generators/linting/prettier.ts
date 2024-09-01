@@ -1,16 +1,18 @@
 import { SchemaForPrettierrc } from '@schemastore/prettierrc';
-import { prettierConfigFile, prettierConfigJsonFile } from './constants';
+import { prettierConfigFile } from './constants';
 import { readJson, Tree, writeJson } from '@nx/devkit';
 
 /**
  * Prettier default configuration.
  */
 export const prettierDefaultConfig: Exclude<SchemaForPrettierrc, string> = {
-  printWidth: 120,
-  tabWidth: 2,
-  singleQuote: true,
-  trailingComma: 'es5',
   bracketSpacing: true,
+  singleQuote: true,
+  trailingComma: 'all',
+  semi: true,
+  tabWidth: 2,
+  printWidth: 120,
+  jsxBracketSameLine: false,
   arrowParens: 'always',
   overrides: [
     {
@@ -30,7 +32,6 @@ export const prettierDefaultConfig: Exclude<SchemaForPrettierrc, string> = {
  * @param tree The file system tree.
  */
 export function setPrettierConfig(tree: Tree): void {
-  if (tree.exists(prettierConfigJsonFile)) return;
   if (!tree.exists(prettierConfigFile)) writeJson(tree, prettierConfigFile, {});
 
   let prettierConfig = readJson<Exclude<SchemaForPrettierrc, string>>(
@@ -40,5 +41,4 @@ export function setPrettierConfig(tree: Tree): void {
 
   prettierConfig = { ...prettierDefaultConfig, ...prettierConfig };
   writeJson(tree, prettierConfigFile, prettierConfig);
-  tree.rename(prettierConfigFile, prettierConfigJsonFile);
 }

@@ -7,7 +7,6 @@
   "properties": {
     "lib": {
       "type": "boolean",
-      "name": "Config lib",
       "description": "Generates a dedicated ESLint config project",
       "default": true,
       "$default": {
@@ -18,7 +17,6 @@
     },
     "eslintRecommended": {
       "type": "boolean",
-      "name": "ESLint Recommended",
       "description": "Applies eslint:recommended",
       "default": true,
       "$default": {
@@ -29,7 +27,6 @@
     },
     "sonarJs": {
       "type": "boolean",
-      "name": "SonarJS",
       "description": "Applies sonarjs:recommended",
       "default": true,
       "$default": {
@@ -40,7 +37,6 @@
     },
     "unusedImports": {
       "type": "boolean",
-      "name": "Unused Imports",
       "description": "Applies unused-imports",
       "default": true,
       "$default": {
@@ -51,7 +47,6 @@
     },
     "typescriptRecommended": {
       "type": "boolean",
-      "name": "TypeScript Recommended",
       "description": "Applies @typescript-eslint/recommended",
       "default": true,
       "$default": {
@@ -62,7 +57,6 @@
     },
     "deprecation": {
       "type": "boolean",
-      "name": "Deprecation",
       "description": "Applies deprecation",
       "default": true,
       "$default": {
@@ -73,7 +67,6 @@
     },
     "importOrder": {
       "type": "boolean",
-      "name": "Import Order",
       "description": "Applies import",
       "default": true,
       "$default": {
@@ -84,7 +77,6 @@
     },
     "prettier": {
       "type": "boolean",
-      "name": "Prettier",
       "description": "Applies prettier",
       "default": true,
       "$default": {

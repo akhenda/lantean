@@ -2,12 +2,11 @@
  * Use this for React.js projects.
  */
 module.exports = {
-  extends: 'plugin:@hendacorp/reactful',
   env: { browser: true },
   overrides: [
     {
       files: '*.json',
-      extends: ['./configs/prettier.js'],
+      extends: ['../configs/prettier.js'],
       parser: 'jsonc-eslint-parser',
       rules: {},
     },
@@ -17,21 +16,21 @@ module.exports = {
     },
     {
       extends: [
-        './configs/esnext.js',
-        './configs/react.js',
-        './configs/prettier.js',
-        './configs/jest-dom.js',
+        '../configs/esnext.js',
+        '../configs/react.js',
+        '../configs/prettier.js',
+        '../configs/jest-dom.js',
       ],
       files: ['*.js', '*.jsx'],
       rules: {},
     },
     {
       extends: [
-        './configs/typescript.js',
-        './configs/typescript-type-checking.js',
-        './configs/react.js',
-        './configs/prettier.js',
-        './configs/jest-dom.js',
+        '../configs/typescript.js',
+        '../configs/typescript-type-checking.js',
+        '../configs/react.js',
+        '../configs/prettier.js',
+        '../configs/jest-dom.js',
       ],
       files: ['*.ts', '*.tsx'],
       settings: {

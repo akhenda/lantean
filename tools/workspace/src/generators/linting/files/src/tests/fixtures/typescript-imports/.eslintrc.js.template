@@ -1,0 +1,10 @@
+module.exports = {
+  extends: [
+    '@<%= npmScope %>/<%= projectName %>/typescript',
+    '@<%= npmScope %>/<%= projectName %>/node',
+  ],
+  parserOptions: {
+    project: 'tsconfig.json',
+    tsconfigRootDir: __dirname,
+  },
+};
