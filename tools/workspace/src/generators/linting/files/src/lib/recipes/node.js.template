@@ -1,0 +1,20 @@
+/**
+ * Use this for Node.js projects.
+ */
+module.exports = {
+  extends: [
+    '<%= importPath %>/src/lib/configs/typescript.js',
+    '<%= importPath %>/src/lib/configs/typescript-type-checking.js',
+    '<%= importPath %>/src/lib/configs/node.js',
+    '<%= importPath %>/src/lib/configs/jest.js',
+    '<%= importPath %>/src/lib/configs/prettier.js',
+  ],
+  env: { node: true },
+  overrides: [
+    {
+      files: '*.json',
+      parser: 'jsonc-eslint-parser',
+      rules: {},
+    },
+  ],
+};

@@ -1,0 +1,53 @@
+/**
+ * Use this for React.js projects.
+ */
+module.exports = {
+  env: { browser: true },
+  overrides: [
+    {
+      files: '*.json',
+      extends: ['<%= importPath %>/src/lib/configs/prettier.js'],
+      parser: 'jsonc-eslint-parser',
+      rules: {},
+    },
+    {
+      files: ['*.ts', '*.tsx', '*.js', '*.jsx'],
+      rules: {},
+    },
+    {
+      extends: [
+        '<%= importPath %>/src/lib/configs/esnext.js',
+        '<%= importPath %>/src/lib/configs/react.js',
+        '<%= importPath %>/src/lib/configs/prettier.js',
+        '<%= importPath %>/src/lib/configs/jest-dom.js',
+      ],
+      files: ['*.js', '*.jsx'],
+      rules: {},
+    },
+    {
+      extends: [
+        '<%= importPath %>/src/lib/configs/typescript.js',
+        '<%= importPath %>/src/lib/configs/typescript-type-checking.js',
+        '<%= importPath %>/src/lib/configs/react.js',
+        '<%= importPath %>/src/lib/configs/prettier.js',
+        '<%= importPath %>/src/lib/configs/jest-dom.js',
+      ],
+      files: ['*.ts', '*.tsx'],
+      settings: {
+        'import/resolver': {
+          typescript: {
+            project: 'tsconfig.base.json',
+          },
+        },
+      },
+      rules: {
+        '@typescript-eslint/naming-convention': 'off',
+        '@typescript-eslint/no-misused-promises': [
+          2,
+          { checksVoidReturn: { attributes: false } },
+        ],
+      },
+    },
+  ],
+  rules: {},
+};

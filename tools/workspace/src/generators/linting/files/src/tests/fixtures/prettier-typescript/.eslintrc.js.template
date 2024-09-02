@@ -1,7 +1,7 @@
 module.exports = {
   extends: [
-    '@<%= npmScope %>/<%= projectName %>/typescript',
-    '@<%= npmScope %>/<%= projectName %>/prettier',
+    '<%= importPath %>/src/lib/configs/typescript',
+    '<%= importPath %>/src/lib/configs/prettier',
   ],
   parserOptions: {
     project: 'tsconfig.json',

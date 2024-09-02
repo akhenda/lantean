@@ -1,7 +1,7 @@
-import { formatFiles, installPackagesTask, Tree } from '@nx/devkit';
+import { installPackagesTask, Tree } from '@nx/devkit';
 
 import { generateConfigLib } from './lib';
-import { normalizeOptions } from './utils';
+import { updateBaseTSConfig } from './utils';
 import { LintingGeneratorSchema } from './schema';
 import {
   addDeprecationRules,
@@ -13,7 +13,7 @@ import {
   addUnusedImportsRules,
 } from './tasks';
 
-import { formatWorkspaceTask, lintWorkspaceTask } from '../../devkit';
+import { formatWorkspaceTask } from '../../devkit';
 
 /**
  * Nx generator to setup ESLint in a workspace.
@@ -30,12 +30,10 @@ export default async function eslintGenerator(
   if (options?.deprecation) addDeprecationRules(tree);
   if (options?.importOrder) addImportOrderRules(tree);
   if (options?.prettier) addPrettierRules(tree);
-
-  await formatFiles(tree);
+  if (options?.sonarJs) updateBaseTSConfig(tree);
 
   return () => {
     installPackagesTask(tree);
-    // lintWorkspaceTask(tree);
-    // formatWorkspaceTask(tree);
+    formatWorkspaceTask(tree);
   };
 }

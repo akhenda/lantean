@@ -10,16 +10,32 @@ import {
   Tree,
   updateJson,
   updateProjectConfiguration,
+  writeJson,
 } from '@nx/devkit';
 import { libraryGenerator } from '@nx/js';
 
 import { addDevDependencyToPackageJson } from '../../devkit';
 
-import { eslintLibDirectory, eslintLibNameDeps, prettierVersion } from './constants';
+import {
+  eslintLibDirectory,
+  eslintLibDepVersions,
+  prettierVersion,
+  vscodeCSSSettingsFile,
+} from './constants';
 import { LintingGeneratorSchema } from './schema';
 import { NormalizedSchema } from './types';
 import { getImportPath, getNpmScope, normalizeOptions } from './utils';
+import { readEsLintConfig, writeEsLintConfig } from './eslint-config';
 
+/**
+ * Generates the files for the ESLint Config library.
+ *
+ * This is a separate function from the main generator so that it can be
+ * reused in the update generator.
+ *
+ * @param tree The abstract syntax tree of the workspace.
+ * @param options The normalized options for the generator.
+ */
 export function addLibFiles(tree: Tree, options: NormalizedSchema) {
   const templateOptions = {
     ...options,
@@ -30,25 +46,69 @@ export function addLibFiles(tree: Tree, options: NormalizedSchema) {
     npmScopeTitle: names(getNpmScope(tree)).className,
   };
 
-  generateFiles(tree, join(__dirname, 'files'), options.projectRoot, templateOptions);
+  generateFiles(
+    tree,
+    join(__dirname, 'files'),
+    options.projectRoot,
+    templateOptions
+  );
 
-  updateJson(tree, join(options.projectRoot, 'src/tests/fixtures/basic-app/project.json'), (projectJson) => {
-    projectJson.name = `${options.projectName}-tests`;
+  updateJson(
+    tree,
+    join(options.projectRoot, 'src/tests/fixtures/basic-app/project.json'),
+    (projectJson) => {
+      projectJson.name = `${options.projectName}-tests`;
 
-    return projectJson;
-  });
+      return projectJson;
+    }
+  );
 }
 
+/**
+ * Adds dependencies to `package.json`. This function is used to add deps to
+ * the root `package.json` and the `package.json` of the `eslint-config`
+ * library.
+ *
+ * @param tree The file system tree.
+ * @returns The updated dependencies.
+ */
 function addDependencies(tree: Tree) {
   const dependencies: Record<string, string> = {};
   const devDependencies: Record<string, string> = {
-    ...eslintLibNameDeps,
+    ...eslintLibDepVersions,
     prettier: prettierVersion,
   };
 
   return addDependenciesToPackageJson(tree, dependencies, devDependencies);
 }
 
+/**
+ * Updates the project-specific TSConfig.
+ *
+ * - Adds the spec pattern to the project-specific TSConfig.
+ *
+ * @param tree The virtual file system tree.
+ * @param options The normalized schema options.
+ */
+function updateTSConfig(tree: Tree, options: NormalizedSchema) {
+  updateJson(tree, join(options.projectRoot, 'tsconfig.spec.json'), (json) => {
+    json.include = [...json.include, 'src/**/*.spec.js'];
+
+    return json;
+  });
+}
+
+/**
+ * Updates the Jest configuration to include TypeScript and JSON files.
+ *
+ * Adds `'tsx'` and `'json'` to the `moduleFileExtensions` option.
+ *
+ * Also adds `fixtures` to the `testPathIgnorePatterns` option to
+ * exclude test fixtures from the test run.
+ *
+ * @param tree The file system tree.
+ * @param options The normalized schema options.
+ */
 function updateJestConfig(tree: Tree, options: NormalizedSchema) {
   const filePath = join(options.projectRoot, 'jest.config.js');
   const fileEntry = tree.read(filePath);
@@ -60,13 +120,20 @@ function updateJestConfig(tree: Tree, options: NormalizedSchema) {
       "moduleFileExtensions: ['ts', 'js', 'html', 'tsx', 'json'],",
       "testPathIgnorePatterns: ['.*/tests/fixtures/'],",
       '// verbose: true,',
-    ].join('\n\t'),
+    ].join('\n\t')
   );
 
   // only write the file if something has changed
   if (newContents !== contents) tree.write(filePath, newContents);
 }
 
+/**
+ * Updates the root and lib project's `package.json` to include all necessary
+ * dependencies and configuration.
+ *
+ * @param tree The file system tree.
+ * @param options The options for the generator.
+ */
 function updatePackageJsons(tree: Tree, options: NormalizedSchema) {
   updateJson(tree, 'package.json', (packageJson) => {
     packageJson.workspaces = [
@@ -117,30 +184,125 @@ function updatePackageJsons(tree: Tree, options: NormalizedSchema) {
   });
 
   updateJson(tree, join(options.projectRoot, 'package.json'), (packageJson) => {
-    packageJson.peerDependencies = {
-      eslint: '~8.57.0',
-      jest: '~29.7.0',
-      prettier: '~3.3.3',
-    };
+    packageJson.peerDependencies = { ...eslintLibDepVersions };
     packageJson.peerDependenciesMeta = {
       jest: { optional: true },
       prettier: { optional: true },
     };
     packageJson.dependencies = deps;
-    packageJson.devDependencies = {
-      ...packageJson.devDependencies,
-      ...eslintLibNameDeps,
-    };
+    packageJson.devDependencies = { ...(packageJson.devDependencies ?? {}) };
 
     return packageJson;
   });
 }
 
+/**
+ * Updates VSCode settings in `.vscode/settings.json`.
+ *
+ * The generated settings are opinionated and try to enforce a consistent
+ * coding style across the project. The settings are also designed to work
+ * seamlessly with the configured ESLint rules.
+ *
+ * If you want to override any of the settings, you can do so by adding your
+ * own settings to the `settings.json` file.
+ *
+ * @param tree The file system tree.
+ */
+function updateVSCodeSettings(tree: Tree) {
+  if (!tree.exists(vscodeCSSSettingsFile)) {
+    writeJson(tree, join('.vscode', vscodeCSSSettingsFile), {
+      version: 1.1,
+      atDirectives: [
+        {
+          name: '@tailwind',
+          description:
+            "Use the @tailwind directive to insert Tailwind's `base`, `components`, `utilities`, and `screens` styles into your CSS.",
+        },
+      ],
+    });
+  }
+
+  updateJson(tree, join('.vscode', 'settings.json'), (settingsJson) => {
+    return {
+      ...settingsJson,
+
+      'files.eol': '\n',
+      'editor.tabSize': 2,
+
+      'search.exclude': {
+        'yarn.lock': true,
+        'pnpm-lock.yaml': true,
+        'bun.lockb': true,
+      },
+
+      // Format all filetypes on save
+      'editor.formatOnSave': true,
+
+      // enable prettier as default formatter for all supported filetypes
+      'editor.defaultFormatter': 'esbenp.prettier-vscode',
+
+      // run eslint --fix on save
+      'editor.codeActionsOnSave': {
+        'source.addMissingImports': 'explicit',
+        'source.fixAll.eslint': 'explicit',
+      },
+
+      // HTML specific settings
+      '[html]': {
+        'editor.formatOnSave': true,
+        'editor.defaultFormatter': 'esbenp.prettier-vscode',
+      },
+
+      // JavaScript specific settings
+      '[javascript]': {
+        'editor.formatOnSave': true,
+        'editor.defaultFormatter': 'esbenp.prettier-vscode',
+      },
+
+      // Typescript specific settings
+      '[typescript]': {
+        'editor.formatOnSave': true,
+        'editor.defaultFormatter': 'esbenp.prettier-vscode',
+      },
+
+      // JSONC specific settings
+      '[jsonc]': { 'editor.defaultFormatter': 'esbenp.prettier-vscode' },
+
+      // Other rules
+      'editor.wordWrap': 'on',
+      'files.trimTrailingWhitespace': true,
+      'files.insertFinalNewline': true,
+
+      // ESLint will not lint .vue, .ts or .tsx files in VSCode by default
+      // so enable linting for these files
+      // Also JSONC eslint plugin needs it
+      // https://github.com/ota-meshi/eslint-plugin-jsonc#visual-studio-code
+      'eslint.validate': [
+        'javascript',
+        'javascriptreact',
+        'vue',
+        'typescript',
+        'typescriptreact',
+        'json5',
+      ],
+
+      'css.customData': ['.vscode/css_custom_data.json'],
+      'files.associations': { '*.css': 'tailwindcss' },
+    };
+  });
+}
+
+/**
+ * Adds a target to the ESLint config project to run semantic-release.
+ *
+ * @param tree The virtual file system tree.
+ * @param options The options passed to the schematic.
+ */
 function addSemanticReleaseTarget(tree: Tree, options: NormalizedSchema) {
   const projectConfiguration = readProjectConfiguration(tree, options.name);
 
   updateProjectConfiguration(tree, options.projectName, {
-    root: projectConfiguration.root,
+    ...projectConfiguration,
     targets: {
       ...projectConfiguration.targets,
       'semantic-release': {
@@ -156,6 +318,14 @@ function addSemanticReleaseTarget(tree: Tree, options: NormalizedSchema) {
   });
 }
 
+/**
+ * Updates the ESLint ignore file to ignore the given project directory, so
+ * that ESLint does not complain about the generated ESLint configuration
+ * file.
+ *
+ * @param tree The file system tree.
+ * @param options The schema options passed to the generator.
+ */
 async function updateESLintIgnoreFile(tree: Tree, options: NormalizedSchema) {
   const ignores = readFileSync(resolve(tree.root, '.eslintignore'), {
     encoding: 'utf8',
@@ -176,8 +346,8 @@ async function updateESLintIgnoreFile(tree: Tree, options: NormalizedSchema) {
       'jest.config.js',
       'jest.config.ts',
       '',
-      '# The eslint plugin test fixtures contain files that deliberatly fail linting',
-      "# in order to test that the plugin reports those errors. We don't want the",
+      '# The eslint config test fixtures contain files that deliberatly fail linting',
+      "# in order to tests that the config reports those errors. We don't want the",
       '# normal eslint run to complain about those files though so ignore them here.',
       `${options.projectRoot}/src/tests/fixtures`,
       `${options.projectRoot}/src/**/*/fixtures`,
@@ -190,13 +360,27 @@ async function updateESLintIgnoreFile(tree: Tree, options: NormalizedSchema) {
   if (ignores.length) tree.write('./.eslintignore', ignores.join('\n'));
 }
 
+/**
+ * Updates the `.prettierignore` file if it exists.
+ *
+ * @param tree The virtual file system tree.
+ * @param options The options passed to the generator.
+ */
 async function updatePrettierIgnoreFile(tree: Tree, options: NormalizedSchema) {
   const ignores = readFileSync(resolve(tree.root, '.prettierignore'), {
     encoding: 'utf8',
   }).split('\n');
 
   if (!ignores.includes(`# ${getImportPath(tree, options.projectDirectory)}`)) {
-    const files = [];
+    const files = [
+      `# ${getImportPath(tree, options.projectDirectory)}`,
+      '# The eslint config test fixtures contain files that deliberatly fail linting',
+      "# in order to tests that the config reports those errors. We don't want the",
+      '# normal prettier run to complain about those files though so ignore them here.',
+      `${options.projectRoot}/src/tests/fixtures`,
+      `${options.projectRoot}/src/**/*/fixtures`,
+      '**/*/fixtures',
+    ];
 
     if (files.length) ignores.push(...files, '');
   }
@@ -205,12 +389,34 @@ async function updatePrettierIgnoreFile(tree: Tree, options: NormalizedSchema) {
 }
 
 /**
+ * Updates the base ESLint configuration by setting the "extends" property
+ * to point to the dedicated ESLint config project.
+ *
+ * @param tree The file system tree.
+ * @param options The normalized schema.
+ */
+function updateBaseEslintConfig(tree: Tree, options: NormalizedSchema) {
+  const eslintConfig = readEsLintConfig(tree);
+
+  eslintConfig.extends = [`${options.importPath}/nx`];
+
+  writeEsLintConfig(tree, {
+    root: eslintConfig.root,
+    extends: eslintConfig.extends,
+    ...eslintConfig,
+  });
+}
+
+/**
  * Generates a dedicated ESLint config project.
  *
  * @param tree The virtual file system tree.
  * @param options The options passed to the generator.
  */
-export async function generateConfigLib(tree: Tree, options: LintingGeneratorSchema = {}) {
+export async function generateConfigLib(
+  tree: Tree,
+  options: LintingGeneratorSchema = {}
+) {
   const normalizedOptions = normalizeOptions(tree, options);
 
   await libraryGenerator(tree, {
@@ -227,10 +433,17 @@ export async function generateConfigLib(tree: Tree, options: LintingGeneratorSch
 
   addLibFiles(tree, normalizedOptions);
   addSemanticReleaseTarget(tree, normalizedOptions);
+  updateTSConfig(tree, normalizedOptions);
   updateJestConfig(tree, normalizedOptions);
+  updateBaseEslintConfig(tree, normalizedOptions);
   updateESLintIgnoreFile(tree, normalizedOptions);
   updatePrettierIgnoreFile(tree, normalizedOptions);
+  updateVSCodeSettings(tree);
   addDependencies(tree);
-  addDevDependencyToPackageJson(tree, normalizedOptions.importPath, 'workspace:*');
+  addDevDependencyToPackageJson(
+    tree,
+    normalizedOptions.importPath,
+    'workspace:*'
+  );
   updatePackageJsons(tree, normalizedOptions);
 }

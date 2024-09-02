@@ -1,0 +1,8 @@
+/**
+ * Default NX Workspace Config
+ */
+module.exports = {
+  extends: '<%= importPath %>/basic.js',
+  overrides: [],
+  rules: {}
+};

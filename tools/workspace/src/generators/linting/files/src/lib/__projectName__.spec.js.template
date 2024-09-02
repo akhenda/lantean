@@ -1,8 +1,8 @@
-import eslintConfig from './<%= projectName %>';
+const eslintConfig = require('./<%= projectName %>');
 
 describe('eslintConfig', () => {
   it('should match snapshot', () => {
     expect(eslintConfig).toBeDefined();
-    // expect(eslintConfig).toMatchSnapshot();
+    expect(eslintConfig).toMatchSnapshot();
   });
 });

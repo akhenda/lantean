@@ -1,0 +1,8 @@
+/**
+ * Use this for Next.js projects.
+ */
+module.exports = {
+  extends: '<%= importPath %>/react.js',
+  overrides: [],
+  rules: {},
+};

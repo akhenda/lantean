@@ -1,0 +1,51 @@
+/**
+ * Use this for casual js/typescript projects.
+ */
+module.exports = {
+  overrides: [
+    {
+      files: '*.json',
+      extends: ['<%= importPath %>/src/lib/configs/prettier.js'],
+      parser: 'jsonc-eslint-parser',
+      rules: {},
+    },
+    {
+      files: ['*.ts', '*.tsx', '*.js', '*.jsx'],
+      rules: {},
+    },
+    {
+      extends: ['<%= importPath %>/src/lib/configs/esnext.js', '<%= importPath %>/src/lib/configs/prettier.js'],
+      files: ['*.js', '*.jsx'],
+      rules: {},
+    },
+    {
+      extends: [
+        '<%= importPath %>/src/lib/configs/typescript.js',
+        '<%= importPath %>/src/lib/configs/typescript-type-checking.js',
+        '<%= importPath %>/src/lib/configs/prettier.js',
+      ],
+      files: ['*.ts', '*.tsx'],
+      settings: {
+        // 'import/parsers': {
+        //   '@typescript-eslint/parser': ['.ts', '.tsx'],
+        // },
+        'import/resolver': {
+          typescript: {
+            project: 'tsconfig.base.json',
+          },
+        },
+      },
+      rules: {},
+    },
+    {
+      files: [
+        '**/test/**/*.[jt]s?(x)',
+        '**/tests/**/*.[jt]s?(x)',
+        '**/__tests__/**/*.[jt]s?(x)',
+        '**/?(*.)+(spec|test).[jt]s?(x)',
+      ],
+      env: { jest: true },
+      extends: ['<%= importPath %>/src/lib/configs/jest.js'],
+    },
+  ],
+};

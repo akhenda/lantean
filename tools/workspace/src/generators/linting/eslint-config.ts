@@ -19,7 +19,8 @@ import { getSet, areSetsEqual } from '../../devkit';
  *
  * @param tree The file system tree.
  * @param eslintConfig The ESLint configuration to write.
- * @param path The path where the ESLint configuration should be written. Defaults to `.eslintrc.json`.
+ * @param path The path where the ESLint configuration should be written.
+ * Defaults to `.eslintrc.json`.
  */
 export function writeEsLintConfig(
   tree: Tree,
@@ -71,8 +72,8 @@ export function isEsLintPluginPresent(tree: Tree, plugin: string): boolean {
  *
  * @param tree The file system tree.
  * @param plugin The name of the plugin to add.
- * @param after The name of the plugin after which the plugin should be placed. If
- * not provided, the plugin will be added to the end of the list of plugins.
+ * @param after The name of the plugin after which the plugin should be placed.
+ * If not provided, the plugin will be added to the end of the list of plugins.
  */
 export function addEsLintPlugin(
   tree: Tree,
@@ -102,7 +103,8 @@ export function addEsLintPlugin(
  *
  * @param tree The file system tree.
  * @param rule The ESLint rule to add.
- * @param path The path to the ESLint configuration file, defaults to `.eslintrc.json`.
+ * @param path The path to the ESLint configuration file, defaults to
+ * `.eslintrc.json`.
  */
 export function addEsLintRules(
   tree: Tree,
@@ -152,7 +154,8 @@ export function addEsLintRules(
  * Updates ESLint project configuration.
  *
  * @param tree The file system tree.
- * @param projectRule A rule that takes a project configuration and returns an ESLint configuration override rule.
+ * @param projectRule A rule that takes a project configuration and returns an
+ * ESLint configuration override rule.
  */
 export function updateEsLintProjectConfig(
   tree: Tree,

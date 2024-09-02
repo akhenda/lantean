@@ -35,6 +35,7 @@
             "ignoredDependencies": [
               "nx",
               "prettier",
+              "@nx/js",
               "@schemastore/eslintrc",
               "@schemastore/package",
               "@schemastore/prettierrc",

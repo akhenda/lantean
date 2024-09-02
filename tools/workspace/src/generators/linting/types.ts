@@ -1,6 +1,9 @@
 import type { JSONSchemaForESLintConfigurationFiles } from '@schemastore/eslintrc';
 import { LintingGeneratorSchema } from './schema';
 
+/**
+ * Extracts the element type of an array.
+ */
 type ArrayElement<ArrayType> = ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
 
 /**
@@ -13,6 +16,9 @@ export type EsLintConfigurationOverrideRules = Exclude<JSONSchemaForESLintConfig
  */
 export type EsLintConfigurationOverrideRule = ArrayElement<EsLintConfigurationOverrideRules>;
 
+/**
+ * The normalized options passed to the generator.
+ */
 export interface NormalizedSchema extends LintingGeneratorSchema {
   name: string;
   projectName: string;

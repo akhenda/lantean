@@ -18,6 +18,7 @@ import {
   unusedImportsRule,
 } from './rules';
 import {
+  eslintLibDepVersions,
   eslintPluginPrettier,
   prettierPlugin,
   prettierVersion,
@@ -48,8 +49,8 @@ export function addEsLintRecommendedRules(tree: Tree): void {
 
   writeEsLintConfig(tree, {
     root: eslintConfig.root,
-    ignorePatterns: eslintConfig.ignorePatterns,
     env,
+    ignorePatterns: eslintConfig.ignorePatterns,
     ...eslintConfig,
   });
 }
@@ -63,7 +64,11 @@ export function addEsLintRecommendedRules(tree: Tree): void {
  * @param tree The file system tree.
  */
 export function addSonarJsRecommendedRules(tree: Tree): void {
-  addDevDependencyToPackageJson(tree, 'eslint-plugin-sonarjs');
+  addDevDependencyToPackageJson(
+    tree,
+    'eslint-plugin-sonarjs',
+    eslintLibDepVersions['eslint-plugin-sonarjs']
+  );
   addEsLintPlugin(tree, 'sonarjs');
   addEsLintRules(tree, sonarJSRule);
 }
@@ -77,7 +82,11 @@ export function addSonarJsRecommendedRules(tree: Tree): void {
  * @param tree The file system tree.
  */
 export function addUnusedImportsRules(tree: Tree): void {
-  addDevDependencyToPackageJson(tree, 'eslint-plugin-unused-imports');
+  addDevDependencyToPackageJson(
+    tree,
+    'eslint-plugin-unused-imports',
+    eslintLibDepVersions['eslint-plugin-unused-imports']
+  );
   addEsLintPlugin(tree, 'unused-imports');
   addEsLintRules(tree, unusedImportsRule);
 }
@@ -86,7 +95,8 @@ export function addUnusedImportsRules(tree: Tree): void {
  * @internal
  * Adds TypeScript recommended rules to the root ESLint configuration.
  *
- * Requires `@typescript-eslint/parser` and `@typescript-eslint/eslint-plugin` to be installed.
+ * Requires `@typescript-eslint/parser` and `@typescript-eslint/eslint-plugin`
+ * to be installed.
  *
  * @param tree The file system tree.
  */
@@ -106,7 +116,8 @@ export function addTypescriptRecommendedRules(tree: Tree): void {
  * @internal
  * Adds `eslint-plugin-deprecation` rules to the root ESLint configuration.
  *
- * Requires `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin` and `eslint-plugin-deprecation` to be installed.
+ * Requires `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin`
+ * and `eslint-plugin-deprecation` to be installed.
  *
  * @param tree The file system tree.
  */
@@ -127,7 +138,8 @@ export function addDeprecationRules(tree: Tree): void {
  * @internal
  * Adds `eslint-plugin-import` rules to the root ESLint configuration.
  *
- * Requires `eslint-plugin-import` and `eslint-import-resolver-typescript` to be installed.
+ * Requires `eslint-plugin-import` and `eslint-import-resolver-typescript`
+ * to be installed.
  *
  * @param tree The file system tree.
  */
@@ -140,7 +152,8 @@ export function addImportOrderRules(tree: Tree): void {
 
 /**
  * @internal
- * Updates ESLint project configuration by adding `parserOptions.project` with the path to `tsconfig.json` file.
+ * Updates ESLint project configuration by adding `parserOptions.project`
+ * with the path to `tsconfig.json` file.
  *
  * @param tree The file system tree.
  */

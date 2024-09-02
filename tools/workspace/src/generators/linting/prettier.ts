@@ -12,7 +12,6 @@ export const prettierDefaultConfig: Exclude<SchemaForPrettierrc, string> = {
   semi: true,
   tabWidth: 2,
   printWidth: 120,
-  jsxBracketSameLine: false,
   arrowParens: 'always',
   overrides: [
     {

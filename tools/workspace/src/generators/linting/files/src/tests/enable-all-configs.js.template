@@ -4,24 +4,23 @@ module.exports = {
   // core configs so specifying them all is not needed.
   // But it is useful for testing to prove all configs can be loaded sucessfully
   extends: [
-    '<%= importPath %>/core',
-    '<%= importPath %>/es5',
-    '<%= importPath %>/esnext',
-    '<%= importPath %>/typescript',
+    '<%= importPath %>/src/lib/configs/core',
+    '<%= importPath %>/src/lib/configs/es5',
+    '<%= importPath %>/src/lib/configs/esnext',
+    '<%= importPath %>/src/lib/configs/typescript',
 
     // Augmenting configs - When extending, these go after the core config
-    '<%= importPath %>/cypress',
-    '<%= importPath %>/jest',
-    '<%= importPath %>/jest-dom',
-    '<%= importPath %>/node',
-    '<%= importPath %>/react',
-    '<%= importPath %>/webpack',
+    '<%= importPath %>/src/lib/configs/cypress',
+    '<%= importPath %>/src/lib/configs/jest',
+    '<%= importPath %>/src/lib/configs/jest-dom',
+    '<%= importPath %>/src/lib/configs/node',
+    '<%= importPath %>/src/lib/configs/react',
 
     // Prettier config - When extending, this must go last
-    '<%= importPath %>/prettier',
+    '<%= importPath %>/src/lib/configs/prettier',
   ],
   rules: {
-    "@typescript-eslint/no-var-requires": "off",
-    "sort-keys-fix/sort-keys-fix": "off"
+    '@typescript-eslint/no-var-requires': 'off',
+    'sort-keys-fix/sort-keys-fix': 'off'
   },
 };
