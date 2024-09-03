@@ -1,4 +1,11 @@
-import { getWorkspaceLayout, names, readJson, Tree, updateJson } from '@nx/devkit';
+/* eslint-disable sort-keys-fix/sort-keys-fix */
+import {
+  getWorkspaceLayout,
+  names,
+  readJson,
+  Tree,
+  updateJson,
+} from '@nx/devkit';
 
 import { eslintLibDirectory, eslintLibName, eslintLibTags } from './constants';
 import { LintingGeneratorSchema } from './schema';
@@ -21,7 +28,10 @@ import { NormalizedSchema } from './types';
  * - `libsDir`: The path to the libs directory.
  * - `importPath`: The import path for the ESLint config library.
  */
-export function normalizeOptions(tree: Tree, options: LintingGeneratorSchema = {}): NormalizedSchema {
+export function normalizeOptions(
+  tree: Tree,
+  options: LintingGeneratorSchema = {},
+): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
   const name = names(eslintLibName).fileName;
   const project = names(eslintLibDirectory).fileName;
@@ -47,7 +57,9 @@ export function normalizeOptions(tree: Tree, options: LintingGeneratorSchema = {
  * Read the npm scope that a workspace should use by default
  */
 export function getNpmScope(tree: Tree): string | undefined {
-  const { name } = tree.exists('package.json') ? readJson<{ name?: string }>(tree, 'package.json') : { name: null };
+  const { name } = tree.exists('package.json')
+    ? readJson<{ name?: string }>(tree, 'package.json')
+    : { name: null };
 
   if (name?.startsWith('@')) return name.split('/')[0].substring(1);
 
@@ -61,7 +73,9 @@ export function getImportPath(tree: Tree, projectDirectory: string): string {
   const npmScope = getNpmScope(tree);
   const prefix = npmScope === '@' ? '' : '@';
 
-  return npmScope ? `${prefix}${npmScope}/${projectDirectory}` : projectDirectory;
+  return npmScope
+    ? `${prefix}${npmScope}/${projectDirectory}`
+    : projectDirectory;
 }
 
 /**
@@ -73,14 +87,18 @@ export function getImportPath(tree: Tree, projectDirectory: string): string {
  * @param options The normalized schema options.
  */
 export function updateBaseTSConfig(tree: Tree) {
-  updateJson(tree, 'tsconfig.base.json', (json) => {
-    json.compilerOptions = {
-      ...json.compilerOptions,
-      strictNullChecks: true,
-      baseUrl: json.compilerOptions.baseUrl,
-      paths: json.compilerOptions.paths,
-    };
+  updateJson(tree, 'tsconfig.base.json', ({ compileOnSave, compilerOptions, ...json }) => {
+    const { baseUrl, paths, ...defaultCompilerOptions } = compilerOptions;
 
-    return json;
+    return {
+      compileOnSave,
+      compilerOptions: {
+        ...defaultCompilerOptions,
+        strictNullChecks: true,
+        baseUrl,
+        paths,
+      },
+      ...json,
+    };
   });
 }

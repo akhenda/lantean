@@ -6,7 +6,7 @@ import { CommitlintGeneratorSchema } from './schema';
 
 describe('commitlint generator', () => {
   let tree: Tree;
-  const options: CommitlintGeneratorSchema = { name: 'test' };
+  const options: CommitlintGeneratorSchema = { configFileName: '.commitlintrc' };
 
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();
@@ -14,7 +14,9 @@ describe('commitlint generator', () => {
 
   it('should run successfully', async () => {
     await commitlintGenerator(tree, options);
+
     const config = readProjectConfiguration(tree, 'test');
+
     expect(config).toBeDefined();
   });
 });

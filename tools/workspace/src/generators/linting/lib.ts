@@ -13,19 +13,21 @@ import {
   writeJson,
 } from '@nx/devkit';
 import { libraryGenerator } from '@nx/js';
+import { unique } from 'radash';
 
 import { addDevDependencyToPackageJson } from '../../devkit';
 
 import {
-  eslintLibDirectory,
   eslintLibDepVersions,
+  eslintLibDirectory,
   prettierVersion,
   vscodeCSSSettingsFile,
+  vscodeExtensions,
 } from './constants';
+import { readEsLintConfig, writeEsLintConfig } from './eslint-config';
 import { LintingGeneratorSchema } from './schema';
 import { NormalizedSchema } from './types';
 import { getImportPath, getNpmScope, normalizeOptions } from './utils';
-import { readEsLintConfig, writeEsLintConfig } from './eslint-config';
 
 /**
  * Generates the files for the ESLint Config library.
@@ -37,31 +39,23 @@ import { readEsLintConfig, writeEsLintConfig } from './eslint-config';
  * @param options The normalized options for the generator.
  */
 export function addLibFiles(tree: Tree, options: NormalizedSchema) {
+  const npmScope = getNpmScope(tree) ?? options.name;
   const templateOptions = {
     ...options,
     ...names(options.name),
+    npmScope,
+    npmScopeTitle: names(npmScope).className,
     offsetFromRoot: offsetFromRoot(options.projectRoot),
     template: '',
-    npmScope: getNpmScope(tree),
-    npmScopeTitle: names(getNpmScope(tree)).className,
   };
 
-  generateFiles(
-    tree,
-    join(__dirname, 'files'),
-    options.projectRoot,
-    templateOptions
-  );
+  generateFiles(tree, join(__dirname, 'files'), options.projectRoot, templateOptions);
 
-  updateJson(
-    tree,
-    join(options.projectRoot, 'src/tests/fixtures/basic-app/project.json'),
-    (projectJson) => {
-      projectJson.name = `${options.projectName}-tests`;
+  updateJson(tree, join(options.projectRoot, 'src/tests/fixtures/basic-app/project.json'), (projectJson) => {
+    projectJson.name = `${options.projectName}-tests`;
 
-      return projectJson;
-    }
-  );
+    return projectJson;
+  });
 }
 
 /**
@@ -120,7 +114,7 @@ function updateJestConfig(tree: Tree, options: NormalizedSchema) {
       "moduleFileExtensions: ['ts', 'js', 'html', 'tsx', 'json'],",
       "testPathIgnorePatterns: ['.*/tests/fixtures/'],",
       '// verbose: true,',
-    ].join('\n\t')
+    ].join('\n\t'),
   );
 
   // only write the file if something has changed
@@ -142,22 +136,25 @@ function updatePackageJsons(tree: Tree, options: NormalizedSchema) {
       `${options.libsDir}/${eslintLibDirectory}/*`,
     ];
 
+    /* eslint-disable @typescript-eslint/naming-convention */
     packageJson.scripts = {
       ...(packageJson.scripts ?? {}),
-      help: 'nx help',
       affected: 'nx affected',
       'affected:apps': 'nx affected:apps',
       'affected:libs': 'nx affected:libs',
-      'nx:update': 'nx migrate latest',
-      'nx:test': 'pnpm exec nx test',
-      'nx:reset': 'pnpm exec nx reset',
-      'deps:update': 'pnpm exec nx run-many --target=update-deps --all',
-      test: 'pnpm exec nx run-many --target=test --all',
       build: 'pnpm exec nx run-many --target=build --all',
+      'deps:update': 'pnpm exec nx run-many --target=update-deps --all',
+      help: 'nx help',
       lint: 'pnpm exec nx run-many --target=lint --all',
       'lint:fix': 'pnpm exec nx run-many --target=lint:fix --all',
+      'nx:reset': 'pnpm exec nx reset',
+      'nx:test': 'pnpm exec nx test',
+      'nx:update': 'nx migrate latest',
+      test: 'pnpm exec nx run-many --target=test --all',
     };
+    /* eslint-enable @typescript-eslint/naming-convention */
 
+    /* eslint-disable sort-keys-fix/sort-keys-fix */
     return {
       name: packageJson.name,
       version: packageJson.version,
@@ -167,6 +164,7 @@ function updatePackageJsons(tree: Tree, options: NormalizedSchema) {
       scripts: packageJson.scripts,
       ...packageJson,
     };
+    /* eslint-enable sort-keys-fix/sort-keys-fix */
   });
 
   let deps = {};
@@ -209,8 +207,12 @@ function updatePackageJsons(tree: Tree, options: NormalizedSchema) {
  * @param tree The file system tree.
  */
 function updateVSCodeSettings(tree: Tree) {
-  if (!tree.exists(vscodeCSSSettingsFile)) {
-    writeJson(tree, join('.vscode', vscodeCSSSettingsFile), {
+  const extensionsFilePath = join('.vscode', 'extensions.json');
+  const cssSettingsFilePath = join('.vscode', vscodeCSSSettingsFile);
+
+  if (!tree.exists(cssSettingsFilePath)) {
+    writeJson(tree, cssSettingsFilePath, {
+      /* eslint-disable sort-keys-fix/sort-keys-fix */
       version: 1.1,
       atDirectives: [
         {
@@ -219,21 +221,30 @@ function updateVSCodeSettings(tree: Tree) {
             "Use the @tailwind directive to insert Tailwind's `base`, `components`, `utilities`, and `screens` styles into your CSS.",
         },
       ],
+      /* eslint-enable sort-keys-fix/sort-keys-fix */
     });
   }
 
+  if (tree.exists(extensionsFilePath)) {
+    updateJson(tree, extensionsFilePath, (extensionsJson) => {
+      return {
+        ...extensionsJson,
+        recommendations: unique([...extensionsJson.recommendations, ...vscodeExtensions]),
+      };
+    });
+  } else {
+    writeJson(tree, extensionsFilePath, { recommendations: vscodeExtensions });
+  }
+
   updateJson(tree, join('.vscode', 'settings.json'), (settingsJson) => {
+    /* eslint-disable @typescript-eslint/naming-convention, sort-keys-fix/sort-keys-fix */
     return {
       ...settingsJson,
 
       'files.eol': '\n',
       'editor.tabSize': 2,
 
-      'search.exclude': {
-        'yarn.lock': true,
-        'pnpm-lock.yaml': true,
-        'bun.lockb': true,
-      },
+      'search.exclude': { 'yarn.lock': true, 'pnpm-lock.yaml': true, 'bun.lockb': true },
 
       // Format all filetypes on save
       'editor.formatOnSave': true,
@@ -277,18 +288,12 @@ function updateVSCodeSettings(tree: Tree) {
       // so enable linting for these files
       // Also JSONC eslint plugin needs it
       // https://github.com/ota-meshi/eslint-plugin-jsonc#visual-studio-code
-      'eslint.validate': [
-        'javascript',
-        'javascriptreact',
-        'vue',
-        'typescript',
-        'typescriptreact',
-        'json5',
-      ],
+      'eslint.validate': ['javascript', 'javascriptreact', 'vue', 'typescript', 'typescriptreact', 'json5'],
 
       'css.customData': ['.vscode/css_custom_data.json'],
       'files.associations': { '*.css': 'tailwindcss' },
     };
+    /* eslint-enable @typescript-eslint/naming-convention, sort-keys-fix/sort-keys-fix */
   });
 }
 
@@ -305,13 +310,14 @@ function addSemanticReleaseTarget(tree: Tree, options: NormalizedSchema) {
     ...projectConfiguration,
     targets: {
       ...projectConfiguration.targets,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       'semantic-release': {
         executor: '@theunderscorer/nx-semantic-release:semantic-release',
         options: {
-          github: true,
           changelog: true,
+          github: true,
           npm: true,
-          tagFormat: options.projectName + '-v${VERSION}',
+          tagFormat: `${options.projectName}-v\${VERSION}`,
         },
       },
     },
@@ -326,7 +332,7 @@ function addSemanticReleaseTarget(tree: Tree, options: NormalizedSchema) {
  * @param tree The file system tree.
  * @param options The schema options passed to the generator.
  */
-async function updateESLintIgnoreFile(tree: Tree, options: NormalizedSchema) {
+function updateESLintIgnoreFile(tree: Tree, options: NormalizedSchema) {
   const ignores = readFileSync(resolve(tree.root, '.eslintignore'), {
     encoding: 'utf8',
   }).split('\n');
@@ -366,7 +372,7 @@ async function updateESLintIgnoreFile(tree: Tree, options: NormalizedSchema) {
  * @param tree The virtual file system tree.
  * @param options The options passed to the generator.
  */
-async function updatePrettierIgnoreFile(tree: Tree, options: NormalizedSchema) {
+function updatePrettierIgnoreFile(tree: Tree, options: NormalizedSchema) {
   const ignores = readFileSync(resolve(tree.root, '.prettierignore'), {
     encoding: 'utf8',
   }).split('\n');
@@ -388,6 +394,20 @@ async function updatePrettierIgnoreFile(tree: Tree, options: NormalizedSchema) {
   if (ignores.length) tree.write('./.prettierignore', ignores.join('\n'));
 }
 
+function updateGitIgnoreFile(tree: Tree, options: NormalizedSchema) {
+  const ignores = readFileSync(resolve(tree.root, '.gitignore'), {
+    encoding: 'utf8',
+  }).split('\n');
+
+  if (!ignores.includes(`# ${getImportPath(tree, options.projectDirectory)}`)) {
+    const files = [`# ${getImportPath(tree, options.projectDirectory)}`, '*.orig', '!.vscode/css_custom_data.json'];
+
+    if (files.length) ignores.push(...files, '');
+  }
+
+  if (ignores.length) tree.write('./.gitignore', ignores.join('\n'));
+}
+
 /**
  * Updates the base ESLint configuration by setting the "extends" property
  * to point to the dedicated ESLint config project.
@@ -400,11 +420,13 @@ function updateBaseEslintConfig(tree: Tree, options: NormalizedSchema) {
 
   eslintConfig.extends = [`${options.importPath}/nx`];
 
+  /* eslint-disable sort-keys-fix/sort-keys-fix */
   writeEsLintConfig(tree, {
     root: eslintConfig.root,
     extends: eslintConfig.extends,
     ...eslintConfig,
   });
+  /* eslint-enable sort-keys-fix/sort-keys-fix */
 }
 
 /**
@@ -413,20 +435,17 @@ function updateBaseEslintConfig(tree: Tree, options: NormalizedSchema) {
  * @param tree The virtual file system tree.
  * @param options The options passed to the generator.
  */
-export async function generateConfigLib(
-  tree: Tree,
-  options: LintingGeneratorSchema = {}
-) {
+export async function generateConfigLib(tree: Tree, options: LintingGeneratorSchema = {}) {
   const normalizedOptions = normalizeOptions(tree, options);
 
   await libraryGenerator(tree, {
-    name: normalizedOptions.projectName,
-    js: true,
     compiler: 'tsc',
-    projectNameAndRootFormat: 'as-provided',
     directory: normalizedOptions.projectRoot,
-    setParserOptionsProject: true,
+    js: true,
     linter: 'eslint',
+    name: normalizedOptions.projectName,
+    projectNameAndRootFormat: 'as-provided',
+    setParserOptionsProject: true,
     strict: true,
     tags: normalizedOptions.parsedTags.join(','),
   });
@@ -438,12 +457,9 @@ export async function generateConfigLib(
   updateBaseEslintConfig(tree, normalizedOptions);
   updateESLintIgnoreFile(tree, normalizedOptions);
   updatePrettierIgnoreFile(tree, normalizedOptions);
+  updateGitIgnoreFile(tree, normalizedOptions);
   updateVSCodeSettings(tree);
   addDependencies(tree);
-  addDevDependencyToPackageJson(
-    tree,
-    normalizedOptions.importPath,
-    'workspace:*'
-  );
+  addDevDependencyToPackageJson(tree, normalizedOptions.importPath, 'workspace:*');
   updatePackageJsons(tree, normalizedOptions);
 }

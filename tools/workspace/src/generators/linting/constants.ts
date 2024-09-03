@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /**
  * Filename of VSCode CSS settings.
  */
@@ -95,3 +96,22 @@ export const eslintLibDepVersions = {
   jest: '^29.7.0',
   prettier: '^3.3.3',
 } as const;
+
+/**
+ * List of VSCode extensions that should be installed.
+ */
+export const vscodeExtensions = [
+  'nrwl.angular-console',
+  'esbenp.prettier-vscode',
+  'firsttris.vscode-jest-runner',
+  'dbaeumer.vscode-eslint',
+  'mikestead.dotenv',
+  'eamodio.gitlens',
+  'streetsidesoftware.code-spell-checker',
+  'formulahendry.auto-close-tag',
+  'formulahendry.auto-rename-tag',
+  'dsznajder.es7-react-js-snippets',
+  'bradlc.vscode-tailwindcss',
+  'lokalise.i18n-ally',
+  'wesbos.theme-cobalt2',
+] as const;

@@ -1,8 +1,14 @@
 import { CommitlintConfigFileName } from './schema';
 
+/**
+ * The default name of the commitlint configuration file.
+ */
 export const defaultCommitlintConfigFile =
   '.commitlintrc.js' as CommitlintConfigFileName;
 
+/**
+ * The dependencies required by the generator.
+ */
 export const devDependencies = {
   '@commitlint/cli': '^19.4.0',
   '@commitlint/config-conventional': '^19.2.2',

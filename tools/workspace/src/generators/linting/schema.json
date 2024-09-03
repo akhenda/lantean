@@ -13,7 +13,7 @@
         "$source": "argv",
         "index": 0
       },
-      "x-prompt": "Do you want to generate a config lib? (If not, we install rules in the rule config file)"
+      "x-prompt": "Do you want to generate a dedicated eslint config library?"
     },
     "eslintRecommended": {
       "type": "boolean",

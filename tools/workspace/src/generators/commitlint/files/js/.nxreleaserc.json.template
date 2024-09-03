@@ -1,0 +1,11 @@
+{
+  "dryRun": false,
+  "changelog": true,
+  "npm": true,
+  "github": true,
+  "repositoryUrl": "<%= gitRepo %>.git",
+  "branches": ["main", { "name": "dev", "channel": "beta", "prerelease": "rc" }],
+  "outputPath": "${WORKSPACE_DIR}/dist",
+  "buildTarget": "build",
+  "commitMessage": "chore(release): ${PROJECT_NAME} - v${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+}
