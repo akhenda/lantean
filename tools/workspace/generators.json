@@ -3,7 +3,12 @@
     "linting": {
       "factory": "./src/generators/linting/generator",
       "schema": "./src/generators/linting/schema.json",
-      "description": "linting generator"
+      "description": "ESLint & Prettier Generator"
+    },
+    "commitlint": {
+      "factory": "./src/generators/commitlint/generator",
+      "schema": "./src/generators/commitlint/schema.json",
+      "description": "Commitlint & Semantic Release Generator"
     }
   }
 }
