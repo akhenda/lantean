@@ -1,7 +1,7 @@
-import { CommitlintConfigFileName } from './types';
+import { CommitlintConfigFileName } from './schema';
 
-export const commitlintConfigFile: CommitlintConfigFileName =
-  '.commitlintrc.js';
+export const defaultCommitlintConfigFile =
+  '.commitlintrc.js' as CommitlintConfigFileName;
 
 export const devDependencies = {
   '@commitlint/cli': '^19.4.0',

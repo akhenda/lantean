@@ -3,7 +3,6 @@ import { join } from 'path';
 import {
   addDependenciesToPackageJson,
   generateFiles,
-  readProjectConfiguration,
   Tree,
   updateJson,
 } from '@nx/devkit';
@@ -62,11 +61,7 @@ export function updateReadme(tree: Tree) {
 }
 
 export function addFiles(tree: Tree, options: NormalizedSchema) {
-  const { root } = readProjectConfiguration(tree, null);
-  const isRootProject = root === '.';
-
   if (
-    !isRootProject &&
     !tree.exists('.commitlintrc') &&
     !tree.exists('.commitlintrc.json') &&
     !tree.exists('.commitlintrc.yaml') &&

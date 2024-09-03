@@ -1,8 +1,12 @@
-import { getWorkspaceLayout, Tree } from "@nx/devkit";
-import { NormalizedSchema } from "./types";
-import { CommitlintGeneratorSchema } from "./schema";
+import { getWorkspaceLayout, Tree } from '@nx/devkit';
+import { NormalizedSchema } from './types';
+import { CommitlintGeneratorSchema } from './schema';
+import { defaultCommitlintConfigFile } from './constants';
 
-export function normalizeOptions(tree: Tree, options: CommitlintGeneratorSchema): NormalizedSchema {
+export function normalizeOptions(
+  tree: Tree,
+  options: CommitlintGeneratorSchema,
+): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
   const appsDir = layout.appsDir === '.' ? 'apps' : layout.appsDir;
   const libsDir = layout.libsDir === '.' ? 'libs' : layout.libsDir;
@@ -11,6 +15,7 @@ export function normalizeOptions(tree: Tree, options: CommitlintGeneratorSchema)
     ...options,
     appsDir,
     libsDir,
+    fileName: options.configFileName ?? defaultCommitlintConfigFile,
   };
 }
 
