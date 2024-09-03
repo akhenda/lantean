@@ -1,3 +1,3 @@
 export interface CommitlintGeneratorSchema {
-  name: string;
+  configFileName: string;
 }

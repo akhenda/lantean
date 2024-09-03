@@ -5,15 +5,77 @@
   "description": "Configures Commitlint & Semantic Release",
   "type": "object",
   "properties": {
-    "name": {
+    "configFileName": {
       "type": "string",
       "description": "",
       "$default": {
         "$source": "argv",
         "index": 0
       },
-      "x-prompt": "What name would you like to use?"
+      "default": ".commitlintrc.js",
+      "x-prompt": {
+        "message": "What name would you like to use for the config file?",
+        "type": "list",
+        "items": [
+          {
+            "value": ".commitlintrc",
+            "label": ".commitlintrc"
+          },
+          {
+            "value": ".commitlintrc.json",
+            "label": ".commitlintrc.json"
+          },
+          {
+            "value": ".commitlintrc.yaml",
+            "label": ".commitlintrc.yaml"
+          },
+          {
+            "value": ".commitlintrc.yml",
+            "label": ".commitlintrc.yml"
+          },
+          {
+            "value": ".commitlintrc.js",
+            "label": ".commitlintrc.js"
+          },
+          {
+            "value": ".commitlintrc.cjs",
+            "label": ".commitlintrc.cjs"
+          },
+          {
+            "value": ".commitlintrc.mjs",
+            "label": ".commitlintrc.mjs"
+          },
+          {
+            "value": ".commitlintrc.ts",
+            "label": ".commitlintrc.ts"
+          },
+          {
+            "value": ".commitlintrc.cts",
+            "label": ".commitlintrc.cts"
+          },
+          {
+            "value": "commitlint.config.js",
+            "label": "commitlint.config.js"
+          },
+          {
+            "value": "commitlint.config.cjs",
+            "label": "commitlint.config.cjs"
+          },
+          {
+            "value": "commitlint.config.mjs",
+            "label": "commitlint.config.mjs"
+          },
+          {
+            "value": "commitlint.config.ts",
+            "label": "commitlint.config.ts"
+          },
+          {
+            "value": "commitlint.config.cts",
+            "label": "commitlint.config.cts"
+          }
+        ]
+      }
     }
   },
-  "required": ["name"]
+  "required": ["configFileName"]
 }

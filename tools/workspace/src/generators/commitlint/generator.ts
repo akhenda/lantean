@@ -1,24 +1,25 @@
-import {
-  addProjectConfiguration,
-  formatFiles,
-  generateFiles,
-  Tree,
-} from '@nx/devkit';
-import * as path from 'path';
+import { formatFiles, Tree } from '@nx/devkit';
+
 import { CommitlintGeneratorSchema } from './schema';
+import {
+  addDependencies,
+  addFiles,
+  updatePackageJson,
+  updateReadme,
+} from './tasks';
+import { normalizeOptions } from './utils';
 
 export async function commitlintGenerator(
   tree: Tree,
-  options: CommitlintGeneratorSchema,
+  schema: CommitlintGeneratorSchema,
 ) {
-  const projectRoot = `libs/${options.name}`;
-  addProjectConfiguration(tree, options.name, {
-    root: projectRoot,
-    projectType: 'library',
-    sourceRoot: `${projectRoot}/src`,
-    targets: {},
-  });
-  generateFiles(tree, path.join(__dirname, 'files'), projectRoot, options);
+  const options = normalizeOptions(tree, schema);
+
+  addDependencies(tree);
+  updatePackageJson(tree);
+  updateReadme(tree);
+  addFiles(tree, options);
+
   await formatFiles(tree);
 }
 
