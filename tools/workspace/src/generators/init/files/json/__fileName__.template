@@ -1,0 +1,9 @@
+{
+	"{apps,libs,tools}/**/*.{ts,tsx}": [
+		"nx affected --target=typecheck"
+	],
+	"{apps,libs,packages,tools}/**/*.{js,ts,jsx,tsx,json,md,html,css,scss}": [
+		"nx affected --target=lint --fix",
+		"nx format:write"
+	]
+}

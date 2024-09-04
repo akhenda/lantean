@@ -7,6 +7,9 @@ import {
   updateJson,
 } from '@nx/devkit';
 
+import { addHuskyHook } from '../../devkit';
+import { isHuskyInstalled } from '../../utils';
+
 import { devDependencies } from './constants';
 import { NormalizedSchema } from './types';
 import { readmeContent } from './utils';
@@ -120,5 +123,9 @@ export function addFiles(tree: Tree, options: NormalizedSchema) {
 
     generateFiles(tree, join(__dirname, 'files', format), '', options);
     generateFiles(tree, join(__dirname, 'files', 'docs'), '', options);
+
+    if (isHuskyInstalled(tree)) {
+      addHuskyHook(tree, 'commit-msg', 'npx --no-install commitlint --edit $1');
+    }
   }
 }

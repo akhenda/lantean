@@ -4,15 +4,77 @@
   "title": "",
   "type": "object",
   "properties": {
-    "name": {
+    "configFileName": {
       "type": "string",
       "description": "",
       "$default": {
         "$source": "argv",
         "index": 0
       },
-      "x-prompt": "What name would you like to use?"
+      "default": ".lintstagedrc.js",
+      "x-prompt": {
+        "message": "What name would you like to use for the lint-staged config file?",
+        "type": "list",
+        "items": [
+          {
+            "value": ".lintstagedrc",
+            "label": ".lintstagedrc"
+          },
+          {
+            "value": ".lintstagedrc.json",
+            "label": ".lintstagedrc.json"
+          },
+          {
+            "value": ".lintstagedrc.yaml",
+            "label": ".lintstagedrc.yaml"
+          },
+          {
+            "value": ".lintstagedrc.yml",
+            "label": ".lintstagedrc.yml"
+          },
+          {
+            "value": ".lintstagedrc.js",
+            "label": ".lintstagedrc.js"
+          },
+          {
+            "value": ".lintstagedrc.cjs",
+            "label": ".lintstagedrc.cjs"
+          },
+          {
+            "value": ".lintstagedrc.mjs",
+            "label": ".lintstagedrc.mjs"
+          },
+          {
+            "value": ".lintstagedrc.ts",
+            "label": ".lintstagedrc.ts"
+          },
+          {
+            "value": ".lintstagedrc.cts",
+            "label": ".lintstagedrc.cts"
+          },
+          {
+            "value": "lint-staged.config.js",
+            "label": "lint-staged.config.js"
+          },
+          {
+            "value": "lint-staged.config.cjs",
+            "label": "lint-staged.config.cjs"
+          },
+          {
+            "value": "lint-staged.config.mjs",
+            "label": "lint-staged.config.mjs"
+          },
+          {
+            "value": "lint-staged.config.ts",
+            "label": "lint-staged.config.ts"
+          },
+          {
+            "value": "lint-staged.config.cts",
+            "label": "lint-staged.config.cts"
+          }
+        ]
+      }
     }
   },
-  "required": ["name"]
+  "required": ["configFileName"]
 }
