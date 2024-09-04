@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "Tsconfig",
+  "title": "TSConfig",
+  "description": "Updates the base tsconfig.json file with stricter options.",
+  "type": "object",
+  "properties": {},
+  "required": []
+}

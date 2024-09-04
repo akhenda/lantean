@@ -1,7 +1,8 @@
 {
   "$schema": "https://json-schema.org/schema",
   "$id": "Init",
-  "title": "",
+  "title": "Init (Husky & Lint-Staged)",
+  "description": "Configures Husky & Lint Staged",
   "type": "object",
   "properties": {
     "configFileName": {
