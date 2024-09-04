@@ -142,15 +142,16 @@ function updatePackageJsons(tree: Tree, options: NormalizedSchema) {
       affected: 'nx affected',
       'affected:apps': 'nx affected:apps',
       'affected:libs': 'nx affected:libs',
-      build: 'pnpm exec nx run-many --target=build --all',
-      'deps:update': 'pnpm exec nx run-many --target=update-deps --all',
+      build: 'bun nx run-many --target=build --all',
+      'deps:update': 'bun nx run-many --target=update-deps --all',
       help: 'nx help',
-      lint: 'pnpm exec nx run-many --target=lint --all',
-      'lint:fix': 'pnpm exec nx run-many --target=lint:fix --all',
-      'nx:reset': 'pnpm exec nx reset',
-      'nx:test': 'pnpm exec nx test',
+      lint: 'bun nx run-many --target=lint --all',
+      'lint:fix': 'bun nx run-many --target=lint:fix --all',
+      nx: 'nx',
+      'nx:reset': 'bun nx reset',
+      'nx:test': 'bun nx test',
       'nx:update': 'nx migrate latest',
-      test: 'pnpm exec nx run-many --target=test --all',
+      test: 'bun nx run-many --target=test --all',
     };
     /* eslint-enable @typescript-eslint/naming-convention */
 

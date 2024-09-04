@@ -1,0 +1,68 @@
+# https://github.com/marketplace/actions/eslint-suggestion
+# https://github.com/marketplace/actions/eslint-annotations
+# https://github.com/marketplace/actions/eslint-pr-review
+# https://github.com/marketplace/actions/eslint-annotate-from-report-json
+
+name: 🕵️ Validate
+
+on: workflow_call
+
+jobs:
+  run-nx-cloud:
+    name: NX Affected
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📦 Install dependencies
+        uses: ./.github/actions/install-deps
+
+      # - name: 🗃️ Verify changed TypeScript files
+      #   uses: tj-actions/changed-files@v39
+      #   id: changed-typescript-files
+      #   with:
+      #     base_sha: ${{ github.event.pull_request.base.sha }}
+      #     files: |
+      #       **/*.ts
+      #       **/*.tsx
+
+      # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
+      # - run: bun nx-cloud record -- echo Hello World
+      # Nx Affected runs only tasks affected by the changes in this PR/commit. Learn more: https://nx.dev/ci/features/affected
+      - name: 📝 Test & build projects
+        run: |
+          bun nx affected:test --ci --coverage
+          bun nx affected:build
+        env:
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_CONVEX_URL: ${{ secrets.NEXT_PUBLIC_CONVEX_URL }}
+
+      - name: 🧐 Lint projects
+        # Continue to the next step even if this fails
+        continue-on-error: true
+        run: |
+          bun nx affected:lint --output-file=./eslint-report.json --format=json
+
+      - name: ✍🏻 Annotate code linting results
+        uses: ataylorme/eslint-annotate-action@v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          report-json: "**/*/eslint-report.json"
+          markdown-report-on-step-summary: true
+
+      # OPTIONAL: save a copy of the usage report for download or use in another job
+      # - name: 📤 Upload ESLint report
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: eslint_report.json
+      #     path: eslint_report.json
+      #     retention-days: 5
+
+      - name: 📤 Archive code coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage

@@ -1,24 +1,34 @@
-import {
-  addProjectConfiguration,
-  formatFiles,
-  generateFiles,
-  Tree,
-} from '@nx/devkit';
-import * as path from 'path';
+import { formatFiles, Tree } from '@nx/devkit';
 import { GithubGeneratorSchema } from './schema';
+import { normalizeOptions } from './utils';
+import { addNxNamedInput, addScriptToPackageJson } from '../../devkit';
+import { ciMergeWorkflowPath } from './constants';
+import { addFiles, updateReadMe, useNXCloud } from './tasks';
 
 export async function githubGenerator(
   tree: Tree,
-  options: GithubGeneratorSchema
+  schema: GithubGeneratorSchema
 ) {
-  const projectRoot = `libs/${options.name}`;
-  addProjectConfiguration(tree, options.name, {
-    root: projectRoot,
-    projectType: 'library',
-    sourceRoot: `${projectRoot}/src`,
-    targets: {},
-  });
-  generateFiles(tree, path.join(__dirname, 'files'), projectRoot, options);
+  const ciFile = ciMergeWorkflowPath;
+  const options = normalizeOptions(tree, schema);
+
+  if (!options.force && tree.exists(ciFile)) {
+    console.log(`GitHub workflow already existing at path: ${ciFile}`);
+
+    return;
+  }
+
+  useNXCloud(tree, options);
+  addFiles(tree, options);
+  addNxNamedInput(
+    tree,
+    { ci: ['{workspaceRoot}/.github/workflows/*.yml'] },
+    true
+  );
+  addScriptToPackageJson(tree, 'nx', 'nx');
+
+  updateReadMe(tree);
+
   await formatFiles(tree);
 }
 

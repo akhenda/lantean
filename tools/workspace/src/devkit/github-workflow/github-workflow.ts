@@ -27,8 +27,8 @@ export interface GitHubActionJobStep {
 /**
  * Checks if the CI workflow file exists in the tree.
  */
-export function existsGitHubCiWorkflow(tree: Tree): boolean {
-  return tree.exists(ciFile);
+export function existsGitHubCiWorkflow(tree: Tree, override?: string): boolean {
+  return tree.exists(override ?? ciFile);
 }
 
 /**

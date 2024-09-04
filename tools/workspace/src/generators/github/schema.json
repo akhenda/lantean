@@ -2,18 +2,56 @@
   "$schema": "https://json-schema.org/schema",
   "$id": "Github",
   "title": "GitHub",
-  "description": "Adds GitHub Action workflows to automate the CI pipeline for your repo.",
+  "description": "Configures GitHub CI Workflow",
   "type": "object",
   "properties": {
-    "name": {
+    "branch": {
       "type": "string",
-      "description": "",
+      "description": "Base branch",
       "$default": {
         "$source": "argv",
         "index": 0
       },
-      "x-prompt": "What name would you like to use?"
+      "default": "main",
+      "x-prompt": "What is your base branch?"
+    },
+    "useNxCloud": {
+      "type": "boolean",
+      "description": "Configure CI workflow to use Nx Cloud",
+      "default": true,
+      "x-prompt": "Do you want to use Nx Cloud?"
+    },
+    "force": {
+      "type": "boolean",
+      "description": "Overwrites existing CI workflow",
+      "default": false
+    },
+    "packageManager": {
+      "type": "string",
+      "description": "",
+      "$default": {
+        "$source": "argv",
+        "index": 3
+      },
+      "default": "bun",
+      "x-prompt": {
+        "message": "What package manager do you use? (Only Bun is supported for now)",
+        "type": "list",
+        "items": [
+          {
+            "value": "bun",
+            "label": "bun"
+          },
+          {
+            "value": "npm",
+            "label": "npm"
+          },
+          {
+            "value": "pnpm",
+            "label": "pnpm"
+          }
+        ]
+      }
     }
-  },
-  "required": ["name"]
+  }
 }

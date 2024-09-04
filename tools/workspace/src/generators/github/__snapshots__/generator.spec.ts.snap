@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`@lantean/workspace github workflow generator should generate the GitHub CI workflow 1`] = `
+{
+  "jobs": {
+    "ci-coverage-badge": {
+      "name": "Coverage Badge",
+      "needs": "ci-validate",
+      "secrets": "inherit",
+      "uses": "./.github/workflows/ci-coverage-badge.yml",
+    },
+    "ci-finale": {
+      "if": "always()
+&& contains(needs.*.result, 'success')
+&& !contains(needs.*.result, 'failure')
+",
+      "name": "Finale",
+      "needs": [
+        "ci-coverage-badge",
+        "ci-release",
+      ],
+      "uses": "./.github/workflows/ci-finale.yml",
+    },
+    "ci-nx-init": {
+      "name": "NX Cloud Init",
+      "uses": "./.github/workflows/ci-nx-init.yml",
+    },
+    "ci-release": {
+      "name": "Release",
+      "needs": "ci-validate",
+      "secrets": "inherit",
+      "uses": "./.github/workflows/ci-release.yml",
+    },
+    "ci-repo-integrity": {
+      "name": "Repo Integrity",
+      "needs": "ci-nx-init",
+      "uses": "./.github/workflows/ci-repo-integrity.yml",
+    },
+    "ci-validate": {
+      "name": "Validate (Lint/Test/Build)",
+      "needs": "ci-repo-integrity",
+      "uses": "./.github/workflows/ci-validate.yml",
+    },
+  },
+  "name": "Merge",
+  "on": {
+    "push": {
+      "branches": [
+        "main",
+        "dev",
+      ],
+    },
+  },
+}
+`;
