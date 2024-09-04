@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "Contributors",
+  "title": "Contributors",
+  "description": "Adds contributors attribution to `README.md` using `contrib.rocks`.",
+  "type": "object",
+  "properties": {}
+}

@@ -19,6 +19,11 @@
       "factory": "./src/generators/tsconfig/generator",
       "schema": "./src/generators/tsconfig/schema.json",
       "description": "TSConfig Generator"
+    },
+    "contributors": {
+      "factory": "./src/generators/contributors/generator",
+      "schema": "./src/generators/contributors/schema.json",
+      "description": "Contributors Generator"
     }
   }
 }
