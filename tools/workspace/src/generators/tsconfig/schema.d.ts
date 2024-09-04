@@ -1,3 +1,6 @@
-export interface TsconfigGeneratorSchema {
-  name: string;
-}
+/* eslint-disable @typescript-eslint/no-empty-interface */
+
+/**
+ * @ignore
+ */
+export interface TsconfigGeneratorSchema {}

@@ -19,13 +19,16 @@ export type LintStagedConfigFileName =
   | 'lint-staged.config.ts'
   | 'lint-staged.config.cts';
 
+/**
+ * Schema for the init generator.
+ */
 export interface InitGeneratorSchema {
   configFileName: LintStagedConfigFileName;
 }
 
+/**
+ * Normalized schema for the init generator.
+ */
 export interface NormalizedSchema extends InitGeneratorSchema {
-  appsDir: string;
   fileName: LintStagedConfigFileName;
-  gitRepo: string;
-  libsDir: string;
 }

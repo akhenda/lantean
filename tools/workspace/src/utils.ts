@@ -1,4 +1,6 @@
 import { Tree } from '@nx/devkit';
+import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
+
 import { readPackageJson } from './devkit';
 
 export function getPkgJson(tree: Tree) {
@@ -10,5 +12,18 @@ export function getNXVersion(tree: Tree) {
 }
 
 export function isHuskyInstalled(tree: Tree) {
-  return !!getPkgJson(tree).devDependencies?.husky;
+  return !!getPkgJson(tree)?.devDependencies?.husky;
+}
+
+export function updateTSConfigCompilerOptions(
+  { compileOnSave, compilerOptions, ...json }: TSConfig,
+  options: TSConfig['compilerOptions'] = {}
+) {
+  const { baseUrl, paths, ...defaultCompilerOptions } = compilerOptions;
+
+  return {
+    compileOnSave,
+    compilerOptions: { ...defaultCompilerOptions, ...options, baseUrl, paths },
+    ...json,
+  };
 }

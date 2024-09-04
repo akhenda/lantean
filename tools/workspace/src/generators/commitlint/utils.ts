@@ -1,4 +1,4 @@
-import { getWorkspaceLayout, Tree } from '@nx/devkit';
+import { Tree } from '@nx/devkit';
 
 import { NormalizedSchema } from './types';
 import { CommitlintGeneratorSchema } from './schema';
@@ -14,24 +14,21 @@ import { getGitRepo } from '../../devkit';
  * @returns The normalized options.
  *
  * The normalized options include the following:
+ * - `fileName`: The path to the commitlint configuration file. If not provided, the default value is {@link defaultCommitlintConfigFile}.
+ * - `gitRepo`: The URL of the git repository.
  * - `appsDir`: The path to the apps directory.
  * - `libsDir`: The path to the libs directory.
- * - `fileName`: The path to the commitlint configuration file. If not provided, the default value is `defaultCommitlintConfigFile`.
  */
 export function normalizeOptions(
   tree: Tree,
   options: CommitlintGeneratorSchema,
 ): NormalizedSchema {
-  const layout = getWorkspaceLayout(tree);
-  const appsDir = layout.appsDir === '.' ? 'apps' : layout.appsDir;
-  const libsDir = layout.libsDir === '.' ? 'libs' : layout.libsDir;
+  const fileName = options ? options.configFileName : defaultCommitlintConfigFile;
 
   return {
     ...options,
-    appsDir,
-    fileName: options.configFileName ?? defaultCommitlintConfigFile,
-    gitRepo: getGitRepo(tree).replace(/^git@github\.com:/, 'https://github.com/'),
-    libsDir,
+    fileName,
+    gitRepo: getGitRepo(tree)?.replace(/^git@github\.com:/, 'https://github.com/'),
   };
 }
 

@@ -1,6 +1,5 @@
 import {
   addProjectConfiguration,
-  convertNxGenerator,
   installPackagesTask,
   readJson,
   Tree,
@@ -29,10 +28,6 @@ import {
 import { formatWorkspaceTask } from '../../devkit';
 import { prettierDefaultConfig } from './prettier';
 
-/**
- * Angular schematic to setup ESLint in a workspace.
- */
-export const lintingSchematic = convertNxGenerator(lintingGenerator);
 const timeout = 10_000;
 
 jest.mock('../../devkit', () => ({
@@ -66,16 +61,11 @@ describe('@lantean/workspace eslint generator', () => {
     expect(eslintConfig).toBeDefined();
   });
 
-  it('should provide a schematic', async () => {
-    expect(typeof lintingSchematic({})).toBe('function');
-  });
-
   it('should run tasks', async () => {
     const tasks = await lintingGenerator(tree, {});
 
     tasks();
 
-    // expect(lintWorkspaceTask).toHaveBeenCalled();
     expect(installPackagesTask).toHaveBeenCalled();
   });
 
@@ -194,10 +184,6 @@ describe('@lantean/workspace prettier generator', () => {
     const eslintConfig = readEsLintConfig(tree);
 
     expect(eslintConfig).toBeDefined();
-  });
-
-  it('should provide a schematic', async () => {
-    expect(typeof lintingSchematic({})).toBe('function');
   });
 
   it('should run successfully even if there was no previous prettier config', async () => {

@@ -1,0 +1,144 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`@lantean/workspace commitlint generator should create commitlint config 1`] = `
+{
+  "extends": [
+    "@commitlint/config-conventional",
+    "@commitlint/config-nx-scopes",
+  ],
+  "prompt": {
+    "aiNumber": 3,
+    "aiQuestionCB": "Write an insightful and concise Git commit message in the present tense for the following Git diff code, without any prefixes, and no longer than 72 characters",
+    "alias": {
+      "fd": "docs: fix typos",
+    },
+    "allowBreakingChanges": [
+      "feat",
+      "fix",
+    ],
+    "allowCustomIssuePrefix": true,
+    "allowCustomScopes": true,
+    "allowEmptyIssuePrefix": true,
+    "allowEmptyScopes": true,
+    "breaklineChar": "|",
+    "breaklineNumber": 100,
+    "confirmColorize": true,
+    "customIssuePrefixAlias": "custom",
+    "customIssuePrefixAlign": "top",
+    "customScopesAlias": "custom",
+    "customScopesAlign": "bottom",
+    "defaultBody": "",
+    "defaultIssues": "",
+    "defaultScope": "",
+    "defaultSubject": "",
+    "emojiAlign": "center",
+    "emptyIssuePrefixAlias": "skip",
+    "emptyScopesAlias": "empty",
+    "issuePrefixes": [
+      {
+        "name": "closed:   ISSUES has been processed",
+        "value": "closed",
+      },
+    ],
+    "markBreakingChangeMode": false,
+    "messages": {
+      "body": "Provide a LONGER description of the change (optional). Use "|" to break new line:
+",
+      "breaking": "List any BREAKING CHANGES (optional). Use "|" to break new line:
+",
+      "confirmCommit": "Are you sure you want to proceed with the commit above?",
+      "customFooterPrefix": "Input ISSUES prefix:",
+      "customScope": "Denote the SCOPE of this change:",
+      "footer": "List any ISSUES by this change. E.g.: #31, #34:
+",
+      "footerPrefixesSelect": "Select the ISSUES type of changeList by this change (optional):",
+      "generatedSelectByAI": "Select suitable subject by AI generated:",
+      "generatingByAI": "Generating your AI commit subject...",
+      "scope": "Denote the SCOPE of this change (optional):",
+      "subject": "Write a SHORT, IMPERATIVE tense description of the change:
+",
+      "type": "Select the type of change that you're committing:",
+    },
+    "minSubjectLength": 0,
+    "skipQuestions": [],
+    "themeColorCode": "",
+    "types": [
+      {
+        "emoji": ":sparkles:",
+        "name": "feat:     ✨  A new feature",
+        "value": "feat",
+      },
+      {
+        "emoji": ":bug:",
+        "name": "fix:      🐛  A bug fix",
+        "value": "fix",
+      },
+      {
+        "emoji": ":recycle:",
+        "name": "refactor: ♻️   A code change that neither fixes a bug nor adds a feature",
+        "value": "refactor",
+      },
+      {
+        "emoji": ":package:",
+        "name": "build:    📦️   Changes that affect the build system or external dependencies",
+        "value": "build",
+      },
+      {
+        "emoji": ":hammer:",
+        "name": "chore:    🔨  Other changes that don't modify src or test files",
+        "value": "chore",
+      },
+      {
+        "emoji": ":memo:",
+        "name": "docs:     📝  Documentation only changes",
+        "value": "docs",
+      },
+      {
+        "emoji": ":lipstick:",
+        "name": "style:    💄  Markup, white-space, formatting, missing semi-colons...",
+        "value": "style",
+      },
+      {
+        "emoji": ":zap:",
+        "name": "perf:     ⚡️  A code change that improves performance",
+        "value": "perf",
+      },
+      {
+        "emoji": ":white_check_mark:",
+        "name": "test:     ✅  Adding missing tests or correcting existing tests",
+        "value": "test",
+      },
+      {
+        "emoji": ":ferris_wheel:",
+        "name": "ci:       🎡  Changes to our CI configuration files and scripts",
+        "value": "ci",
+      },
+      {
+        "emoji": ":rewind:",
+        "name": "revert:   ⏪️  Reverts a previous commit",
+        "value": "revert",
+      },
+    ],
+    "upperCaseSubject": false,
+    "useAI": false,
+    "useEmoji": true,
+  },
+  "rules": {
+    "scope-enum": [
+      "deps",
+      "version",
+      "release",
+      "deploy",
+      "configs",
+      "ds",
+    ],
+  },
+}
+`;
+
+exports[`@lantean/workspace commitlint generator should merge commitlint config 1`] = `
+{
+  "extends": [],
+  "rules": {},
+}
+`;

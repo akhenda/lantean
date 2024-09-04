@@ -19,7 +19,7 @@ import { normalizeOptions } from './utils';
  */
 export async function commitlintGenerator(
   tree: Tree,
-  schema: CommitlintGeneratorSchema,
+  schema?: CommitlintGeneratorSchema,
 ) {
   const options = normalizeOptions(tree, schema);
 

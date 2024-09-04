@@ -19,6 +19,9 @@ export type CommitlintConfigFileName =
   | 'commitlint.config.ts'
   | 'commitlint.config.cts';
 
+/**
+ * The schema for the commitlint generator.
+ */
 export interface CommitlintGeneratorSchema {
   configFileName: CommitlintConfigFileName;
 }

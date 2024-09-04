@@ -6,6 +6,9 @@ import {
   Tree,
   updateJson,
 } from '@nx/devkit';
+import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
+
+import { updateTSConfigCompilerOptions } from '../../utils';
 
 import { eslintLibDirectory, eslintLibName, eslintLibTags } from './constants';
 import { LintingGeneratorSchema } from './schema';
@@ -30,7 +33,7 @@ import { NormalizedSchema } from './types';
  */
 export function normalizeOptions(
   tree: Tree,
-  options: LintingGeneratorSchema = {},
+  options: LintingGeneratorSchema = {}
 ): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
   const name = names(eslintLibName).fileName;
@@ -87,18 +90,7 @@ export function getImportPath(tree: Tree, projectDirectory: string): string {
  * @param options The normalized schema options.
  */
 export function updateBaseTSConfig(tree: Tree) {
-  updateJson(tree, 'tsconfig.base.json', ({ compileOnSave, compilerOptions, ...json }) => {
-    const { baseUrl, paths, ...defaultCompilerOptions } = compilerOptions;
-
-    return {
-      compileOnSave,
-      compilerOptions: {
-        ...defaultCompilerOptions,
-        strictNullChecks: true,
-        baseUrl,
-        paths,
-      },
-      ...json,
-    };
+  updateJson<TSConfig>(tree, 'tsconfig.base.json', (json) => {
+    return updateTSConfigCompilerOptions(json, { strictNullChecks: true });
   });
 }

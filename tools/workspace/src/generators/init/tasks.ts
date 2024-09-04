@@ -11,10 +11,21 @@ import { isHuskyInstalled } from '../../utils';
 
 import { NormalizedSchema } from './schema';
 
+/**
+ * Adds Husky to a workspace.
+ *
+ * @param tree The file system tree
+ */
 export function addHusky(tree: Tree) {
   addHuskyToPackageJson(tree);
 }
 
+/**
+ * Adds lint-staged to a workspace.
+ *
+ * @param tree The file system tree
+ * @param options The normalized generator options
+ */
 export function addLintStaged(tree: Tree, options: NormalizedSchema) {
   addDevDependencyToPackageJson(tree, 'lint-staged');
 

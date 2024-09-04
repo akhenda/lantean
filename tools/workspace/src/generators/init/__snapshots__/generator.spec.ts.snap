@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`@nx-squeezer/workspace lint-staged generator should create lint-staged config 1`] = `
+{
+  "{apps,libs,packages,tools}/**/*.{js,ts,jsx,tsx,json,md,html,css,scss}": [
+    "nx affected --target=lint --fix",
+    "nx format:write",
+  ],
+  "{apps,libs,tools}/**/*.{ts,tsx}": [
+    "nx affected --target=typecheck",
+  ],
+}
+`;
+
+exports[`@nx-squeezer/workspace lint-staged generator should merge lint-staged config 1`] = `
+{
+  "*.md": "markdown --format",
+}
+`;
