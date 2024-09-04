@@ -1,14 +1,19 @@
 {
   "generators": {
-    "linting": {
-      "factory": "./src/generators/linting/generator",
-      "schema": "./src/generators/linting/schema.json",
-      "description": "ESLint & Prettier Generator"
+    "init": {
+      "factory": "./src/generators/init/generator",
+      "schema": "./src/generators/init/schema.json",
+      "description": "Init (Husky & Lint-Staged) Generator"
     },
     "commitlint": {
       "factory": "./src/generators/commitlint/generator",
       "schema": "./src/generators/commitlint/schema.json",
       "description": "Commitlint & Semantic Release Generator"
+    },
+    "linting": {
+      "factory": "./src/generators/linting/generator",
+      "schema": "./src/generators/linting/schema.json",
+      "description": "ESLint & Prettier Generator"
     }
   }
 }
