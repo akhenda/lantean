@@ -28,5 +28,11 @@ export function getGitRepo(tree: Tree): string | null {
  * Gets the repo slug for the current git repo.
  */
 export function getGitRepoSlug(tree: Tree): string | null {
+  const repo = getGitRepo(tree);
+
+  if (repo.includes('git@github.com:')) {
+    return getGitRepo(tree)?.replace(/^git@github.com:/, '') ?? null;
+  }
+
   return getGitRepo(tree)?.replace(/^https:\/\/github.com\//, '') ?? null;
 }
