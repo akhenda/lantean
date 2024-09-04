@@ -24,6 +24,11 @@
       "factory": "./src/generators/contributors/generator",
       "schema": "./src/generators/contributors/schema.json",
       "description": "Contributors Generator"
+    },
+    "github": {
+      "factory": "./src/generators/github/generator",
+      "schema": "./src/generators/github/schema.json",
+      "description": "GitHub Generator"
     }
   }
 }
