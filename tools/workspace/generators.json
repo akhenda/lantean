@@ -29,6 +29,11 @@
       "factory": "./src/generators/github/generator",
       "schema": "./src/generators/github/schema.json",
       "description": "GitHub Generator"
+    },
+    "codecov": {
+      "factory": "./src/generators/codecov/generator",
+      "schema": "./src/generators/codecov/schema.json",
+      "description": "Codecov Generator"
     }
   }
 }
