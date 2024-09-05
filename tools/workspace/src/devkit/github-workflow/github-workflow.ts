@@ -38,21 +38,22 @@ export function addGitHubCiJobStep(
   tree: Tree,
   job: string,
   step: GitHubActionJobStep,
+  workflowFile: string = ciFile
 ) {
-  const ci = parseDocument(tree.read(ciFile)?.toString() ?? '');
+  const ci = parseDocument(tree.read(workflowFile)?.toString() ?? '');
   const jobSteps = ci.getIn(['jobs', job, 'steps']) as YAMLSeq<
     Map<keyof GitHubActionJobStep, string>
   >;
 
   if (jobSteps == null) {
-    console.error(`Could not find "${job}" job in file: ${ciFile}`);
+    console.error(`Could not find "${job}" job in file: ${workflowFile}`);
 
     return;
   }
 
   if (jobSteps.items.some((item) => item.get('name') === step.name)) {
     console.error(
-      `Step "${step.name}" in "${job}" already present in file: ${ciFile}`,
+      `Step "${step.name}" in "${job}" already present in file: ${workflowFile}`,
     );
 
     return;
@@ -60,5 +61,5 @@ export function addGitHubCiJobStep(
 
   jobSteps.add(step as unknown as Map<keyof GitHubActionJobStep, string>);
 
-  tree.write(ciFile, stringify(ci));
+  tree.write(workflowFile, stringify(ci));
 }

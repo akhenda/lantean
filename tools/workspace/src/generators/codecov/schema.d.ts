@@ -1,3 +1,6 @@
-export interface CodecovGeneratorSchema {
-  name: string;
-}
+/* eslint-disable @typescript-eslint/no-empty-interface */
+
+/**
+ * @ignore
+ */
+export interface CodecovGeneratorSchema {}

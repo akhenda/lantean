@@ -1,9 +1,9 @@
-# @lantean/workspace:github-workflow
+# @lantean/workspace:github
 
 Setup command:
 
 ```shell
-nx g @lantean/workspace:github-workflow
+nx g @lantean/workspace:github
 ```
 
 Adds a [GitHub Action workflow](https://docs.github.com/en/actions/using-workflows) to automate the CI pipeline for your repo. It includes the following actions:
