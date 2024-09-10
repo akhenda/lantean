@@ -39,6 +39,11 @@
       "factory": "./src/generators/codecov/generator",
       "schema": "./src/generators/codecov/schema.json",
       "description": "Codecov Generator"
+    },
+    "env": {
+      "factory": "./src/generators/env/generator",
+      "schema": "./src/generators/env/schema.json",
+      "description": "Env Generator"
     }
   }
 }
