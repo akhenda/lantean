@@ -9,7 +9,7 @@ import {
   getGitRepo,
   joinNormalize,
 } from '../../devkit';
-import { getImportPath } from '../linting/utils';
+import { getImportPath } from '../../utils';
 
 import { NormalizedSchema } from './schema';
 

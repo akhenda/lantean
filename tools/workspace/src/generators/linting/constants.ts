@@ -30,11 +30,6 @@ export const eslintConfigFile = '.eslintrc.json';
 export const prettierConfigFile = '.prettierrc';
 
 /**
- * Filename of Prettier config in json.
- */
-export const prettierConfigJsonFile = '.prettierrc.json';
-
-/**
  * Name of ESLint Prettier plugin.
  */
 export const prettierPlugin = 'prettier';
@@ -42,7 +37,7 @@ export const prettierPlugin = 'prettier';
 /**
  * Prettier NPM Version.
  */
-export const prettierVersion = '3.3.3';
+export const prettierVersion = '^3.3.3';
 
 /**
  * Name of ESLint Prettier NPM package.
@@ -94,7 +89,7 @@ export const eslintLibDepVersions = {
   'eslint-plugin-write-good-comments': '^0.2.0',
   'eslint-plugin-yml': '^1.14.0',
   jest: '^29.7.0',
-  prettier: '^3.3.3',
+  prettier: prettierVersion,
 } as const;
 
 /**

@@ -1,0 +1,17 @@
+import sheriff from 'eslint-config-sheriff';
+import { defineFlatConfig } from 'eslint-define-config';
+
+const sheriffOptions = {
+  react: false,
+  next: false,
+  astro: false,
+  lodash: true,
+  playwright: false,
+  jest: false,
+  vitest: false,
+};
+
+/**
+ * Use this for casual js/typescript projects.
+ */
+export default defineFlatConfig([...sheriff(sheriffOptions)]);

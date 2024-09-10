@@ -14,7 +14,9 @@ describe('sheriff generator', () => {
 
   it('should run successfully', async () => {
     await sheriffGenerator(tree, options);
+
     const config = readProjectConfiguration(tree, 'test');
+
     expect(config).toBeDefined();
   });
 });

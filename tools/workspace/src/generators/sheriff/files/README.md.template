@@ -1,0 +1,80 @@
+# <%= projectName %>
+
+This library was generated with [Nx](https://nx.dev).
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](../../LICENSE.md) [![npm version](https://badge.fury.io/js/%40<%= npmScope %>%2F<%= projectName %>.svg)](https://badge.fury.io/js/%40<%= npmScope %>%2F<%= projectName %>.svg) [![npm bundle size (minified + gzip)](https://img.shields.io/bundlephobia/minzip/<%= importPath %>.svg)](https://img.shields.io/bundlephobia/minzip/<%= importPath %>.svg)
+
+ESLint configs.
+
+## Installation
+
+You'll first need to install [ESLint](http://eslint.org):
+
+**With PNPM**
+
+```bash
+pnpm add -D eslint
+```
+
+**With Yarn**
+
+```bash
+yarn add --dev eslint
+```
+
+**With npm**
+
+```bash
+npm i eslint --save-dev
+```
+
+Next, install `<%= importPath %>`:
+
+**With PNPM**
+
+```bash
+pnpm add -D <%= importPath %>
+```
+
+**With Yarn**
+
+```bash
+yarn add --dev <%= importPath %>
+```
+
+**With npm**
+
+```bash
+npm install <%= importPath %> --save-dev
+```
+
+## Usage
+
+This package uses Eslint's "Flat Config" format, not the legacy "eslintrc" format. To upgrade your Eslint configuration, follow the [Configuration Migration Guide](https://eslint.org/docs/latest/use/configure/migration-guide).
+
+---
+
+<%= npmScopeTitle %>’s ESLint configs come bundled in this package. In order to use them, you include the relevant configurations in your project’s `eslint.config.js`.
+
+## Provided configurations
+
+This library provides the following configurations:
+
+- [basic](./basic.mjs): Use this for casual js/typescript projects.
+- [expo](./expo.mjs): Use this for React Native or Expo projects.
+- [next](./next.mjs): Use this for Next.js projects.
+- [node](./node.mjs): Use this for Node.js projects.
+- [nx](./nx.mjs): Use this in the default NX Workspace Config.
+- [react](./react.mjs): Use this for React.js projects.
+
+### Supported Typescript version
+
+The supported version of TypeScript is constrained by the [@typescipt-eslint parser support](https://typescript-eslint.io/users/dependency-versions/#typescript) that is installed.
+
+## Building
+
+Run `nx build <%= projectName %>` to build the library.
+
+## Running unit tests
+
+Run `nx test <%= projectName %>` to execute the unit tests via [Jest](https://jestjs.io).

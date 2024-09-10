@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import { join, resolve } from 'path';
+import { unique } from 'radash';
 
 import {
   addDependenciesToPackageJson,
@@ -13,21 +14,42 @@ import {
   writeJson,
 } from '@nx/devkit';
 import { libraryGenerator } from '@nx/js';
-import { unique } from 'radash';
+import { JSONSchemaForESLintConfigurationFiles } from '@schemastore/package';
 
 import { addDevDependencyToPackageJson } from '../../devkit';
 import { getImportPath, getNpmScope } from '../../utils';
 
 import {
+  eslintConfigFile,
   eslintLibDepVersions,
   eslintLibDirectory,
   vscodeCSSSettingsFile,
   vscodeExtensions,
 } from './constants';
-import { readEsLintConfig, writeEsLintConfig } from './eslint-config';
-import { LintingGeneratorSchema } from './schema';
-import { NormalizedSchema } from './types';
+import { NormalizedSchema, SheriffGeneratorSchema } from './schema';
 import { normalizeOptions } from './utils';
+
+/**
+ * This function is a safety net. It warns the user if the repository has not been
+ * converted to ESLint Flat Config. It does not perform the conversion itself.
+ *
+ * If the repository is not converted, nx g @nx/eslint:convert-to-flat-config should
+ * be run first.
+ */
+export function hasFlatConfig(tree: Tree) {
+  if (!tree.exists(eslintConfigFile) && !tree.exists('eslint.config.js')) {
+    console.error(
+      `Sheriff needs this NX Monorepo to be converted to Eslint Flat Config.`,
+    );
+    console.error(
+      `Try to convert it first using nx g @nx/eslint:convert-to-flat-config`,
+    );
+
+    return false;
+  }
+
+  return true;
+}
 
 /**
  * Generates the files for the ESLint Config library.
@@ -55,14 +77,50 @@ export function addLibFiles(tree: Tree, options: NormalizedSchema) {
     options.projectRoot,
     templateOptions,
   );
+}
 
-  updateJson(
+/**
+ * Updates the TSConfig for the library to include `.mjs` files.
+ *
+ * The `tsconfig.lib.json` file is updated to include `*.mjs` in the
+ * `include` property. This allows the library to be built with modern
+ * JavaScript syntax.
+ *
+ * @param tree The abstract syntax tree of the workspace.
+ * @param options The normalized options for the generator.
+ */
+function updateTSConfig(tree: Tree, options: NormalizedSchema) {
+  updateJson(tree, join(options.projectRoot, 'tsconfig.lib.json'), (json) => {
+    json.include = [...json.include, './**/*.mjs'];
+
+    return json;
+  });
+}
+
+/**
+ * Updates the ESLint configuration file to support modern JavaScript syntax.
+ *
+ * It adds a new override with the following configuration:
+ * - `files`: Only applies to `.mjs` files.
+ * - `parserOptions.sourceType`: Set to `'module'` to support ES modules.
+ * - `parserOptions.ecmaVersion`: Set to `2022` to support the latest ECMAScript features.
+ * - `rules`: An empty object that can be extended with additional rules.
+ *
+ * @param tree The abstract syntax tree of the workspace.
+ * @param options The normalized options for the generator.
+ */
+function updateEslintConfig(tree: Tree, options: NormalizedSchema) {
+  updateJson<JSONSchemaForESLintConfigurationFiles>(
     tree,
-    join(options.projectRoot, 'src/tests/fixtures/basic-app/project.json'),
-    (projectJson) => {
-      projectJson.name = `${options.projectName}-tests`;
+    join(options.projectRoot, '.eslintrc.json'),
+    (eslintConfig) => {
+      eslintConfig.overrides.unshift({
+        files: ['*.mjs'],
+        parserOptions: { sourceType: 'module', ecmaVersion: 2022 },
+        rules: {},
+      });
 
-      return projectJson;
+      return eslintConfig;
     },
   );
 }
@@ -80,51 +138,6 @@ function addDependencies(tree: Tree) {
   const devDependencies: Record<string, string> = eslintLibDepVersions;
 
   return addDependenciesToPackageJson(tree, dependencies, devDependencies);
-}
-
-/**
- * Updates the project-specific TSConfig.
- *
- * - Adds the spec pattern to the project-specific TSConfig.
- *
- * @param tree The virtual file system tree.
- * @param options The normalized schema options.
- */
-function updateTSConfig(tree: Tree, options: NormalizedSchema) {
-  updateJson(tree, join(options.projectRoot, 'tsconfig.spec.json'), (json) => {
-    json.include = [...json.include, 'src/**/*.spec.js'];
-
-    return json;
-  });
-}
-
-/**
- * Updates the Jest configuration to include TypeScript and JSON files.
- *
- * Adds `'tsx'` and `'json'` to the `moduleFileExtensions` option.
- *
- * Also adds `fixtures` to the `testPathIgnorePatterns` option to
- * exclude test fixtures from the test run.
- *
- * @param tree The file system tree.
- * @param options The normalized schema options.
- */
-function updateJestConfig(tree: Tree, options: NormalizedSchema) {
-  const filePath = join(options.projectRoot, 'jest.config.js');
-  const fileEntry = tree.read(filePath);
-  const contents = fileEntry?.toString() ?? '';
-
-  const newContents = contents.replace(
-    /moduleFileExtensions: \['ts', 'js', 'html'\],/gi,
-    [
-      "moduleFileExtensions: ['ts', 'js', 'html', 'tsx', 'json'],",
-      "testPathIgnorePatterns: ['.*/tests/fixtures/'],",
-      '// verbose: true,',
-    ].join('\n\t'),
-  );
-
-  // only write the file if something has changed
-  if (newContents !== contents) tree.write(filePath, newContents);
 }
 
 /**
@@ -371,6 +384,9 @@ function updateESLintIgnoreFile(tree: Tree, options: NormalizedSchema) {
       `# ${getImportPath(tree, options.projectDirectory)}`,
       '.eslintrc.js',
       '.eslintrc.cjs',
+      'eslint.config.cjs',
+      'eslint.config.mjs',
+      'eslint.config.mts',
       '.prettier.cjs',
       'coverage',
       '/coverage',
@@ -380,6 +396,9 @@ function updateESLintIgnoreFile(tree: Tree, options: NormalizedSchema) {
       'tsconfig.json',
       'jest.config.js',
       'jest.config.ts',
+      'jest.config.cjs',
+      'jest.config.mjs',
+      'jest.config.mts',
       '',
       '# The eslint config test fixtures contain files that deliberatly fail linting',
       "# in order to tests that the config reports those errors. We don't want the",
@@ -424,7 +443,7 @@ function updatePrettierIgnoreFile(tree: Tree, options: NormalizedSchema) {
 }
 
 /**
- * Updates the `.gitignore` file if it exists.
+ * Updates the root `.gitignore` to include paths to ignore.
  *
  * If the `.gitignore` does not already include the `# ${path}` line,
  * it adds the following files to the `.gitignore`:
@@ -453,27 +472,6 @@ function updateGitIgnoreFile(tree: Tree, options: NormalizedSchema) {
 }
 
 /**
- * Updates the base ESLint configuration by setting the "extends" property
- * to point to the dedicated ESLint config project.
- *
- * @param tree The file system tree.
- * @param options The normalized schema.
- */
-function updateBaseEslintConfig(tree: Tree, options: NormalizedSchema) {
-  const eslintConfig = readEsLintConfig(tree);
-
-  eslintConfig.extends = [`${options.importPath}/nx`];
-
-  /* eslint-disable sort-keys-fix/sort-keys-fix */
-  writeEsLintConfig(tree, {
-    root: eslintConfig.root,
-    extends: eslintConfig.extends,
-    ...eslintConfig,
-  });
-  /* eslint-enable sort-keys-fix/sort-keys-fix */
-}
-
-/**
  * Generates a dedicated ESLint config project.
  *
  * @param tree The virtual file system tree.
@@ -481,30 +479,35 @@ function updateBaseEslintConfig(tree: Tree, options: NormalizedSchema) {
  */
 export async function generateConfigLib(
   tree: Tree,
-  options: LintingGeneratorSchema = {},
+  options: SheriffGeneratorSchema = {},
 ) {
   const normalizedOptions = normalizeOptions(tree, options);
 
   await libraryGenerator(tree, {
+    bundler: 'tsc',
     compiler: 'tsc',
+    buildable: true,
+    publishable: true,
+    importPath: normalizedOptions.importPath,
     directory: normalizedOptions.projectRoot,
     js: true,
     linter: 'eslint',
+    testEnvironment: 'node',
+    unitTestRunner: 'none',
     name: normalizedOptions.projectName,
     projectNameAndRootFormat: 'as-provided',
-    setParserOptionsProject: true,
+    setParserOptionsProject: false,
     strict: true,
     tags: normalizedOptions.parsedTags.join(','),
   });
 
   addLibFiles(tree, normalizedOptions);
   addSemanticReleaseTarget(tree, normalizedOptions);
-  updateTSConfig(tree, normalizedOptions);
-  updateJestConfig(tree, normalizedOptions);
-  updateBaseEslintConfig(tree, normalizedOptions);
   updateESLintIgnoreFile(tree, normalizedOptions);
   updatePrettierIgnoreFile(tree, normalizedOptions);
   updateGitIgnoreFile(tree, normalizedOptions);
+  updateTSConfig(tree, normalizedOptions);
+  updateEslintConfig(tree, normalizedOptions);
   updateVSCodeSettings(tree);
   addDependencies(tree);
   addDevDependencyToPackageJson(

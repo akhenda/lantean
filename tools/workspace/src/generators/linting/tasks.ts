@@ -21,7 +21,6 @@ import {
   eslintLibDepVersions,
   eslintPluginPrettier,
   prettierPlugin,
-  prettierVersion,
 } from './constants';
 import { setPrettierConfig } from './prettier';
 
@@ -186,6 +185,6 @@ export function addPrettierRules(tree: Tree) {
     rules: {},
   });
 
-  addDependenciesToPackageJson(tree, { prettier: prettierVersion }, {});
+  addDependenciesToPackageJson(tree, { prettier: eslintLibDepVersions.prettier }, {});
   addDevDependencyToPackageJson(tree, eslintPluginPrettier);
 }

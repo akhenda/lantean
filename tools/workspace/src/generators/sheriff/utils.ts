@@ -4,8 +4,7 @@ import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from
 import { getImportPath, updateTSConfigCompilerOptions } from '../../utils';
 
 import { eslintLibDirectory, eslintLibName, eslintLibTags } from './constants';
-import { LintingGeneratorSchema } from './schema';
-import { NormalizedSchema } from './types';
+import { NormalizedSchema, SheriffGeneratorSchema } from './schema';
 
 /**
  * Normalize options for the ESLint generator.
@@ -26,7 +25,7 @@ import { NormalizedSchema } from './types';
  */
 export function normalizeOptions(
   tree: Tree,
-  options: LintingGeneratorSchema = {},
+  options: SheriffGeneratorSchema = {},
 ): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
   const name = names(eslintLibName).fileName;

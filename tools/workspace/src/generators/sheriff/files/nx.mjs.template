@@ -1,0 +1,17 @@
+import sheriff from 'eslint-config-sheriff';
+import { defineFlatConfig } from 'eslint-define-config';
+
+const sheriffOptions = {
+  react: false,
+  next: false,
+  astro: false,
+  lodash: true,
+  playwright: false,
+  jest: false,
+  vitest: false,
+};
+
+/**
+ * Default NX Workspace Config
+ */
+export default defineFlatConfig([...sheriff(sheriffOptions)]);

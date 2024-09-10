@@ -1,25 +1,27 @@
-import {
-  addProjectConfiguration,
-  formatFiles,
-  generateFiles,
-  Tree,
-} from '@nx/devkit';
-import * as path from 'path';
+import { formatFiles, installPackagesTask, Tree } from '@nx/devkit';
+
+import { formatWorkspaceTask } from '../../devkit';
+
 import { SheriffGeneratorSchema } from './schema';
+import { generateConfigLib, hasFlatConfig } from './tasks';
+import { updateBaseTSConfig } from './utils';
 
 export async function sheriffGenerator(
   tree: Tree,
-  options: SheriffGeneratorSchema
+  options: SheriffGeneratorSchema,
 ) {
-  const projectRoot = `libs/${options.name}`;
-  addProjectConfiguration(tree, options.name, {
-    root: projectRoot,
-    projectType: 'library',
-    sourceRoot: `${projectRoot}/src`,
-    targets: {},
-  });
-  generateFiles(tree, path.join(__dirname, 'files'), projectRoot, options);
+  if (!hasFlatConfig(tree)) return;
+
+  await generateConfigLib(tree, options);
+
+  updateBaseTSConfig(tree);
+
   await formatFiles(tree);
+
+  return () => {
+    installPackagesTask(tree);
+    formatWorkspaceTask(tree);
+  };
 }
 
 export default sheriffGenerator;
