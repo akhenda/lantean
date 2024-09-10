@@ -50,10 +50,7 @@ export function updatePackageJson(tree: Tree) {
       workspaces: packageJson.workspaces,
       scripts: packageJson.scripts,
       config: {
-        commitizen: {
-          path: 'node_modules/cz-git',
-          useEmoji: true,
-        },
+        commitizen: { path: 'node_modules/cz-git', useEmoji: true },
       },
       ...packageJson,
     };

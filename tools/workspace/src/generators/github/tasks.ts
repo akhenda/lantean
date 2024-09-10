@@ -1,7 +1,26 @@
+import { resolve } from 'path';
+import { readFileSync } from 'fs';
+
 import { generateFiles, Tree } from '@nx/devkit';
-import { addBadgeToReadme, ciFile, getGitRepo, joinNormalize } from '../../devkit';
+
+import {
+  addBadgeToReadme,
+  ciFile,
+  getGitRepo,
+  joinNormalize,
+} from '../../devkit';
+import { getImportPath } from '../linting/utils';
+
 import { NormalizedSchema } from './schema';
 
+/**
+ * Adds the GitHub CI workflow files.
+ *
+ * If an existing ci.yml file is present, it is backed up to ci.yml.original.
+ *
+ * @param tree The file system tree
+ * @param options The normalized generator options
+ */
 export function addFiles(tree: Tree, options: NormalizedSchema) {
   const templateOptions = { ...options, tmpl: '' };
 
@@ -20,6 +39,12 @@ export function addFiles(tree: Tree, options: NormalizedSchema) {
   );
 }
 
+/**
+ * Logs instructions on how to use Nx Cloud
+ *
+ * @param tree The file system tree
+ * @param options The normalized generator options
+ */
 export function useNXCloud(tree: Tree, options: NormalizedSchema) {
   if (options.useNxCloud) {
     console.log(
@@ -36,6 +61,11 @@ export function useNXCloud(tree: Tree, options: NormalizedSchema) {
   }
 }
 
+/**
+ * Updates the root README.md to include a badge linking to the CI workflow
+ *
+ * @param tree The file system tree
+ */
 export function updateReadMe(tree: Tree) {
   const gitRepo = getGitRepo(tree);
 
@@ -52,4 +82,34 @@ export function updateReadMe(tree: Tree) {
       true
     );
   }
+}
+
+/**
+ * Updates the root `.gitignore` to include paths to ignore.
+ *
+ * If the `.gitignore` does not already include the `# ${path}` line,
+ * it adds the following files to the `.gitignore`:
+ * - `eslint-report.json`
+ * - /eslint_report.json`
+ *
+ * @param tree The file system tree
+ */
+export function updateGitIgnoreFile(tree: Tree) {
+  const ignores = readFileSync(resolve(tree.root, '.gitignore'), {
+    encoding: 'utf8',
+  }).split('\n');
+
+  if (!ignores.includes(`# ${getImportPath(tree, 'github')}`)) {
+    const files = [
+      `# ${getImportPath(tree, 'github')}`,
+      'eslint-report.json',
+      '**/*/eslint-report.json',
+      'eslint_report.json',
+      '**/*/eslint_report.json',
+    ];
+
+    if (files.length) ignores.push(...files, '');
+  }
+
+  if (ignores.length) tree.write('./.gitignore', ignores.join('\n'));
 }

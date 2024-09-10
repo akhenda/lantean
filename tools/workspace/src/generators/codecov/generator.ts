@@ -15,7 +15,10 @@ import {
   readRawCodecov,
 } from './codecov';
 
-export const ciFile = './.github/workflows/ci-validate.yml';
+/**
+ * Path to the GitHub CI Validate File
+ */
+export const ciValidateFile = './.github/workflows/ci-validate.yml';
 
 /**
  * Nx generator to setup codecov.
@@ -28,13 +31,13 @@ export default async function codecovGenerator(tree: Tree) {
     true
   );
 
-  if (existsGitHubCiWorkflow(tree, ciFile)) {
+  if (existsGitHubCiWorkflow(tree, ciValidateFile)) {
     addGitHubCiJobStep(tree, 'run-nx-cloud', {
       name: 'Codecov',
       uses: 'codecov/codecov-action@v3.1.0',
       if: `hashFiles('coverage/**/*') != ''`,
       with: { fail_ci_if_error: true, verbose: true },
-    }, ciFile);
+    }, ciValidateFile);
   } else {
     console.error(
       `Codecov needs to be called from a CI pipeline, but it could not be found.`

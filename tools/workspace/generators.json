@@ -10,6 +10,11 @@
       "schema": "./src/generators/commitlint/schema.json",
       "description": "Commitlint & Semantic Release Generator"
     },
+    "sheriff": {
+      "factory": "./src/generators/sheriff/generator",
+      "schema": "./src/generators/sheriff/schema.json",
+      "description": "Sheriff (ESLint) Generator"
+    },
     "linting": {
       "factory": "./src/generators/linting/generator",
       "schema": "./src/generators/linting/schema.json",

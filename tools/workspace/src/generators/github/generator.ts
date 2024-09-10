@@ -3,8 +3,19 @@ import { GithubGeneratorSchema } from './schema';
 import { normalizeOptions } from './utils';
 import { addNxNamedInput, addScriptToPackageJson } from '../../devkit';
 import { ciMergeWorkflowPath } from './constants';
-import { addFiles, updateReadMe, useNXCloud } from './tasks';
+import {
+  addFiles,
+  updateGitIgnoreFile,
+  updateReadMe,
+  useNXCloud,
+} from './tasks';
 
+/**
+ * Configures GitHub CI Workflow
+ *
+ * @param tree Tree
+ * @param schema GithubGeneratorSchema
+ */
 export async function githubGenerator(
   tree: Tree,
   schema: GithubGeneratorSchema
@@ -28,6 +39,7 @@ export async function githubGenerator(
   addScriptToPackageJson(tree, 'nx', 'nx');
 
   updateReadMe(tree);
+  updateGitIgnoreFile(tree);
 
   await formatFiles(tree);
 }

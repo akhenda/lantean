@@ -53,6 +53,7 @@ export interface Codecov {
     /** Require changes */
     require_changes: boolean;
   };
+
   /** Coverage */
   coverage: {
     /** Range */
@@ -107,16 +108,10 @@ export const codecovDefault: Codecov = {
     precision: 1,
     status: {
       patch: {
-        default: {
-          target: '50%',
-          threshold: '10%',
-        },
+        default: { target: '50%', threshold: '10%' },
       },
       project: {
-        default: {
-          target: '50%',
-          threshold: '10%',
-        },
+        default: { target: '50%', threshold: '10%' },
       },
     },
   },
