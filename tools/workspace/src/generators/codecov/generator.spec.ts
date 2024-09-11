@@ -6,7 +6,7 @@ import { parse, stringify } from 'yaml';
 import { getGitRepoSlug, nxConfigFile, readmeFile } from '../../devkit';
 
 import { readCodecov, readRawCodecov } from './codecov';
-import codecovGenerator, { ciFile } from './generator';
+import codecovGenerator, { ciValidateFile } from './generator';
 
 jest.mock('node-fetch-commonjs');
 
@@ -81,12 +81,12 @@ describe('@lantean/workspace codecov generator', () => {
   });
 
   it('should add step to GitHub workflow', async () => {
-    tree.write(ciFile, stringify({ jobs: { 'run-nx-cloud': { steps: [] } } }));
+    tree.write(ciValidateFile, stringify({ jobs: { 'run-nx-cloud': { steps: [] } } }));
 
     await codecovGenerator(tree);
 
     expect(
-      parse(tree.read(ciFile)?.toString() ?? '').jobs['run-nx-cloud'].steps
+      parse(tree.read(ciValidateFile)?.toString() ?? '').jobs['run-nx-cloud'].steps
     ).toStrictEqual([
       {
         name: 'Codecov',

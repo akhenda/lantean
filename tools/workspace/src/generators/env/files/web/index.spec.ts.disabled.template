@@ -1,0 +1,18 @@
+import config from './index';
+
+const { env, constants } = config;
+
+describe('<%= projectName %>/web', () => {
+  it('get the default web envs', () => {
+    // Constants
+    expect(constants.useSentry).toBe(false);
+
+    // Env Accessors
+    expect(env.isProd).toBe(false);
+    expect(env.isTest).toBe(true);
+    expect(env.isDev).toBe(false);
+
+    // Env Variables
+    expect(env.NEXT_PUBLIC_ADMIN_EMAIL).toBe('admin@example.com');
+  });
+});

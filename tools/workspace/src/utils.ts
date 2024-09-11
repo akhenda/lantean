@@ -47,12 +47,13 @@ export function isHuskyInstalled(tree: Tree) {
  * @returns The updated TSConfig.
  */
 export function updateTSConfigCompilerOptions(
-  { compileOnSave, compilerOptions, ...json }: TSConfig,
+  { compileOnSave, compilerOptions = {}, extends: _extends = null, ...json }: TSConfig,
   options: TSConfig['compilerOptions'] = {},
 ) {
   const { baseUrl, paths, ...defaultCompilerOptions } = compilerOptions;
 
   return {
+    ...(_extends ? { extends: _extends } : {}),
     compileOnSave,
     compilerOptions: { ...defaultCompilerOptions, ...options, baseUrl, paths },
     ...json,

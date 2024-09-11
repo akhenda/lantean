@@ -198,7 +198,6 @@ describe('@lantean/workspace prettier generator', () => {
 
   it('should run tasks', async () => {
     const tasks = await lintingGenerator(tree);
-    console.log('tasks: ', tasks);
 
     expect(tasks).toBeTruthy();
 

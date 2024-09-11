@@ -4,6 +4,8 @@ export type NodeEnv = typeof nodeEnvs[number];
 export interface CleanedEnvAccessors {
   /** true if NODE_ENV === 'development' */
   readonly isDevelopment: boolean;
+
+  /** Alias to isDevelopemnt */
   readonly isDev: boolean;
 
   /** true if NODE_ENV === 'test' */
@@ -11,6 +13,8 @@ export interface CleanedEnvAccessors {
 
   /** true if NODE_ENV === 'production' */
   readonly isProduction: boolean;
+
+  /** Alias to isProduction */
   readonly isProd: boolean;
 }
 

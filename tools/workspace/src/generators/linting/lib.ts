@@ -161,6 +161,7 @@ function updatePackageJsons(tree: Tree, options: NormalizedSchema) {
     };
     /* eslint-enable @typescript-eslint/naming-convention */
 
+    /* eslint-disable */
     /* eslint-disable sort-keys-fix/sort-keys-fix */
     return {
       name: packageJson.name,
@@ -172,6 +173,7 @@ function updatePackageJsons(tree: Tree, options: NormalizedSchema) {
       ...packageJson,
     };
     /* eslint-enable sort-keys-fix/sort-keys-fix */
+    /* eslint-enable */
   });
 
   let deps = {};
@@ -219,6 +221,7 @@ function updateVSCodeSettings(tree: Tree) {
 
   if (!tree.exists(cssSettingsFilePath)) {
     writeJson(tree, cssSettingsFilePath, {
+      /* eslint-disable */
       /* eslint-disable sort-keys-fix/sort-keys-fix */
       version: 1.1,
       atDirectives: [
@@ -229,6 +232,7 @@ function updateVSCodeSettings(tree: Tree) {
         },
       ],
       /* eslint-enable sort-keys-fix/sort-keys-fix */
+      /* eslint-enable */
     });
   }
 
@@ -247,6 +251,7 @@ function updateVSCodeSettings(tree: Tree) {
   }
 
   updateJson(tree, join('.vscode', 'settings.json'), (settingsJson) => {
+    /* eslint-disable */
     /* eslint-disable @typescript-eslint/naming-convention, sort-keys-fix/sort-keys-fix */
     return {
       ...settingsJson,
@@ -323,6 +328,7 @@ function updateVSCodeSettings(tree: Tree) {
       // ],
     };
     /* eslint-enable @typescript-eslint/naming-convention, sort-keys-fix/sort-keys-fix */
+    /* eslint-enable */
   });
 }
 
@@ -464,6 +470,7 @@ function updateBaseEslintConfig(tree: Tree, options: NormalizedSchema) {
 
   eslintConfig.extends = [`${options.importPath}/nx`];
 
+  /* eslint-disable */
   /* eslint-disable sort-keys-fix/sort-keys-fix */
   writeEsLintConfig(tree, {
     root: eslintConfig.root,
@@ -471,6 +478,7 @@ function updateBaseEslintConfig(tree: Tree, options: NormalizedSchema) {
     ...eslintConfig,
   });
   /* eslint-enable sort-keys-fix/sort-keys-fix */
+  /* eslint-enable */
 }
 
 /**

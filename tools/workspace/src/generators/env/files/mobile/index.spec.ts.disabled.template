@@ -1,0 +1,21 @@
+import config from './index';
+
+const { env, constants } = config;
+
+describe('<%= projectName %>/mobile', () => {
+  it('get the default mobile envs', () => {
+    // Constants
+    expect(constants.persistNavigation).toBe('never');
+    expect(constants.catchErrors).toBe('always');
+
+    // Env Accessors
+    expect(env.isProduction).toBe(false);
+    expect(env.isTest).toBe(true);
+    expect(env.isDev).toBe(false);
+
+    // Env Variables
+    expect(env.EXPO_PUBLIC_ADMIN_EMAIL).toBe('admin@example.com');
+    expect(env.EXPO_PUBLIC_USE_REACTOTRON).toBe(true);
+    expect(env.EXPO_PUBLIC_USE_REDUX_LOGGER).toBe(true);
+  });
+});

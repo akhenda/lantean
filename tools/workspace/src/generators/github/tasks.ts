@@ -1,4 +1,4 @@
-import { resolve } from 'path';
+import { join, resolve } from 'path';
 import { readFileSync } from 'fs';
 
 import { generateFiles, Tree } from '@nx/devkit';
@@ -95,6 +95,8 @@ export function updateReadMe(tree: Tree) {
  * @param tree The file system tree
  */
 export function updateGitIgnoreFile(tree: Tree) {
+  if (!tree.exists(join(tree.root, '.gitignore'))) return;
+
   const ignores = readFileSync(resolve(tree.root, '.gitignore'), {
     encoding: 'utf8',
   }).split('\n');

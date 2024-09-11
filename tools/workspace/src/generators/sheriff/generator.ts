@@ -8,7 +8,7 @@ import { updateBaseTSConfig } from './utils';
 
 export async function sheriffGenerator(
   tree: Tree,
-  options: SheriffGeneratorSchema,
+  options?: SheriffGeneratorSchema,
 ) {
   if (!hasFlatConfig(tree)) return;
 

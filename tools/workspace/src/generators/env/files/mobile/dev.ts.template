@@ -12,24 +12,27 @@ import { z } from 'zod';
 import { getEnvWithAccessors, nodeEnvs } from '../utils';
 
 const dev = createEnv({
+  server: {
+    NODE_ENV: z.enum(nodeEnvs).optional(),
+  },
+
   clientPrefix: 'EXPO_PUBLIC_',
 
   client: {
-    ADMIN_EMAIL: z.string().email().default('admin@example.com'),
-    NODE_ENV: z.enum(nodeEnvs).optional(),
-    USE_REACTOTRON: z.boolean().default(true),
-    USE_REDUX_DEV_TOOLS: z.boolean().default(true),
-    USE_REDUX_LOGGER: z.boolean().default(true),
-    USE_ZUSTAND_DEV_TOOLS: z.boolean().default(true),
+    EXPO_PUBLIC_ADMIN_EMAIL: z.string().email().default('admin@example.com'),
+    EXPO_PUBLIC_USE_REACTOTRON: z.boolean().default(true),
+    EXPO_PUBLIC_USE_REDUX_DEV_TOOLS: z.boolean().default(true),
+    EXPO_PUBLIC_USE_REDUX_LOGGER: z.boolean().default(true),
+    EXPO_PUBLIC_USE_ZUSTAND_DEV_TOOLS: z.boolean().default(true),
   },
 
   runtimeEnv: {
-    ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+    EXPO_PUBLIC_ADMIN_EMAIL: process.env.EXPO_PUBLIC_ADMIN_EMAIL,
+    EXPO_PUBLIC_USE_REACTOTRON: process.env.EXPO_PUBLIC_USE_REACTOTRON,
+    EXPO_PUBLIC_USE_REDUX_DEV_TOOLS: process.env.EXPO_PUBLIC_USE_REDUX_DEV_TOOLS,
+    EXPO_PUBLIC_USE_REDUX_LOGGER: process.env.EXPO_PUBLIC_USE_REDUX_LOGGER,
+    EXPO_PUBLIC_USE_ZUSTAND_DEV_TOOLS: process.env.EXPO_PUBLIC_USE_ZUSTAND_DEV_TOOLS,
     NODE_ENV: process.env.NODE_ENV,
-    USE_REACTOTRON: process.env.USE_REACTOTRON,
-    USE_REDUX_DEV_TOOLS: process.env.USE_REDUX_DEV_TOOLS,
-    USE_REDUX_LOGGER: process.env.USE_REDUX_LOGGER,
-    USE_ZUSTAND_DEV_TOOLS: process.env.USE_ZUSTAND_DEV_TOOLS,
   },
 });
 

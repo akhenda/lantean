@@ -1,5 +1,4 @@
-import { readFileSync } from 'fs';
-import { join, resolve } from 'path';
+import { join } from 'path';
 import { unique } from 'radash';
 
 import {
@@ -91,7 +90,7 @@ export function addLibFiles(tree: Tree, options: NormalizedSchema) {
  */
 function updateTSConfig(tree: Tree, options: NormalizedSchema) {
   updateJson(tree, join(options.projectRoot, 'tsconfig.lib.json'), (json) => {
-    json.include = [...json.include, './**/*.mjs'];
+    json.include = [...(json.include ?? []), './**/*.mjs'];
 
     return json;
   });
@@ -114,11 +113,14 @@ function updateEslintConfig(tree: Tree, options: NormalizedSchema) {
     tree,
     join(options.projectRoot, '.eslintrc.json'),
     (eslintConfig) => {
-      eslintConfig.overrides.unshift({
-        files: ['*.mjs'],
-        parserOptions: { sourceType: 'module', ecmaVersion: 2022 },
-        rules: {},
-      });
+      eslintConfig.overrides = [
+        {
+          files: ['*.mjs'],
+          parserOptions: { sourceType: 'module', ecmaVersion: 2022 },
+          rules: {},
+        },
+        ...(eslintConfig.overrides ?? []),
+      ];
 
       return eslintConfig;
     },
@@ -174,6 +176,7 @@ function updatePackageJsons(tree: Tree, options: NormalizedSchema) {
     };
     /* eslint-enable @typescript-eslint/naming-convention */
 
+    /* eslint-disable */
     /* eslint-disable sort-keys-fix/sort-keys-fix */
     return {
       name: packageJson.name,
@@ -185,6 +188,7 @@ function updatePackageJsons(tree: Tree, options: NormalizedSchema) {
       ...packageJson,
     };
     /* eslint-enable sort-keys-fix/sort-keys-fix */
+    /* eslint-enable */
   });
 
   let deps = {};
@@ -232,6 +236,7 @@ function updateVSCodeSettings(tree: Tree) {
 
   if (!tree.exists(cssSettingsFilePath)) {
     writeJson(tree, cssSettingsFilePath, {
+      /* eslint-disable */
       /* eslint-disable sort-keys-fix/sort-keys-fix */
       version: 1.1,
       atDirectives: [
@@ -242,6 +247,7 @@ function updateVSCodeSettings(tree: Tree) {
         },
       ],
       /* eslint-enable sort-keys-fix/sort-keys-fix */
+      /* eslint-enable */
     });
   }
 
@@ -260,6 +266,7 @@ function updateVSCodeSettings(tree: Tree) {
   }
 
   updateJson(tree, join('.vscode', 'settings.json'), (settingsJson) => {
+    /* eslint-disable */
     /* eslint-disable @typescript-eslint/naming-convention, sort-keys-fix/sort-keys-fix */
     return {
       ...settingsJson,
@@ -336,6 +343,7 @@ function updateVSCodeSettings(tree: Tree) {
       // ],
     };
     /* eslint-enable @typescript-eslint/naming-convention, sort-keys-fix/sort-keys-fix */
+    /* eslint-enable */
   });
 }
 
@@ -375,9 +383,11 @@ function addSemanticReleaseTarget(tree: Tree, options: NormalizedSchema) {
  * @param options The schema options passed to the generator.
  */
 function updateESLintIgnoreFile(tree: Tree, options: NormalizedSchema) {
-  const ignores = readFileSync(resolve(tree.root, '.eslintignore'), {
-    encoding: 'utf8',
-  }).split('\n');
+  const ignoreFilePath = '.eslintignore';
+
+  if (!tree.exists(ignoreFilePath)) return;
+
+  const ignores = tree.read(ignoreFilePath, 'utf8').split('\n');
 
   if (!ignores.includes(`# ${getImportPath(tree, options.projectDirectory)}`)) {
     const files = [
@@ -421,9 +431,11 @@ function updateESLintIgnoreFile(tree: Tree, options: NormalizedSchema) {
  * @param options The options passed to the generator.
  */
 function updatePrettierIgnoreFile(tree: Tree, options: NormalizedSchema) {
-  const ignores = readFileSync(resolve(tree.root, '.prettierignore'), {
-    encoding: 'utf8',
-  }).split('\n');
+  const ignoreFilePath = '.prettierignore';
+
+  if (!tree.exists(ignoreFilePath)) return;
+
+  const ignores = tree.read(ignoreFilePath, 'utf8').split('\n');
 
   if (!ignores.includes(`# ${getImportPath(tree, options.projectDirectory)}`)) {
     const files = [
@@ -454,9 +466,11 @@ function updatePrettierIgnoreFile(tree: Tree, options: NormalizedSchema) {
  * @param options The options passed to the generator
  */
 function updateGitIgnoreFile(tree: Tree, options: NormalizedSchema) {
-  const ignores = readFileSync(resolve(tree.root, '.gitignore'), {
-    encoding: 'utf8',
-  }).split('\n');
+  const ignoreFilePath = '.gitignore';
+
+  if (!tree.exists(ignoreFilePath)) return;
+
+  const ignores = tree.read(ignoreFilePath, 'utf8').split('\n');
 
   if (!ignores.includes(`# ${getImportPath(tree, options.projectDirectory)}`)) {
     const files = [

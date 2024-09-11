@@ -8,7 +8,7 @@ export interface SheriffGeneratorSchema {}
 /**
  * The normalized options passed to the generator.
  */
-export interface NormalizedSchema extends LintingGeneratorSchema {
+export interface NormalizedSchema extends SheriffGeneratorSchema {
   name: string;
   projectName: string;
   projectRoot: string;

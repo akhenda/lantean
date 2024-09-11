@@ -1,0 +1,18 @@
+import config from './index';
+
+const { env, constants } = config;
+
+describe('<%= projectName %>/server', () => {
+  it('get the default server envs', () => {
+    // Constants
+    expect(constants.useDatadog).toBe(true);
+
+    // Env Accessors
+    expect(env.isProduction).toBe(false);
+    expect(env.isTest).toBe(true);
+    expect(env.isDev).toBe(false);
+
+    // Env Variables
+    expect(env.ADMIN_EMAIL).toBe('admin@example.com');
+  });
+});
