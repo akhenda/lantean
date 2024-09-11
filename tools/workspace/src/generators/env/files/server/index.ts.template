@@ -1,0 +1,6 @@
+import * as constants from './constants';
+import env from './env';
+
+const config = { constants, env };
+
+export default config;

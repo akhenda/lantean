@@ -7,11 +7,12 @@
     "name": {
       "type": "string",
       "description": "",
+      "default": "env",
       "$default": {
         "$source": "argv",
         "index": 0
       },
-      "x-prompt": "What name would you like to use?"
+      "x-prompt": "What name would you like to use for the env lib?"
     }
   },
   "required": ["name"]

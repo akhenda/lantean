@@ -1,0 +1,38 @@
+export const nodeEnvs = ['development', 'test', 'production', 'staging'] as const
+export type NodeEnv = typeof nodeEnvs[number];
+
+export interface CleanedEnvAccessors {
+  /** true if NODE_ENV === 'development' */
+  readonly isDevelopment: boolean;
+  readonly isDev: boolean;
+
+  /** true if NODE_ENV === 'test' */
+  readonly isTest: boolean;
+
+  /** true if NODE_ENV === 'production' */
+  readonly isProduction: boolean;
+  readonly isProd: boolean;
+}
+
+export function getCleanedEnvAccessors<T extends Record<string, unknown>>(env: T) {
+  return {
+    // If NODE_ENV is not set, assume production
+    isProd: !env.NODE_ENV || env.NODE_ENV === 'production',
+    isDev: env.NODE_ENV === 'development',
+    isTest: env.NODE_ENV === 'test',
+  };
+}
+
+export function getEnvWithAccessors<T extends Record<string, unknown>>(env: T) {
+  const accessors = getCleanedEnvAccessors(env);
+
+  Object.defineProperties(env, {
+    isDev: { value: accessors.isDev },
+    isDevelopment: { value: accessors.isDev },
+    isProd: { value: accessors.isProd },
+    isProduction: { value: accessors.isProd },
+    isTest: { value: accessors.isTest },
+  });
+
+  return env as T & CleanedEnvAccessors;
+}

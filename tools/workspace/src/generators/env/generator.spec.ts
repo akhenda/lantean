@@ -14,7 +14,9 @@ describe('env generator', () => {
 
   it('should run successfully', async () => {
     await envGenerator(tree, options);
+
     const config = readProjectConfiguration(tree, 'test');
+
     expect(config).toBeDefined();
   });
 });
