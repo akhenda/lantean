@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "Universal",
+  "title": "Configures Gluestack",
+  "description": "Configures a Universal Design System (UDS) using Gluestack.io",
+  "type": "object",
+  "properties": {
+    "uiName": {
+      "type": "string",
+      "description": "",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use for the ui lib?"
+    },
+    "utilsName": {
+      "type": "string",
+      "description": "",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use for the utils lib?"
+    }
+  },
+  "required": ["uiName", "utilsName"]
+}

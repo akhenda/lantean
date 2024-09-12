@@ -1,7 +1,8 @@
 {
   "$schema": "https://json-schema.org/schema",
   "$id": "Env",
-  "title": "",
+  "title": "Configures ENV",
+  "description": "Configures Client & Server Environment Variables",
   "type": "object",
   "properties": {
     "name": {

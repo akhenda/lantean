@@ -44,6 +44,11 @@
       "factory": "./src/generators/env/generator",
       "schema": "./src/generators/env/schema.json",
       "description": "Env Generator"
+    },
+    "universal": {
+      "factory": "./src/generators/universal/generator",
+      "schema": "./src/generators/universal/schema.json",
+      "description": "Universal Design System (UDS) Generator"
     }
   }
 }
