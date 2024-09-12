@@ -3,7 +3,7 @@ import { getWorkspaceLayout, names, Tree } from '@nx/devkit';
 import { getImportPath, getNpmScope } from '../../utils';
 
 import { NormalizedSchema, UniversalGeneratorSchema } from './schema';
-import { libName, uiTags, utilsTags } from './constants';
+import { folderNames, libName, uiTags, utilsTags } from './constants';
 
 /**
  * Normalize options for the Universal generator.
@@ -77,22 +77,20 @@ export function normalizeOptions(
     projectDirectory,
     projectName: name,
     projectRoot,
-    ui,
-    uiTags,
-    utils,
-    utilsTags,
 
-    designPath,
-    designRoot,
-    featuresPath,
-    featuresRoot,
-    hooksPath,
-    hooksRoot,
-    providersPath,
-    providersRoot,
-    storesPath,
-    storesRoot,
-    utilsPath,
-    utilsRoot,
+    folderNames: {
+      ...folderNames,
+      designUI: ui,
+      designUtils: utils,
+    },
+    paths: {
+      design: { path: designPath, root: designRoot },
+      features: { path: featuresPath, root: featuresRoot },
+      hooks: { path: hooksPath, root: hooksRoot },
+      providers: { path: providersPath, root: providersRoot },
+      stores: { path: storesPath, root: storesRoot },
+      utils: { path: utilsPath, root: utilsRoot },
+    },
+    tags: { ui: uiTags, utils: utilsTags },
   };
 }

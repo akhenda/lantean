@@ -1,3 +1,3 @@
 # Design
 
-Our Glustack UI components will live here.
+Our Universal (Gluestack) UI components will live here.

@@ -1,9 +1,7 @@
 import { formatFiles, installPackagesTask, Tree } from '@nx/devkit';
 
-import { formatWorkspaceTask } from '../../devkit';
-
 import { UniversalGeneratorSchema } from './schema';
-import { generateUniversalLib } from './tasks';
+import { generateUniversalLib, updatePrettierConfig } from './tasks';
 import { normalizeOptions } from './utils';
 
 /**
@@ -22,11 +20,22 @@ export async function universalGenerator(
   const options = normalizeOptions(tree, schema);
 
   await generateUniversalLib(tree, options);
+
+  /**
+   * Breaks on Prettier v2
+   *
+   * https://github.com/tailwindlabs/prettier-plugin-tailwindcss/issues/207#issuecomment-1698071122
+   *
+   * TODO(akhenda): Enable later when Prettier v3 is standard
+   */
   await formatFiles(tree);
+
+  // We need to call this after we format the files otherwise prettier
+  // will fail since the tailwind plugin is not yet installed
+  updatePrettierConfig(tree);
 
   return () => {
     installPackagesTask(tree);
-    formatWorkspaceTask(tree);
   };
 }
 

@@ -24,9 +24,16 @@ export const uiTags = [...commonDSTags, 'ui', 'ui-library'];
 export const utilsTags = [...commonDSTags, 'utils', 'utils-library'];
 
 /**
- * Filename of VSCode CSS settings.
+ * Folder names
  */
-export const vscodeCSSSettingsFile = 'css_custom_data.json';
+export const folderNames = {
+  design: 'design',
+  features: 'features',
+  hooks: 'hooks',
+  providers: 'providers',
+  stores: 'stores',
+  utils: 'utils',
+};
 
 /**
  * Dependencies to be installed
@@ -49,6 +56,7 @@ export const dependencies = {
  */
 export const devDependencies = {
   tailwindcss: '^3.4.11',
+  prettier: '^3.3.3',
 } as const;
 
 /**

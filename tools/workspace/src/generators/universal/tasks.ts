@@ -4,22 +4,25 @@ import {
   addDependenciesToPackageJson,
   generateFiles,
   offsetFromRoot,
+  readJson,
   readProjectConfiguration,
   Tree,
   updateJson,
   updateProjectConfiguration,
   writeJson,
 } from '@nx/devkit';
+import { SchemaForPrettierrc } from '@schemastore/prettierrc';
+import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
 import { addTsConfigPath, libraryGenerator } from '@nx/js';
 import { unique } from 'radash';
 
 import {
   dependencies,
   devDependencies,
-  vscodeCSSSettingsFile,
   vscodeExtensions,
 } from './constants';
 import { NormalizedSchema } from './schema';
+import { updateTSConfigCompilerOptions } from '../../utils';
 
 /**
  * Deletes unnecessary files from the Universal library.
@@ -51,32 +54,18 @@ function cleanupLib(tree: Tree, libDirectory: string) {
  * @param options The normalized options for the generator.
  */
 function updateBaseTSConfigPaths(tree: Tree, options: NormalizedSchema) {
-  const {
-    designPath,
-    designRoot,
-    featuresPath,
-    featuresRoot,
-    hooksPath,
-    hooksRoot,
-    providersPath,
-    providersRoot,
-    storesPath,
-    storesRoot,
-    utilsPath,
-    utilsRoot,
-    ui,
-    utils,
-  } = options;
+  const { designUI: ui, designUtils } = options.folderNames;
+  const { design, features, hooks, providers, stores, utils } = options.paths;
 
-  addTsConfigPath(tree, `${designPath}/${ui}/*`, [`${designRoot}/${ui}/*`]);
-  addTsConfigPath(tree, `${designPath}/${utils}/*`, [
-    `${designRoot}/${utils}/*`,
+  addTsConfigPath(tree, `${features.path}/*`, [`${features.root}/*`]);
+  addTsConfigPath(tree, `${hooks.path}/*`, [`${hooks.root}/*`]);
+  addTsConfigPath(tree, `${providers.path}/*`, [`${providers.root}/*`]);
+  addTsConfigPath(tree, `${stores.path}/*`, [`${stores.root}/*`]);
+  addTsConfigPath(tree, `${utils.path}/*`, [`${utils.root}/*`]);
+  addTsConfigPath(tree, `${design.path}/${ui}/*`, [`${design.root}/${ui}/*`]);
+  addTsConfigPath(tree, `${design.path}/${designUtils}/*`, [
+    `${design.root}/${designUtils}/*`,
   ]);
-  addTsConfigPath(tree, `${featuresPath}/*`, [`${featuresRoot}/*`]);
-  addTsConfigPath(tree, `${hooksPath}/*`, [`${hooksRoot}/*`]);
-  addTsConfigPath(tree, `${providersPath}/*`, [`${providersRoot}/*`]);
-  addTsConfigPath(tree, `${storesPath}/*`, [`${storesRoot}/*`]);
-  addTsConfigPath(tree, `${utilsPath}/*`, [`${utilsRoot}/*`]);
 }
 
 /**
@@ -117,7 +106,8 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
 function addComponentsJson(tree: Tree, options: NormalizedSchema) {
   const componentsJsonPath = join(options.projectRoot, 'components.json');
   if (!tree.exists(componentsJsonPath)) {
-    const { designPath, designRoot, ui, utils } = options;
+    const { design } = options.paths;
+    const { designUI: ui, designUtils: utils } = options.folderNames;
 
     writeJson(tree, 'components.json', {
       $schema: 'https://ui.shadcn.com/schema.json',
@@ -125,15 +115,15 @@ function addComponentsJson(tree: Tree, options: NormalizedSchema) {
       rsc: true,
       tsx: true,
       tailwind: {
-        config: join(designRoot, 'ui', 'tailwind.config.ts'),
-        css: join(designRoot, 'ui', 'global.css'),
+        config: join(design.root, 'ui', 'tailwind.config.ts'),
+        css: join(design.root, 'ui', 'global.css'),
         baseColor: 'neutral',
         cssVariables: true,
       },
       aliases: {
-        components: `${designPath}/${ui}/components`,
-        ui: `${designPath}/${ui}/components/ui`,
-        utils: `${designPath}/${utils}`,
+        components: `${design.path}/${ui}/components`,
+        ui: `${design.path}/${ui}/components/ui`,
+        utils: `${design.path}/${utils}`,
       },
     });
   }
@@ -159,6 +149,82 @@ function updateProjectConfig(tree: Tree, options: NormalizedSchema) {
   });
 }
 
+function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
+  updateJson<TSConfig>(
+    tree,
+    join(options.projectRoot, 'tsconfig.json'),
+    (json) => {
+      return updateTSConfigCompilerOptions(json, {
+        noPropertyAccessFromIndexSignature: false,
+        esModuleInterop: true,
+      });
+    }
+  );
+
+  updateJson<TSConfig>(
+    tree,
+    join(options.projectRoot, 'tsconfig.lib.json'),
+    (json) => {
+      json.include = [
+        ...((json.include ?? []) as Array<string>),
+        'design/**/*.ts',
+        'features/**/*.ts',
+        'hooks/**/*.ts',
+        'providers/**/*.ts',
+        'stores/**/*.ts',
+        'utils/**/*.ts',
+      ];
+      json.exclude = [
+        ...((json.exclude ?? []) as Array<string>),
+        'design/**/*.spec.ts',
+        'design/**/*.test.ts',
+        'features/**/*.spec.ts',
+        'features/**/*.test.ts',
+        'hooks/**/*.spec.ts',
+        'hooks/**/*.test.ts',
+        'providers/**/*.spec.ts',
+        'providers/**/*.test.ts',
+        'stores/**/*.spec.ts',
+        'stores/**/*.test.ts',
+        'utils/**/*.spec.ts',
+        'utils/**/*.test.ts',
+      ];
+
+      return json;
+    }
+  );
+
+  updateJson<TSConfig>(
+    tree,
+    join(options.projectRoot, 'tsconfig.spec.json'),
+    (json) => {
+      json.include = [
+        ...((json.include ?? []) as Array<string>),
+        'design/**/*.test.ts',
+        'design/**/*.spec.ts',
+        'design/**/*.d.ts',
+        'features/**/*.test.ts',
+        'features/**/*.spec.ts',
+        'features/**/*.d.ts',
+        'hooks/**/*.test.ts',
+        'hooks/**/*.spec.ts',
+        'hooks/**/*.d.ts',
+        'providers/**/*.test.ts',
+        'providers/**/*.spec.ts',
+        'providers/**/*.d.ts',
+        'stores/**/*.test.ts',
+        'stores/**/*.spec.ts',
+        'stores/**/*.d.ts',
+        'utils/**/*.test.ts',
+        'utils/**/*.spec.ts',
+        'utils/**/*.d.ts',
+      ];
+
+      return json;
+    }
+  );
+}
+
 /**
  * Updates VSCode settings to include Tailwind CSS and its VSCode extensions.
  *
@@ -172,24 +238,6 @@ function updateProjectConfig(tree: Tree, options: NormalizedSchema) {
  */
 function updateVSCodeSettings(tree: Tree) {
   const extensionsFilePath = join('.vscode', 'extensions.json');
-  const cssSettingsFilePath = join('.vscode', vscodeCSSSettingsFile);
-
-  if (!tree.exists(cssSettingsFilePath)) {
-    writeJson(tree, cssSettingsFilePath, {
-      /* eslint-disable */
-      /* eslint-disable sort-keys-fix/sort-keys-fix */
-      version: 1.1,
-      atDirectives: [
-        {
-          name: '@tailwind',
-          description:
-            "Use the @tailwind directive to insert Tailwind's `base`, `components`, `utilities`, and `screens` styles into your CSS.",
-        },
-      ],
-      /* eslint-enable sort-keys-fix/sort-keys-fix */
-      /* eslint-enable */
-    });
-  }
 
   if (tree.exists(extensionsFilePath)) {
     updateJson(tree, extensionsFilePath, (extensionsJson) => {
@@ -206,17 +254,14 @@ function updateVSCodeSettings(tree: Tree) {
   }
 
   updateJson(tree, join('.vscode', 'settings.json'), (settingsJson) => {
-    /* eslint-disable */
-    /* eslint-disable @typescript-eslint/naming-convention, sort-keys-fix/sort-keys-fix */
     return {
       ...settingsJson,
 
+      'files.associations': { '*.css': 'tailwindcss' },
       'tailwindCSS.experimental.classRegex': [
         ['tva\\((([^()]*|\\([^()]*\\))*)\\)', '["\'`]([^"\'`]*).*?["\'`]'],
       ],
     };
-    /* eslint-enable @typescript-eslint/naming-convention, sort-keys-fix/sort-keys-fix */
-    /* eslint-enable */
   });
 }
 
@@ -227,6 +272,36 @@ function updateVSCodeSettings(tree: Tree) {
  */
 function addDependencies(tree: Tree) {
   addDependenciesToPackageJson(tree, dependencies, devDependencies);
+}
+
+/**
+ * Updates the root `.prettierrc` configuration file to include
+ * the `prettier-plugin-tailwindcss` plugin.
+ *
+ * If the file does not exist, it creates it with an empty configuration.
+ *
+ * Otherwise, it adds the plugin to the existing configuration.
+ *
+ * @param tree The abstract syntax tree of the workspace.
+ */
+export function updatePrettierConfig(tree: Tree) {
+  const prettierConfigFile = '.prettierrc';
+
+  if (!tree.exists(prettierConfigFile) && !tree.exists('.prettierrc.json')) {
+    writeJson(tree, prettierConfigFile, {});
+  }
+
+  let prettierConfig = readJson<Exclude<SchemaForPrettierrc, string>>(
+    tree,
+    prettierConfigFile
+  );
+
+  prettierConfig = {
+    ...prettierConfig,
+    plugins: [...(prettierConfig.plugins ?? []), 'prettier-plugin-tailwindcss'],
+  };
+
+  writeJson(tree, prettierConfigFile, prettierConfig);
 }
 
 /**
@@ -241,6 +316,7 @@ export async function generateUniversalLib(
 ) {
   await libraryGenerator(tree, {
     name: options.projectName,
+    directory: options.projectRoot,
     bundler: 'tsc',
     compiler: 'tsc',
     linter: 'eslint',
@@ -249,7 +325,7 @@ export async function generateUniversalLib(
     projectNameAndRootFormat: 'as-provided',
     setParserOptionsProject: true,
     strict: true,
-    tags: unique([...options.uiTags, ...options.utilsTags]).join(','),
+    tags: unique([...options.tags.ui, ...options.tags.utils]).join(','),
   });
 
   cleanupLib(tree, options.projectRoot);
@@ -257,6 +333,7 @@ export async function generateUniversalLib(
   addLibFiles(tree, options);
   addComponentsJson(tree, options);
   updateProjectConfig(tree, options);
+  updateTSConfigs(tree, options);
   updateVSCodeSettings(tree);
   addDependencies(tree);
 }

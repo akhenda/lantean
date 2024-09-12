@@ -317,7 +317,7 @@ function updateVSCodeSettings(tree: Tree) {
         'json5',
       ],
 
-      'css.customData': ['.vscode/css_custom_data.json'],
+      'css.customData': [`.vscode/${vscodeCSSSettingsFile}`],
       'files.associations': { '*.css': 'tailwindcss' },
 
       'tailwindCSS.experimental.classRegex': [
@@ -439,7 +439,7 @@ function updatePrettierIgnoreFile(tree: Tree, options: NormalizedSchema) {
  * If the `.gitignore` does not already include the `# ${path}` line,
  * it adds the following files to the `.gitignore`:
  * - `*.orig`
- * - `!.vscode/css_custom_data.json`
+ * - `!.vscode/${vscodeCSSSettingsFile}`
  *
  * @param tree The file system tree
  * @param options The options passed to the generator
@@ -453,7 +453,7 @@ function updateGitIgnoreFile(tree: Tree, options: NormalizedSchema) {
     const files = [
       `# ${getImportPath(tree, options.projectDirectory)}`,
       '*.orig',
-      '!.vscode/css_custom_data.json',
+      `!.vscode/${vscodeCSSSettingsFile}`,
     ];
 
     if (files.length) ignores.push(...files, '');

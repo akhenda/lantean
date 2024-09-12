@@ -48,7 +48,7 @@ export function addDependencies(tree: Tree) {
  * @param tree The file system tree.
  * @param options The normalized schema options.
  */
-function updateTSConfig(tree: Tree, options: NormalizedSchema) {
+function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
   updateJson<TSConfig>(
     tree,
     join(options.projectRoot, 'tsconfig.json'),
@@ -262,7 +262,7 @@ export async function generateEnvLib(
 
   addLibFiles(tree, normalizedOptions);
   updateJestConfig(tree, normalizedOptions);
-  updateTSConfig(tree, normalizedOptions);
+  updateTSConfigs(tree, normalizedOptions);
   addDependencies(tree);
   updateESLintConfig(tree, normalizedOptions);
   updatePackageJson(tree, normalizedOptions);
