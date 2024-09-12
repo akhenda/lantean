@@ -320,6 +320,10 @@ function updateVSCodeSettings(tree: Tree) {
       'css.customData': ['.vscode/css_custom_data.json'],
       'files.associations': { '*.css': 'tailwindcss' },
 
+      'tailwindCSS.experimental.classRegex': [
+        ['tva\\((([^()]*|\\([^()]*\\))*)\\)', '["\'`]([^"\'`]*).*?["\'`]'],
+      ],
+
       // https://blog.adarshkonchady.com/fixing-vscode-issues-with-eslint-on-nx-monorepo
       // 'eslint.workingDirectories': [
       //   { pattern: './apps/*/' },

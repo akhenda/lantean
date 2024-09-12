@@ -6,7 +6,7 @@ import { UniversalGeneratorSchema } from './schema';
 
 describe('universal generator', () => {
   let tree: Tree;
-  const options: UniversalGeneratorSchema = { uiName: 'test', utilsName: 'utils' };
+  const options: UniversalGeneratorSchema = { uiName: 'ui-kit', utilsName: 'utils' };
 
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();
@@ -14,7 +14,7 @@ describe('universal generator', () => {
 
   it('should run successfully', async () => {
     await universalGenerator(tree, options);
-    const config = readProjectConfiguration(tree, 'test');
+    const config = readProjectConfiguration(tree, 'ui-kit');
     expect(config).toBeDefined();
   });
 });
