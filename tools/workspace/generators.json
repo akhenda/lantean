@@ -49,6 +49,11 @@
       "factory": "./src/generators/universal/generator",
       "schema": "./src/generators/universal/schema.json",
       "description": "Universal Design System (UDS) Generator"
+    },
+    "web": {
+      "factory": "./src/generators/web/generator",
+      "schema": "./src/generators/web/schema.json",
+      "description": "Web Design System (WDS) Generator"
     }
   }
 }
