@@ -1,18 +1,28 @@
-import { ExecutorContext } from '@nx/devkit';
-
 import { AddExecutorSchema } from './schema';
 import executor from './executor';
+import { createFakeContext } from '../../../utils';
 
-const options: AddExecutorSchema = {};
-const context: ExecutorContext = {
-  root: '',
+const options = {} as AddExecutorSchema;
+const context = createFakeContext({
+  workspaceRoot: '/root',
   cwd: process.cwd(),
-  isVerbose: false,
-};
+  project: 'a',
+  projectRoot: '/root/packages/a',
+  additionalProjects: [
+    {
+      project: 'lib1',
+      projectRoot: '/root/libs/lib1',
+    },
+    {
+      project: 'lib2',
+      projectRoot: '/root/libs/lib2',
+    },
+  ],
+})
 
 describe('Add Executor', () => {
   it('can run', async () => {
     const output = await executor(options, context);
-    expect(output.success).toBe(true);
+    expect(output?.success).toBe(true);
   });
 });

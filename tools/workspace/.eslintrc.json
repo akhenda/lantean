@@ -33,13 +33,14 @@
           "error",
           {
             "ignoredDependencies": [
-              "nx",
-              "prettier",
               "@nx/js",
               "@schemastore/eslintrc",
               "@schemastore/package",
               "@schemastore/prettierrc",
-              "@schemastore/tsconfig"
+              "@schemastore/tsconfig",
+              "nx",
+              "prettier",
+              "shelljs"
             ]
           }
         ]

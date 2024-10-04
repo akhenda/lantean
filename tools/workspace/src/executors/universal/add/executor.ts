@@ -57,9 +57,11 @@ export function execPackageManagerCommand(command: string, options?: Options) {
 }
 
 const runExecutor: PromiseExecutor<AddExecutorSchema> = async (options, context) => {
+  if (!context.workspace) return  { success: false };
+
   const { root } = context.workspace.projects[context.projectName]
 
-  return execPackageManagerCommand(
+  execPackageManagerCommand(
     buildCommand([
       'shadcn-ui@latest add',
       (options.component ?? '').length === 0 ? '--all' : options.component,
@@ -69,6 +71,8 @@ const runExecutor: PromiseExecutor<AddExecutorSchema> = async (options, context)
     ]),
     {}
   )
+
+  return { success: true }
 };
 
 export default runExecutor;

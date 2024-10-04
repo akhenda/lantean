@@ -1,4 +1,4 @@
-import { readJson, Tree } from '@nx/devkit';
+import { ExecutorContext, ProjectConfiguration, readJson, TargetConfiguration, Tree } from '@nx/devkit';
 import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
 
 import { readPackageJson } from './devkit';
@@ -81,4 +81,69 @@ export function getImportPath(tree: Tree, dir: string): string {
   const prefix = npmScope === '@' ? '' : '@';
 
   return npmScope ? `${prefix}${npmScope}/${dir}` : dir;
+}
+
+function assembleAdditionalProjects(
+  additionalProjects: {
+    project: string;
+    projectRoot: string;
+    targets?: Record<string, TargetConfiguration>;
+  }[],
+) {
+  return additionalProjects.reduce<{
+    [projectName: string]: ProjectConfiguration;
+  }>(
+    (acc, p) => {
+      acc[p.project] = {
+        root: p.projectRoot,
+        targets: p.targets || {},
+      };
+      return acc;
+    },
+    {} satisfies { [project: string]: ProjectConfiguration },
+  );
+}
+
+export function createFakeContext({
+  cwd = process.cwd(),
+  project,
+  projectRoot,
+  workspaceRoot,
+  targets = {},
+  additionalProjects = [],
+}: {
+  cwd?: string;
+  project: string;
+  projectRoot: string;
+  workspaceRoot: string;
+  targets?: Record<string, TargetConfiguration>;
+  additionalProjects?: {
+    project: string;
+    projectRoot: string;
+    targets?: Record<string, TargetConfiguration>;
+  }[];
+}): ExecutorContext {
+  const projectsConfigurations = {
+    version: 2,
+      projects: {
+        [project]: {
+          root: projectRoot,
+          targets,
+        },
+        ...assembleAdditionalProjects(additionalProjects),
+      },
+  };
+
+  return {
+    isVerbose: false,
+    cwd: cwd,
+    root: workspaceRoot,
+    projectName: project,
+    projectsConfigurations,
+    projectGraph: {
+      nodes: {},
+      dependencies: {},
+    },
+    workspace: projectsConfigurations,
+  } satisfies ExecutorContext;
 }
