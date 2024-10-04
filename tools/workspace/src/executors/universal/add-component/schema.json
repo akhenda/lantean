@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/schema",
   "version": 2,
-  "title": "Add executor",
-  "description": "",
+  "title": "Universal Add Component Executor",
+  "description": "Add a Universal (Gluestack) component",
   "type": "object",
   "properties": {
     "component": {

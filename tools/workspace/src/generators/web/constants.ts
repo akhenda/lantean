@@ -1,12 +1,12 @@
 /**
  * Name of the library
  */
-export const libName = 'universal';
+export const libName = 'web';
 
 /**
  * Common tags for the library
  */
-export const commonTags = ['universal'];
+export const commonTags = ['web'];
 
 /**
  * Common Design System tags for the library
@@ -39,10 +39,9 @@ export const folderNames = {
  * Dependencies to be installed
  */
 export const dependencies = {
-  '@gluestack-ui/nativewind-utils': '^1.0.23',
   'class-variance-authority': '^0.7.0',
   clsx: '^2.1.1',
-  'lucide-react': '^0.441.0',
+  'lucide-react': '^0.447.0',
   'prettier-plugin-tailwindcss': '^0.6.6',
   'tailwindcss-animate': '^1.0.7',
   'tailwind-merge': '^2.5.2',

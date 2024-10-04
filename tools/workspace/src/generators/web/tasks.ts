@@ -16,22 +16,18 @@ import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from
 import { addTsConfigPath, libraryGenerator } from '@nx/js';
 import { unique } from 'radash';
 
-import {
-  dependencies,
-  devDependencies,
-  vscodeExtensions,
-} from './constants';
+import { dependencies, devDependencies, vscodeExtensions } from './constants';
 import { NormalizedSchema } from './schema';
 import { updateTSConfigCompilerOptions } from '../../utils';
 
 /**
- * Deletes unnecessary files from the Universal library.
+ * Deletes unnecessary files from the Web library.
  *
- * The Universal library is created by `@nx/js` and contains unnecessary
+ * The Web library is created by `@nx/js` and contains unnecessary
  * files such as `package.json` and `src/index.ts` that need to be deleted.
  *
  * @param tree The file system tree.
- * @param libDirectory The directory of the Universal library.
+ * @param libDirectory The directory of the Web library.
  */
 function cleanupLib(tree: Tree, libDirectory: string) {
   tree.delete(`${libDirectory}/package.json`);
@@ -45,7 +41,7 @@ function cleanupLib(tree: Tree, libDirectory: string) {
 }
 
 /**
- * Updates the TSConfig paths for the Universal library.
+ * Updates the TSConfig paths for the Web library.
  *
  * The paths are updated to include the paths for the design, features,
  * hooks, providers, stores, and utils directories.
@@ -69,7 +65,7 @@ function updateBaseTSConfigPaths(tree: Tree, options: NormalizedSchema) {
 }
 
 /**
- * Generates the files for the Universal library.
+ * Generates the files for the Web library.
  *
  * This is a separate function from the main generator so that it can be
  * reused in the update generator.
@@ -93,10 +89,10 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
 }
 
 /**
- * Generates the `components.json` file for the Universal library.
+ * Generates the `components.json` file for the Web library.
  *
  * This file is used by the `@shadcn/ui` package to configure the
- * Universal library.
+ * Web library.
  *
  * The file is only generated if it does not already exist.
  *
@@ -130,10 +126,8 @@ function addComponentsJson(tree: Tree, options: NormalizedSchema) {
 }
 
 /**
- * Updates the project configuration to include a new target called
- * `add-component` that runs the `@${options.npmScope}/universal:add` executor.
- *
- * This target is used to generate new components in the Universal library.
+ * Updates the project configuration to include the necessary targets
+ * for generating new components, pages, and utilities in the Web library.
  *
  * @param tree The abstract syntax tree of the workspace.
  * @param options The normalized options for the generator.
@@ -143,7 +137,13 @@ function updateProjectConfig(tree: Tree, options: NormalizedSchema) {
     ...readProjectConfiguration(tree, options.projectName),
     targets: {
       'add-component': {
-        executor: `@${options.npmScope}/universal:component:add`,
+        executor: `@${options.npmScope}/web:component:add`,
+      },
+      'add-page': {
+        executor: `@${options.npmScope}/web:page:add`,
+      },
+      'add-util': {
+        executor: `@${options.npmScope}/web:util:add`,
       },
     },
   });
@@ -305,7 +305,7 @@ export function updatePrettierConfig(tree: Tree) {
 }
 
 /**
- * Generates a Universal Design System (UDS) library.
+ * Generates a Web Design System (WDS) library.
  *
  * @param tree The abstract syntax tree of the workspace.
  * @param options The normalized options for the generator.
