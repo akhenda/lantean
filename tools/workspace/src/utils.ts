@@ -1,5 +1,15 @@
-import { ExecutorContext, ProjectConfiguration, readJson, TargetConfiguration, Tree } from '@nx/devkit';
+import {
+  detectPackageManager,
+  ExecutorContext,
+  getPackageManagerCommand,
+  ProjectConfiguration,
+  readJson,
+  TargetConfiguration,
+  Tree,
+} from '@nx/devkit';
 import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
+import * as shell from 'shelljs';
+import type { ExecOptions } from 'shelljs';
 
 import { readPackageJson } from './devkit';
 
@@ -47,8 +57,13 @@ export function isHuskyInstalled(tree: Tree) {
  * @returns The updated TSConfig.
  */
 export function updateTSConfigCompilerOptions(
-  { compileOnSave, compilerOptions = {}, extends: _extends = null, ...json }: TSConfig,
-  options: TSConfig['compilerOptions'] = {},
+  {
+    compileOnSave,
+    compilerOptions = {},
+    extends: _extends = null,
+    ...json
+  }: TSConfig,
+  options: TSConfig['compilerOptions'] = {}
 ) {
   const { baseUrl, paths, ...defaultCompilerOptions } = compilerOptions;
 
@@ -83,27 +98,44 @@ export function getImportPath(tree: Tree, dir: string): string {
   return npmScope ? `${prefix}${npmScope}/${dir}` : dir;
 }
 
+/**
+ * Assembles the given list of additional projects into a map of project
+ * configurations.
+ *
+ * @param additionalProjects The list of additional projects to assemble.
+ * @returns A map of project configurations, where each key is the project name
+ * and the value is the project configuration.
+ */
 function assembleAdditionalProjects(
   additionalProjects: {
     project: string;
     projectRoot: string;
     targets?: Record<string, TargetConfiguration>;
-  }[],
+  }[]
 ) {
   return additionalProjects.reduce<{
     [projectName: string]: ProjectConfiguration;
-  }>(
-    (acc, p) => {
-      acc[p.project] = {
-        root: p.projectRoot,
-        targets: p.targets || {},
-      };
-      return acc;
-    },
-    {} satisfies { [project: string]: ProjectConfiguration },
-  );
+  }>((acc, p) => {
+    acc[p.project] = {
+      root: p.projectRoot,
+      targets: p.targets || {},
+    };
+    return acc;
+  }, {} satisfies { [project: string]: ProjectConfiguration });
 }
 
+/**
+ * Creates a fake Nx ExecutorContext for testing purposes.
+ *
+ * @param options The options for creating the fake context.
+ * @param options.cwd The current working directory of the context.
+ * @param options.project The name of the project.
+ * @param options.projectRoot The path to the root of the project.
+ * @param options.workspaceRoot The path to the root of the workspace.
+ * @param options.targets The targets of the project.
+ * @param options.additionalProjects The additional projects to include in the context.
+ * @returns The fake context.
+ */
 export function createFakeContext({
   cwd = process.cwd(),
   project,
@@ -125,13 +157,10 @@ export function createFakeContext({
 }): ExecutorContext {
   const projectsConfigurations = {
     version: 2,
-      projects: {
-        [project]: {
-          root: projectRoot,
-          targets,
-        },
-        ...assembleAdditionalProjects(additionalProjects),
-      },
+    projects: {
+      [project]: { root: projectRoot, targets },
+      ...assembleAdditionalProjects(additionalProjects),
+    },
   };
 
   return {
@@ -140,10 +169,124 @@ export function createFakeContext({
     root: workspaceRoot,
     projectName: project,
     projectsConfigurations,
-    projectGraph: {
-      nodes: {},
-      dependencies: {},
-    },
+    projectGraph: { nodes: {}, dependencies: {} },
     workspace: projectsConfigurations,
   } satisfies ExecutorContext;
+}
+
+/**
+ * Represents a part of a command. A part can be a string or a boolean
+ * (indicating that the part should not be included in the command).
+ */
+type CommandPart = string | boolean;
+
+/**
+ * Options to run a command.
+ */
+export interface CommandOptions extends ExecOptions {
+  asString?: boolean;
+  asJSON?: boolean;
+  silent?: boolean;
+}
+
+/**
+ * Builds a command from a list of parts.
+ *
+ * @param parts The parts of the command to build.
+ * @returns The built command.
+ *
+ * @example
+ * buildCommand(['npm', 'install', '--save-dev', 'jest'])
+ * > 'npm install --save-dev jest'
+ */
+export const buildCommand = (parts: CommandPart[]): string =>
+  parts.filter(Boolean).join(' ');
+
+/**
+ * Returns the `dlx` command of the detected package manager.
+ *
+ * @returns The `dlx` command of the detected package manager.
+ */
+export function getPackageManagerDlxCommand() {
+  return getPackageManagerCommand(detectPackageManager()).dlx;
+}
+
+/**
+ * Runs a command.
+ *
+ * @param command The command to run.
+ * @param options Options to run the command.
+ * @param isDryRun If true, the command is not actually run and success is returned.
+ * @returns The result of running the command. If `asString` is true, the result is returned
+ * as a string. If `asJSON` is true, the result is returned as JSON. If neither are true,
+ * the result is returned as an object with `success` and `output` properties.
+ *
+ * @example
+ * execCommand('npm install jest --save-dev')
+ * > { success: true, output: '' }
+ *
+ * @example
+ * execCommand('npm install jest --save-dev', { asString: true })
+ * > 'jest@^28.1.3 installed'
+ *
+ * @example
+ * execCommand('npm install jest --save-dev', { asJSON: true })
+ * > { "success": true, "output": "" }
+ */
+export const execCommand = (
+  command: string,
+  options: CommandOptions = { asString: false, asJSON: false },
+  isDryRun = false
+) => {
+  if (!options.silent || isDryRun) {
+    console.log('\nRunning:');
+    console.log(command);
+
+    if (isDryRun) return { success: true, output: '' };
+  }
+
+  const result = shell.exec(command, options);
+
+  if (options.asJSON) return JSON.parse(result.toString());
+  if (options.asString) return result.toString();
+
+  return { success: result['code'] === 0, output: result.stdout };
+};
+
+/**
+ * Run a command using the workspace's package manager.
+ *
+ * If the `NX_COMMAND_USE_NPX` environment variable is set, the command is
+ * run using `npx`. Otherwise, the command is run using the package manager's
+ * `dlx` command.
+ *
+ * @param command The command to run.
+ * @param options Options to pass to the command. If `asString` is true, the
+ * result is returned as a string. If `asJSON` is true, the result is returned as
+ * JSON. If neither are true, the result is returned as an object with `success`
+ * and `output` properties.
+ *
+ * @example
+ * execPackageManagerCommand('install jest --save-dev')
+ * > { success: true, output: '' }
+ *
+ * @example
+ * execPackageManagerCommand('install jest --save-dev', { asString: true })
+ * > 'jest@^28.1.3 installed'
+ *
+ * @example
+ * execPackageManagerCommand('install jest --save-dev', { asJSON: true })
+ * > { "success": true, "output": "" }
+ */
+export function execPackageManagerCommand(
+  command: string,
+  options?: CommandOptions
+) {
+  return execCommand(
+    buildCommand([
+      process.env.NX_COMMAND_USE_NPX ? 'npx' : getPackageManagerDlxCommand(),
+      command,
+    ]),
+    options
+  );
 }

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Web Add Component Executor",
+  "description": "Add a Web (shadcn/ui) component",
+  "type": "object",
+  "properties": {
+    "component": {
+      "type": "string",
+      "description": "",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What component would you like to add? (Keep empty to add all)"
+    },
+    "overwrite": {
+      "type": "boolean",
+      "description": "",
+      "$default": {
+        "$source": "argv",
+        "index": 1
+      },
+      "x-prompt": "Overwrite existing files?"
+    }
+  },
+  "required": []
+}

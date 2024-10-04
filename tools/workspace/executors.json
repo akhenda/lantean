@@ -4,6 +4,11 @@
       "implementation": "./src/executors/universal/add-component/executor",
       "schema": "./src/executors/universal/add-component/schema.json",
       "description": "Adds a Universal (Gluestack) component"
+    },
+    "web:component:add": {
+      "implementation": "./src/executors/web/add-component/executor",
+      "schema": "./src/executors/web/add-component/schema.json",
+      "description": "Adds a Web (shadcn/ui) component"
     }
   }
 }

@@ -1,4 +1,4 @@
-export interface AddExecutorSchema {
+export interface UniversalComponentAddExecutorSchema {
   component: string;
   overwrite: boolean;
 }

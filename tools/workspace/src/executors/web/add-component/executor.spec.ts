@@ -1,8 +1,8 @@
-import { UniversalComponentAddExecutorSchema } from './schema';
+import { WebComponentAddExecutorSchema } from './schema';
 import executor from './executor';
 import { createFakeContext } from '../../../utils';
 
-const options = {} as UniversalComponentAddExecutorSchema;
+const options = {} as WebComponentAddExecutorSchema;
 const context = createFakeContext({
   workspaceRoot: '/root',
   cwd: process.cwd(),
@@ -14,7 +14,7 @@ const context = createFakeContext({
   ],
 });
 
-describe('UniversalComponentAdd Executor', () => {
+describe('WebComponentAdd Executor', () => {
   it('can run', async () => {
     const output = await executor(options, context);
 
