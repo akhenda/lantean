@@ -111,8 +111,8 @@ function addComponentsJson(tree: Tree, options: NormalizedSchema) {
       rsc: true,
       tsx: true,
       tailwind: {
-        config: join(design.root, 'ui', 'tailwind.config.ts'),
-        css: join(design.root, 'ui', 'global.css'),
+        config: join(design.root, ui, 'tailwind.config.ts'),
+        css: join(design.root, ui, 'global.css'),
         baseColor: 'neutral',
         cssVariables: true,
       },
