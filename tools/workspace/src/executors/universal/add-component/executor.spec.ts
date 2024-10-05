@@ -1,9 +1,9 @@
 import { UniversalComponentAddExecutorSchema } from './schema';
 import executor from './executor';
-import { createFakeContext } from '../../../utils';
+import * as utils from '../../../utils';
 
 const options = {} as UniversalComponentAddExecutorSchema;
-const context = createFakeContext({
+const context = utils.createFakeContext({
   workspaceRoot: '/root',
   cwd: process.cwd(),
   project: 'a',
@@ -16,6 +16,10 @@ const context = createFakeContext({
 
 describe('UniversalComponentAdd Executor', () => {
   it('can run', async () => {
+    jest
+      .spyOn(utils, 'execCommand')
+      .mockReturnValueOnce({ output: '', success: true });
+
     const output = await executor(options, context);
 
     expect(output?.success).toBe(true);

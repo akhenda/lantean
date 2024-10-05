@@ -12,7 +12,7 @@ const runExecutor: PromiseExecutor<
 
   return execPackageManagerCommand(
     buildCommand([
-      'shadcn-ui@latest add',
+      'shadcn@latest add',
       (options.component ?? '').length === 0 ? '--all' : options.component,
       options.overwrite && '--overwrite',
       '--path=src',
