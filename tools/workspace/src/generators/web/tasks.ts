@@ -118,8 +118,10 @@ function addComponentsJson(tree: Tree, options: NormalizedSchema) {
       },
       aliases: {
         components: `${design.path}/${ui}/components`,
-        ui: `${design.path}/${ui}/components/ui`,
         utils: `${design.path}/${utils}`,
+        ui: `${design.path}/${ui}/components/ui`,
+        // lib: `${design.path}/lib`,
+        // hooks: `${design.path}/hooks`
       },
     });
   }
@@ -137,13 +139,13 @@ function updateProjectConfig(tree: Tree, options: NormalizedSchema) {
     ...readProjectConfiguration(tree, options.projectName),
     targets: {
       'add-component': {
-        executor: `@${options.npmScope}/web:component:add`,
+        executor: `@${options.npmScope}/workspace:add-web-component`,
       },
       'add-page': {
-        executor: `@${options.npmScope}/web:page:add`,
+        executor: `@${options.npmScope}/workspace:add-web-page`,
       },
       'add-util': {
-        executor: `@${options.npmScope}/web:util:add`,
+        executor: `@${options.npmScope}/workspace:add-web-util`,
       },
     },
   });
@@ -305,6 +307,39 @@ export function updatePrettierConfig(tree: Tree) {
 }
 
 /**
+ * Updates the root `package.json` to include the necessary scripts for the
+ * generator.
+ *
+ * Adds the `web:component:add` script which allows users to easily add
+ * components to their web project.
+ *
+ * @param tree The file system tree.
+ */
+function updatePackageJsons(tree: Tree) {
+  updateJson(tree, 'package.json', (packageJson) => {
+    /* eslint-disable @typescript-eslint/naming-convention */
+    packageJson.scripts = {
+      ...(packageJson.scripts ?? {}),
+      'web:component:add': 'TS_NODE_PROJECT=tsconfig.base.json bunx shadcn@latest add'
+    };
+    /* eslint-enable @typescript-eslint/naming-convention */
+
+    /* eslint-disable */
+    /* eslint-disable sort-keys-fix/sort-keys-fix */
+    return {
+      name: packageJson.name,
+      version: packageJson.version,
+      private: packageJson.private,
+      license: packageJson.license,
+      scripts: packageJson.scripts,
+      ...packageJson,
+    };
+    /* eslint-enable sort-keys-fix/sort-keys-fix */
+    /* eslint-enable */
+  });
+}
+
+/**
  * Generates a Web Design System (WDS) library.
  *
  * @param tree The abstract syntax tree of the workspace.
@@ -336,4 +371,5 @@ export async function generateUniversalLib(
   updateTSConfigs(tree, options);
   updateVSCodeSettings(tree);
   addDependencies(tree);
+  updatePackageJsons(tree);
 }

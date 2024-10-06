@@ -131,7 +131,8 @@ function addComponentsJson(tree: Tree, options: NormalizedSchema) {
 
 /**
  * Updates the project configuration to include a new target called
- * `add-component` that runs the `@${options.npmScope}/universal:add` executor.
+ * `add-component` that runs the `${options.importPath}/add-universal-component`
+ * executor.
  *
  * This target is used to generate new components in the Universal library.
  *
@@ -143,7 +144,7 @@ function updateProjectConfig(tree: Tree, options: NormalizedSchema) {
     ...readProjectConfiguration(tree, options.projectName),
     targets: {
       'add-component': {
-        executor: `@${options.npmScope}/universal:component:add`,
+        executor: `@${options.npmScope}/workspace:add-universal-component`,
       },
     },
   });

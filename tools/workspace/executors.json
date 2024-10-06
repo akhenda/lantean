@@ -1,11 +1,11 @@
 {
   "executors": {
-    "universal:component:add": {
+    "add-universal-component": {
       "implementation": "./src/executors/universal/add-component/executor",
       "schema": "./src/executors/universal/add-component/schema.json",
       "description": "Adds a Universal (Gluestack) component"
     },
-    "web:component:add": {
+    "add-web-component": {
       "implementation": "./src/executors/web/add-component/executor",
       "schema": "./src/executors/web/add-component/schema.json",
       "description": "Adds a Web (shadcn/ui) component"

@@ -280,10 +280,12 @@ export const execCommand = (
  */
 export function execPackageManagerCommand(
   command: string,
-  options?: CommandOptions
+  options?: CommandOptions,
+  env = '',
 ) {
   return execCommand(
     buildCommand([
+      env,
       process.env.NX_COMMAND_USE_NPX ? 'npx' : getPackageManagerDlxCommand(),
       command,
     ]),
