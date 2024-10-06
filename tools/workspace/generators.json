@@ -54,6 +54,11 @@
       "factory": "./src/generators/web/generator",
       "schema": "./src/generators/web/schema.json",
       "description": "Web Design System (WDS) Generator"
+    },
+    "mobile": {
+      "factory": "./src/generators/mobile/generator",
+      "schema": "./src/generators/mobile/schema.json",
+      "description": "Mobile Design System (MDS) Generator"
     }
   }
 }
