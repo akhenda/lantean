@@ -17,7 +17,7 @@ jest.mock('@nx/js', () => ({
 
 describe('mobile generator', () => {
   let tree: Tree;
-  const options: MobileGeneratorSchema = { uiName: 'ui-kit', utilsName: 'utils' };
+  const options: MobileGeneratorSchema = { uiName: 'ui-kit', libName: 'lib' };
 
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();

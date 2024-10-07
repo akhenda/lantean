@@ -13,15 +13,15 @@
       },
       "x-prompt": "What name would you like to use for the ui lib?"
     },
-    "utilsName": {
+    "libName": {
       "type": "string",
       "description": "",
       "$default": {
         "$source": "argv",
         "index": 0
       },
-      "x-prompt": "What name would you like to use for the utils lib?"
+      "x-prompt": "What name would you like to use for the lib folder?"
     }
   },
-  "required": ["uiName", "utilsName"]
+  "required": ["uiName", "libName"]
 }

@@ -21,7 +21,7 @@ export const uiTags = [...commonDSTags, 'ui', 'ui-library'] as const;
 /**
  * Utils tags for the library
  */
-export const utilsTags = [...commonDSTags, 'utils', 'utils-library'] as const;
+export const libTags = [...commonDSTags, 'ds-lib'] as const;
 
 /**
  * Folder names
@@ -41,6 +41,7 @@ export const folderNames = {
 export const dependencies = {
   '@react-native-async-storage/async-storage': '^2.0.0',
   '@react-navigation/native': '^6.1.18',
+  '@rn-primitives/portal': '^1.0.4',
   'class-variance-authority': '^0.7.0',
   clsx: '^2.1.1',
   'expo-navigation-bar': '^3.0.7',

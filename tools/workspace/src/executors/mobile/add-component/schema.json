@@ -24,5 +24,5 @@
       "x-prompt": "Overwrite existing files?"
     }
   },
-  "required": []
+  "required": ["component"]
 }

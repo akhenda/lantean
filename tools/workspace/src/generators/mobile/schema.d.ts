@@ -3,7 +3,7 @@
  */
 export interface MobileGeneratorSchema {
   uiName: string;
-  utilsName: string;
+  libName: string;
 }
 
 /**
@@ -39,7 +39,7 @@ export type LibFolderNames = {
   [k in LibFolder]: string;
 } & {
   designUI: string;
-  designUtils: string;
+  designLib: string;
 };
 
 /**
@@ -47,7 +47,7 @@ export type LibFolderNames = {
  */
 export type LibTags = {
   ui: readonly string[];
-  utils: readonly string[];
+  lib: readonly string[];
 };
 
 /**

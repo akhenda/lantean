@@ -3,7 +3,6 @@ import { join } from 'node:path';
 import TailwindAnimate from 'tailwindcss-animate';
 import type { Config } from 'tailwindcss';
 import { fontFamily } from 'tailwindcss/defaultTheme';
-import NativewindPreset from 'nativewind/preset';
 import { hairlineWidth } from 'nativewind/theme';
 
 export function buildConfig(appDir: string): Config {
@@ -13,7 +12,7 @@ export function buildConfig(appDir: string): Config {
       join(appDir, '{src,pages,components,app}/**/*!(*.stories|*.spec).{ts,tsx,html}'),
       ...createGlobPatternsForDependencies(appDir),
     ],
-    presets: [NativewindPreset],
+    presets: [require("nativewind/preset")],
     theme: {
       container: {
         center: true,

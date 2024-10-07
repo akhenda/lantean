@@ -1,14 +1,16 @@
 import './global.css';
 
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Theme, ThemeProvider } from '@react-navigation/native';
+import { PortalHost } from '@rn-primitives/portal';
 import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Platform } from 'react-native';
 
-import { NAV_THEME } from './lib/constants';
-import { useColorScheme } from './lib/useColorScheme';
+import { setAndroidNavigationBar } from '../<%= libName %>/utils';
+import { NAV_THEME } from '../<%= libName %>/constants';
+import { useColorScheme } from '../<%= libName %>/hooks';
 
 const DARK_THEME: Theme = { dark: true, colors: NAV_THEME.dark };
 const LIGHT_THEME: Theme = { dark: false, colors: NAV_THEME.light };
@@ -21,9 +23,9 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
-  const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
+  const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     (async () => {
       const theme = await AsyncStorage.getItem('theme');
 
@@ -43,11 +45,13 @@ export default function RootLayout() {
 
       if (colorTheme !== colorScheme) {
         setColorScheme(colorTheme);
+        setAndroidNavigationBar(colorTheme);
         setIsColorSchemeLoaded(true);
 
         return;
       }
 
+      setAndroidNavigationBar(colorTheme);
       setIsColorSchemeLoaded(true);
     })().finally(() => {
       SplashScreen.hideAsync();
@@ -60,6 +64,7 @@ export default function RootLayout() {
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
       <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
       <Stack />
+      <PortalHost />
     </ThemeProvider>
   );
 }

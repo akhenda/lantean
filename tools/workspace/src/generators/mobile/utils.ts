@@ -1,10 +1,9 @@
 import { getWorkspaceLayout, names, Tree } from '@nx/devkit';
-import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
 
-import { getImportPath, getNpmScope, getTSConfigGlobs, getTSConfigInclude } from '../../utils';
+import { getImportPath, getNpmScope } from '../../utils';
 
 import { NormalizedSchema, MobileGeneratorSchema } from './schema';
-import { folderNames, libName, uiTags, utilsTags } from './constants';
+import { folderNames, libName, uiTags, libTags } from './constants';
 
 /**
  * Normalize options for the Mobile generator.
@@ -23,8 +22,8 @@ import { folderNames, libName, uiTags, utilsTags } from './constants';
  * - `libsDir`: The path to the libs directory.
  * - `ui`: The name of the ui lib.
  * - `uiTags`: The tags for the ui lib.
- * - `utils`: The name of the utils lib.
- * - `utilsTags`: The tags for the utils lib.
+ * - `lib`: The name of the lib.
+ * - `libTags`: The tags for the lib.
  * - `designPath`: The path to the design folder.
  * - `designRoot`: The path to the design folder.
  * - `featuresPath`: The path to the features folder.
@@ -40,7 +39,7 @@ import { folderNames, libName, uiTags, utilsTags } from './constants';
  */
 export function normalizeOptions(
   tree: Tree,
-  options: MobileGeneratorSchema
+  options: MobileGeneratorSchema,
 ): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
   const appsDir = layout.appsDir === '.' ? 'apps' : layout.appsDir;
@@ -48,7 +47,7 @@ export function normalizeOptions(
 
   const name = names(libName).fileName;
   const ui = names(options.uiName).fileName;
-  const utils = names(options.utilsName).fileName;
+  const lib = names(options.libName).fileName;
   const projectDirectory = name;
   const projectRoot = `${libsDir}/${projectDirectory}`;
   const importPath = getImportPath(tree, name);
@@ -79,11 +78,7 @@ export function normalizeOptions(
     projectName: name,
     projectRoot,
 
-    folderNames: {
-      ...folderNames,
-      designUI: ui,
-      designUtils: utils,
-    },
+    folderNames: { ...folderNames, designUI: ui, designLib: lib },
     paths: {
       design: { path: designPath, root: designRoot },
       features: { path: featuresPath, root: featuresRoot },
@@ -92,6 +87,6 @@ export function normalizeOptions(
       stores: { path: storesPath, root: storesRoot },
       utils: { path: utilsPath, root: utilsRoot },
     },
-    tags: { ui: uiTags, utils: utilsTags },
+    tags: { ui: uiTags, lib: libTags },
   };
 }

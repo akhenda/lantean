@@ -12,7 +12,7 @@ const runExecutor: PromiseExecutor<
   return execPackageManagerCommand(
     buildCommand([
       '@react-native-reusables/cli@latest add',
-      (options.component ?? '').length === 0 ? '--all' : options.component,
+      options.component,
       options.overwrite && '--overwrite',
     ]),
     {},

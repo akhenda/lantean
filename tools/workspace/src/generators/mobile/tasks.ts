@@ -59,7 +59,7 @@ function cleanupLib(tree: Tree, libDirectory: string) {
  * @param options The normalized options for the generator.
  */
 function updateBaseTSConfigPaths(tree: Tree, options: NormalizedSchema) {
-  const { designUI: ui, designUtils } = options.folderNames;
+  const { designUI: ui, designLib } = options.folderNames;
   const { design, features, hooks, providers, stores, utils } = options.paths;
 
   addTsConfigPath(tree, `${features.path}/*`, [`${features.root}/*`]);
@@ -68,8 +68,8 @@ function updateBaseTSConfigPaths(tree: Tree, options: NormalizedSchema) {
   addTsConfigPath(tree, `${stores.path}/*`, [`${stores.root}/*`]);
   addTsConfigPath(tree, `${utils.path}/*`, [`${utils.root}/*`]);
   addTsConfigPath(tree, `${design.path}/${ui}/*`, [`${design.root}/${ui}/*`]);
-  addTsConfigPath(tree, `${design.path}/${designUtils}/*`, [
-    `${design.root}/${designUtils}/*`,
+  addTsConfigPath(tree, `${design.path}/${designLib}/*`, [
+    `${design.root}/${designLib}/*`,
   ]);
 }
 
@@ -112,13 +112,13 @@ function addComponentsJson(tree: Tree, options: NormalizedSchema) {
   const componentsJsonPath = join(options.projectRoot, 'components.json');
   if (!tree.exists(componentsJsonPath)) {
     const { design } = options.paths;
-    const { designUI: ui } = options.folderNames;
+    const { designUI: ui, designLib: lib } = options.folderNames;
 
     writeJson(tree, 'components.json', {
       platforms: 'native-only',
       aliases: {
         components: `${design.path}/${ui}/components`,
-        lib: `${design.path}/${ui}/lib`,
+        lib: `${design.path}/${lib}`,
       },
     });
   }
@@ -182,7 +182,7 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
     tree,
     join(options.projectRoot, 'tsconfig.lib.json'),
     (json) => {
-      json.include = getLibTSConfigInclude(folders, json.include);
+      json.include = ['nativewind-env.d.ts', ...getLibTSConfigInclude(folders, json.include)];
       json.exclude = getLibTSConfigExclude(folders, json.exclude);
 
       return json;
@@ -337,7 +337,7 @@ export async function generateMobileLib(tree: Tree, options: NormalizedSchema) {
     projectNameAndRootFormat: 'as-provided',
     setParserOptionsProject: true,
     strict: true,
-    tags: unique([...options.tags.ui, ...options.tags.utils]).join(','),
+    tags: unique([...options.tags.ui, ...options.tags.lib]).join(','),
   });
 
   cleanupLib(tree, options.projectRoot);
