@@ -9,6 +9,11 @@
       "implementation": "./src/executors/web/add-component/executor",
       "schema": "./src/executors/web/add-component/schema.json",
       "description": "Adds a Web (shadcn/ui) component"
+    },
+    "add-mobile-component": {
+      "implementation": "./src/executors/mobile/add-component/executor",
+      "schema": "./src/executors/mobile/add-component/schema.json",
+      "description": "Adds a Mobile (react-native-reusables) component"
     }
   }
 }
