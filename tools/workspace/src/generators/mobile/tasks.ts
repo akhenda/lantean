@@ -21,13 +21,13 @@ import { NormalizedSchema } from './schema';
 import { updateTSConfigCompilerOptions } from '../../utils';
 
 /**
- * Deletes unnecessary files from the Web library.
+ * Deletes unnecessary files from the library.
  *
- * The Web library is created by `@nx/js` and contains unnecessary
+ * The library is created by `@nx/js` and contains unnecessary
  * files such as `package.json` and `src/index.ts` that need to be deleted.
  *
  * @param tree The file system tree.
- * @param libDirectory The directory of the Web library.
+ * @param libDirectory The directory of the library.
  */
 function cleanupLib(tree: Tree, libDirectory: string) {
   tree.delete(`${libDirectory}/package.json`);
@@ -41,7 +41,7 @@ function cleanupLib(tree: Tree, libDirectory: string) {
 }
 
 /**
- * Updates the TSConfig paths for the Web library.
+ * Updates the TSConfig paths for the mobile library.
  *
  * The paths are updated to include the paths for the design, features,
  * hooks, providers, stores, and utils directories.
@@ -65,7 +65,7 @@ function updateBaseTSConfigPaths(tree: Tree, options: NormalizedSchema) {
 }
 
 /**
- * Generates the files for the Web library.
+ * Generates the files for the mobile library.
  *
  * This is a separate function from the main generator so that it can be
  * reused in the update generator.
@@ -84,15 +84,15 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
     tree,
     join(__dirname, 'files'),
     options.projectRoot,
-    templateOptions
+    templateOptions,
   );
 }
 
 /**
- * Generates the `components.json` file for the Web library.
+ * Generates the `components.json` file for the mobile library.
  *
- * This file is used by the `@shadcn/ui` package to configure the
- * Web library.
+ * This file is used by the `react-native-reusables` package to configure the
+ * mobile library.
  *
  * The file is only generated if it does not already exist.
  *
@@ -129,7 +129,7 @@ function addComponentsJson(tree: Tree, options: NormalizedSchema) {
 
 /**
  * Updates the project configuration to include the necessary targets
- * for generating new components, pages, and utilities in the Web library.
+ * for generating new components, pages, and utilities in the mobile library.
  *
  * @param tree The abstract syntax tree of the workspace.
  * @param options The normalized options for the generator.
@@ -139,20 +139,20 @@ function updateProjectConfig(tree: Tree, options: NormalizedSchema) {
     ...readProjectConfiguration(tree, options.projectName),
     targets: {
       'add-component': {
-        executor: `@${options.npmScope}/workspace:add-web-component`,
+        executor: `@${options.npmScope}/workspace:add-mobile-component`,
       },
       'add-page': {
-        executor: `@${options.npmScope}/workspace:add-web-page`,
+        executor: `@${options.npmScope}/workspace:add-mobile-page`,
       },
       'add-util': {
-        executor: `@${options.npmScope}/workspace:add-web-util`,
+        executor: `@${options.npmScope}/workspace:add-mobile-util`,
       },
     },
   });
 }
 
 /**
- * Updates the TSConfig files for the Web library.
+ * Updates the TSConfig files for the mobile library.
  *
  * - The main TSConfig is updated to use the `ESNext` module and
  *   `bundler` module resolution.
@@ -175,7 +175,7 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
         noPropertyAccessFromIndexSignature: false,
         esModuleInterop: true,
       });
-    }
+    },
   );
 
   updateJson<TSConfig>(
@@ -208,7 +208,7 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
       ];
 
       return json;
-    }
+    },
   );
 
   updateJson<TSConfig>(
@@ -238,7 +238,7 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
       ];
 
       return json;
-    }
+    },
   );
 }
 
@@ -310,7 +310,7 @@ export function updatePrettierConfig(tree: Tree) {
 
   let prettierConfig = readJson<Exclude<SchemaForPrettierrc, string>>(
     tree,
-    prettierConfigFile
+    prettierConfigFile,
   );
 
   prettierConfig = {
@@ -325,8 +325,8 @@ export function updatePrettierConfig(tree: Tree) {
  * Updates the root `package.json` to include the necessary scripts for the
  * generator.
  *
- * Adds the `web:component:add` script which allows users to easily add
- * components to their web project.
+ * Adds the `mobile:component:add` script which allows users to easily add
+ * components to their mobile project.
  *
  * @param tree The file system tree.
  */
@@ -335,7 +335,8 @@ function updatePackageJsons(tree: Tree) {
     /* eslint-disable @typescript-eslint/naming-convention */
     packageJson.scripts = {
       ...(packageJson.scripts ?? {}),
-      'web:component:add': 'TS_NODE_PROJECT=tsconfig.base.json bun nx run web:add-component'
+      'mobile:component:add':
+        'TS_NODE_PROJECT=tsconfig.base.json bun nx run mobile:add-component',
     };
     /* eslint-enable @typescript-eslint/naming-convention */
 
@@ -355,15 +356,12 @@ function updatePackageJsons(tree: Tree) {
 }
 
 /**
- * Generates a Web Design System (WDS) library.
+ * Generates a Mobile Design System (MDS) library.
  *
  * @param tree The abstract syntax tree of the workspace.
  * @param options The normalized options for the generator.
  */
-export async function generateWebLib(
-  tree: Tree,
-  options: NormalizedSchema
-) {
+export async function generateMobileLib(tree: Tree, options: NormalizedSchema) {
   await libraryGenerator(tree, {
     name: options.projectName,
     directory: options.projectRoot,

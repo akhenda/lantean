@@ -2,11 +2,11 @@ import { getWorkspaceLayout, names, Tree } from '@nx/devkit';
 
 import { getImportPath, getNpmScope } from '../../utils';
 
-import { NormalizedSchema, WebGeneratorSchema } from './schema';
+import { NormalizedSchema, MobileGeneratorSchema } from './schema';
 import { folderNames, libName, uiTags, utilsTags } from './constants';
 
 /**
- * Normalize options for the Web generator.
+ * Normalize options for the Mobile generator.
  *
  * @param tree The virtual file system tree.
  * @param options The options passed to the generator.
@@ -39,7 +39,7 @@ import { folderNames, libName, uiTags, utilsTags } from './constants';
  */
 export function normalizeOptions(
   tree: Tree,
-  options: WebGeneratorSchema
+  options: MobileGeneratorSchema
 ): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
   const appsDir = layout.appsDir === '.' ? 'apps' : layout.appsDir;

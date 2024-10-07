@@ -1,12 +1,12 @@
 /**
  * Name of the library
  */
-export const libName = 'web';
+export const libName = 'mobile';
 
 /**
  * Common tags for the library
  */
-export const commonTags = ['web'];
+export const commonTags = ['mobile'];
 
 /**
  * Common Design System tags for the library
@@ -39,10 +39,12 @@ export const folderNames = {
  * Dependencies to be installed
  */
 export const dependencies = {
+  '@react-native-async-storage/async-storage': '^2.0.0',
   'class-variance-authority': '^0.7.0',
   clsx: '^2.1.1',
-  'lucide-react': '^0.447.0',
+  'lucide-react-native': '^0.447.0',
   'prettier-plugin-tailwindcss': '^0.6.6',
+  'react-native-svg': '^15.7.1',
   'tailwindcss-animate': '^1.0.7',
   'tailwind-merge': '^2.5.2',
   'usehooks-ts': '^3.1.0',

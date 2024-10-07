@@ -1,7 +1,7 @@
 import { formatFiles, installPackagesTask, Tree } from '@nx/devkit';
 
 import { WebGeneratorSchema } from './schema';
-import { generateUniversalLib, updatePrettierConfig } from './tasks';
+import { generateWebLib, updatePrettierConfig } from './tasks';
 import { normalizeOptions } from './utils';
 
 /**
@@ -16,7 +16,7 @@ import { normalizeOptions } from './utils';
 export async function webGenerator(tree: Tree, schema: WebGeneratorSchema) {
   const options = normalizeOptions(tree, schema);
 
-  await generateUniversalLib(tree, options);
+  await generateWebLib(tree, options);
 
   /**
    * Breaks on Prettier v2
