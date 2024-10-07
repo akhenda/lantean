@@ -99,6 +99,88 @@ export function getImportPath(tree: Tree, dir: string): string {
 }
 
 /**
+ * Creates an array of globs that can be used in a TSConfig's `include` field.
+ *
+ * @param folders The folders to create globs for.
+ * @param exts The file extensions to include.
+ *
+ * @returns An array of globs.
+ */
+export function getTSConfigGlobs(folders: string[] = [], exts: string[] = []) {
+  return folders
+    .map((directory) => exts.map((ext) => `${directory}/**/*.${ext}`))
+    .flat();
+}
+
+/**
+ * Creates a list of unique globs that can be used in a TSConfig's `include` field.
+ *
+ * @param globs The list of globs to include.
+ * @param include The list of existing globs to include.
+ *
+ * @returns A list of unique globs.
+ */
+export function getTSConfigInclude(
+  globs: string[] = [],
+  include: string[] = []
+) {
+  return Array.from(new Set([...include, ...globs]));
+}
+
+/**
+ * Creates a list of unique globs that can be used in a TSConfig's `exclude` field.
+ *
+ * @param globs The list of globs to exclude.
+ * @param exclude The list of existing globs to exclude.
+ *
+ * @returns A list of unique globs.
+ */
+export function getTSConfigExclude(
+  globs: string[] = [],
+  exclude: string[] = []
+) {
+  return Array.from(new Set([...exclude, ...globs]));
+}
+
+/**
+ * Creates a list of unique globs that can be used in a library's TSConfig's `include` field.
+ *
+ * @param folders The list of folders to include.
+ * @param include The list of existing globs to include.
+ * @param extensions The list of file extensions to include.
+ *
+ * @returns A list of unique globs.
+ */
+export function getLibTSConfigInclude(
+  folders: string[] = [],
+  include: TSConfig['include'] = [],
+  extensions = ['ts', 'tsx']
+) {
+  const globs = getTSConfigGlobs(folders, extensions);
+
+  return getTSConfigInclude(globs, include as Array<string>);
+}
+
+/**
+ * Creates a list of unique globs that can be used in a library's TSConfig's `exclude` field.
+ *
+ * @param folders The list of folders to exclude.
+ * @param exclude The list of existing globs to exclude.
+ * @param extensions The list of file extensions to exclude.
+ *
+ * @returns A list of unique globs.
+ */
+export function getLibTSConfigExclude(
+  folders: string[] = [],
+  exclude: TSConfig['exclude'] = [],
+  extensions = ['spec.ts', 'spec.tsx', 'test.ts', 'test.tsx']
+) {
+  const globs = getTSConfigGlobs(folders, extensions);
+
+  return getTSConfigInclude(globs, exclude as Array<string>);
+}
+
+/**
  * Assembles the given list of additional projects into a map of project
  * configurations.
  *
@@ -281,7 +363,7 @@ export const execCommand = (
 export function execPackageManagerCommand(
   command: string,
   options?: CommandOptions,
-  env = '',
+  env = ''
 ) {
   return execCommand(
     buildCommand([

@@ -6,22 +6,22 @@ export const libName = 'web';
 /**
  * Common tags for the library
  */
-export const commonTags = ['web'];
+export const commonTags = ['web'] as const;
 
 /**
  * Common Design System tags for the library
  */
-export const commonDSTags = [...commonTags, 'design', 'ds', 'design-system'];
+export const commonDSTags = [...commonTags, 'design', 'ds', 'design-system'] as const;
 
 /**
  * UI tags for the library
  */
-export const uiTags = [...commonDSTags, 'ui', 'ui-library'];
+export const uiTags = [...commonDSTags, 'ui', 'ui-library'] as const;
 
 /**
  * Utils tags for the library
  */
-export const utilsTags = [...commonDSTags, 'utils', 'utils-library'];
+export const utilsTags = [...commonDSTags, 'utils', 'utils-library'] as const;
 
 /**
  * Folder names
@@ -33,7 +33,7 @@ export const folderNames = {
   providers: 'providers',
   stores: 'stores',
   utils: 'utils',
-};
+} as const;
 
 /**
  * Dependencies to be installed

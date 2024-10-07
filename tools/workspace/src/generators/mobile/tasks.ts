@@ -16,9 +16,18 @@ import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from
 import { addTsConfigPath, libraryGenerator } from '@nx/js';
 import { unique } from 'radash';
 
-import { dependencies, devDependencies, vscodeExtensions } from './constants';
+import {
+  dependencies,
+  devDependencies,
+  folderNames,
+  vscodeExtensions,
+} from './constants';
 import { NormalizedSchema } from './schema';
-import { updateTSConfigCompilerOptions } from '../../utils';
+import {
+  getLibTSConfigExclude,
+  getLibTSConfigInclude,
+  updateTSConfigCompilerOptions,
+} from '../../utils';
 
 /**
  * Deletes unnecessary files from the library.
@@ -84,7 +93,7 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
     tree,
     join(__dirname, 'files'),
     options.projectRoot,
-    templateOptions,
+    templateOptions
   );
 }
 
@@ -103,25 +112,13 @@ function addComponentsJson(tree: Tree, options: NormalizedSchema) {
   const componentsJsonPath = join(options.projectRoot, 'components.json');
   if (!tree.exists(componentsJsonPath)) {
     const { design } = options.paths;
-    const { designUI: ui, designUtils: utils } = options.folderNames;
+    const { designUI: ui } = options.folderNames;
 
     writeJson(tree, 'components.json', {
-      $schema: 'https://ui.shadcn.com/schema.json',
-      style: 'default',
-      rsc: true,
-      tsx: true,
-      tailwind: {
-        config: join(design.root, ui, 'tailwind.config.ts'),
-        css: join(design.root, ui, 'global.css'),
-        baseColor: 'neutral',
-        cssVariables: true,
-      },
+      platforms: 'native-only',
       aliases: {
         components: `${design.path}/${ui}/components`,
-        utils: `${design.path}/${utils}`,
-        ui: `${design.path}/${ui}/components/ui`,
-        // lib: `${design.path}/lib`,
-        // hooks: `${design.path}/hooks`
+        lib: `${design.path}/${ui}/lib`,
       },
     });
   }
@@ -167,6 +164,8 @@ function updateProjectConfig(tree: Tree, options: NormalizedSchema) {
  * @param options The normalized schema options.
  */
 function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
+  const folders = Object.values(folderNames);
+
   updateJson<TSConfig>(
     tree,
     join(options.projectRoot, 'tsconfig.json'),
@@ -174,71 +173,36 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
       return updateTSConfigCompilerOptions(json, {
         noPropertyAccessFromIndexSignature: false,
         esModuleInterop: true,
+        jsx: 'react-native',
       });
-    },
+    }
   );
 
   updateJson<TSConfig>(
     tree,
     join(options.projectRoot, 'tsconfig.lib.json'),
     (json) => {
-      json.include = [
-        ...((json.include ?? []) as Array<string>),
-        'design/**/*.ts',
-        'features/**/*.ts',
-        'hooks/**/*.ts',
-        'providers/**/*.ts',
-        'stores/**/*.ts',
-        'utils/**/*.ts',
-      ];
-      json.exclude = [
-        ...((json.exclude ?? []) as Array<string>),
-        'design/**/*.spec.ts',
-        'design/**/*.test.ts',
-        'features/**/*.spec.ts',
-        'features/**/*.test.ts',
-        'hooks/**/*.spec.ts',
-        'hooks/**/*.test.ts',
-        'providers/**/*.spec.ts',
-        'providers/**/*.test.ts',
-        'stores/**/*.spec.ts',
-        'stores/**/*.test.ts',
-        'utils/**/*.spec.ts',
-        'utils/**/*.test.ts',
-      ];
+      json.include = getLibTSConfigInclude(folders, json.include);
+      json.exclude = getLibTSConfigExclude(folders, json.exclude);
 
       return json;
-    },
+    }
   );
 
   updateJson<TSConfig>(
     tree,
     join(options.projectRoot, 'tsconfig.spec.json'),
     (json) => {
-      json.include = [
-        ...((json.include ?? []) as Array<string>),
-        'design/**/*.test.ts',
-        'design/**/*.spec.ts',
-        'design/**/*.d.ts',
-        'features/**/*.test.ts',
-        'features/**/*.spec.ts',
-        'features/**/*.d.ts',
-        'hooks/**/*.test.ts',
-        'hooks/**/*.spec.ts',
-        'hooks/**/*.d.ts',
-        'providers/**/*.test.ts',
-        'providers/**/*.spec.ts',
-        'providers/**/*.d.ts',
-        'stores/**/*.test.ts',
-        'stores/**/*.spec.ts',
-        'stores/**/*.d.ts',
-        'utils/**/*.test.ts',
-        'utils/**/*.spec.ts',
-        'utils/**/*.d.ts',
-      ];
+      json.include = getLibTSConfigInclude(folders, json.include, [
+        'd.ts',
+        'spec.ts',
+        'spec.tsx',
+        'test.ts',
+        'test.tsx',
+      ]);
 
       return json;
-    },
+    }
   );
 }
 
@@ -310,7 +274,7 @@ export function updatePrettierConfig(tree: Tree) {
 
   let prettierConfig = readJson<Exclude<SchemaForPrettierrc, string>>(
     tree,
-    prettierConfigFile,
+    prettierConfigFile
   );
 
   prettierConfig = {

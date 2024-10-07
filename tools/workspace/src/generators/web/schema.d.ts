@@ -46,8 +46,8 @@ export type LibFolderNames = {
  * The tags of the libs.
  */
 export type LibTags = {
-  ui: string[];
-  utils: string[];
+  ui: readonly string[];
+  utils: readonly string[];
 };
 
 /**

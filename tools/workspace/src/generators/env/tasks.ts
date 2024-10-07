@@ -14,7 +14,12 @@ import { libraryGenerator } from '@nx/js';
 import { JSONSchemaForESLintConfigurationFiles as ESLintConfig } from '@schemastore/package';
 import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
 
-import { getNpmScope, updateTSConfigCompilerOptions } from '../../utils';
+import {
+  getLibTSConfigExclude,
+  getLibTSConfigInclude,
+  getNpmScope,
+  updateTSConfigCompilerOptions,
+} from '../../utils';
 
 import { defaultLibName, envDeps } from './constants';
 import { EnvGeneratorSchema, NormalizedSchema } from './schema';
@@ -49,6 +54,8 @@ export function addDependencies(tree: Tree) {
  * @param options The normalized schema options.
  */
 function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
+  const folders = ['mobile', 'server', 'web'];
+
   updateJson<TSConfig>(
     tree,
     join(options.projectRoot, 'tsconfig.json'),
@@ -59,7 +66,7 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
         noPropertyAccessFromIndexSignature: false,
         esModuleInterop: true,
       });
-    },
+    }
   );
 
   updateJson<TSConfig>(
@@ -67,25 +74,17 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
     join(options.projectRoot, 'tsconfig.lib.json'),
     (json) => {
       json.include = [
-        ...((json.include ?? []) as Array<string>),
-        'mobile/**/*.ts',
-        'web/**/*.ts',
-        'server/**/*.ts',
+        ...getLibTSConfigInclude(folders, json.include, ['ts']),
         './index.ts',
         './utils.ts',
       ];
-      json.exclude = [
-        ...((json.exclude ?? []) as Array<string>),
-        'mobile/**/*.spec.ts',
-        'mobile/**/*.test.ts',
-        'server/**/*.spec.ts',
-        'server/**/*.test.ts',
-        'web/**/*.spec.ts',
-        'web/**/*.test.ts',
-      ];
+      json.exclude = getLibTSConfigExclude(folders, json.exclude, [
+        'spec.ts',
+        'test.ts',
+      ]);
 
       return json;
-    },
+    }
   );
 
   updateJson<TSConfig>(
@@ -93,23 +92,16 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
     join(options.projectRoot, 'tsconfig.spec.json'),
     (json) => {
       json.include = [
-        ...((json.include ?? []) as Array<string>),
-        'mobile/**/*.test.ts',
-        'mobile/**/*.spec.ts',
-        'mobile/**/*.d.ts',
-        'server/**/*.test.ts',
-        'server/**/*.spec.ts',
-        'server/**/*.d.ts',
-        'web/**/*.test.ts',
-        'web/**/*.spec.ts',
-        'web/**/*.d.ts',
+        ...getLibTSConfigInclude(folders, json.include, [
+          'd.ts',
+          'spec.ts',
+          'test.ts',
+        ]),
         'test-setup.ts',
       ];
 
-      return updateTSConfigCompilerOptions(json, {
-        module: 'ESNext',
-      });
-    },
+      return updateTSConfigCompilerOptions(json, { module: 'ESNext' });
+    }
   );
 }
 
@@ -132,7 +124,7 @@ function updateJestConfig(tree: Tree, options: NormalizedSchema) {
     [
       "moduleFileExtensions: ['ts', 'js', 'html'],",
       "setupFilesAfterEnv: ['<rootDir>/test-setup.ts'],",
-    ].join('\n\t'),
+    ].join('\n\t')
   );
 
   // only write the file if something has changed
@@ -163,7 +155,7 @@ export function addLibFiles(tree: Tree, options: NormalizedSchema) {
     tree,
     join(__dirname, 'files'),
     options.projectRoot,
-    templateOptions,
+    templateOptions
   );
 
   tree.delete(join(options.projectRoot, 'src'));
@@ -186,7 +178,7 @@ function updateESLintConfig(tree: Tree, options: NormalizedSchema) {
       }
 
       return json;
-    },
+    }
   );
 }
 
@@ -245,7 +237,7 @@ function updateProjectJson(tree: Tree, options: NormalizedSchema) {
  */
 export async function generateEnvLib(
   tree: Tree,
-  options: EnvGeneratorSchema = { name: defaultLibName },
+  options: EnvGeneratorSchema = { name: defaultLibName }
 ) {
   const normalizedOptions = normalizeOptions(tree, options);
 

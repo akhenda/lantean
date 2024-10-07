@@ -1,6 +1,7 @@
 import { getWorkspaceLayout, names, Tree } from '@nx/devkit';
+import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
 
-import { getImportPath, getNpmScope } from '../../utils';
+import { getImportPath, getNpmScope, getTSConfigGlobs, getTSConfigInclude } from '../../utils';
 
 import { NormalizedSchema, MobileGeneratorSchema } from './schema';
 import { folderNames, libName, uiTags, utilsTags } from './constants';

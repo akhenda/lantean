@@ -16,9 +16,18 @@ import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from
 import { addTsConfigPath, libraryGenerator } from '@nx/js';
 import { unique } from 'radash';
 
-import { dependencies, devDependencies, vscodeExtensions } from './constants';
+import {
+  dependencies,
+  devDependencies,
+  folderNames,
+  vscodeExtensions,
+} from './constants';
 import { NormalizedSchema } from './schema';
-import { updateTSConfigCompilerOptions } from '../../utils';
+import {
+  getLibTSConfigExclude,
+  getLibTSConfigInclude,
+  updateTSConfigCompilerOptions,
+} from '../../utils';
 
 /**
  * Deletes unnecessary files from the Web library.
@@ -167,6 +176,8 @@ function updateProjectConfig(tree: Tree, options: NormalizedSchema) {
  * @param options The normalized schema options.
  */
 function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
+  const folders = Object.values(folderNames);
+
   updateJson<TSConfig>(
     tree,
     join(options.projectRoot, 'tsconfig.json'),
@@ -174,6 +185,7 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
       return updateTSConfigCompilerOptions(json, {
         noPropertyAccessFromIndexSignature: false,
         esModuleInterop: true,
+        jsx: 'react',
       });
     }
   );
@@ -182,30 +194,8 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
     tree,
     join(options.projectRoot, 'tsconfig.lib.json'),
     (json) => {
-      json.include = [
-        ...((json.include ?? []) as Array<string>),
-        'design/**/*.ts',
-        'features/**/*.ts',
-        'hooks/**/*.ts',
-        'providers/**/*.ts',
-        'stores/**/*.ts',
-        'utils/**/*.ts',
-      ];
-      json.exclude = [
-        ...((json.exclude ?? []) as Array<string>),
-        'design/**/*.spec.ts',
-        'design/**/*.test.ts',
-        'features/**/*.spec.ts',
-        'features/**/*.test.ts',
-        'hooks/**/*.spec.ts',
-        'hooks/**/*.test.ts',
-        'providers/**/*.spec.ts',
-        'providers/**/*.test.ts',
-        'stores/**/*.spec.ts',
-        'stores/**/*.test.ts',
-        'utils/**/*.spec.ts',
-        'utils/**/*.test.ts',
-      ];
+      json.include = getLibTSConfigInclude(folders, json.include);
+      json.exclude = getLibTSConfigExclude(folders, json.exclude);
 
       return json;
     }
@@ -215,27 +205,13 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
     tree,
     join(options.projectRoot, 'tsconfig.spec.json'),
     (json) => {
-      json.include = [
-        ...((json.include ?? []) as Array<string>),
-        'design/**/*.test.ts',
-        'design/**/*.spec.ts',
-        'design/**/*.d.ts',
-        'features/**/*.test.ts',
-        'features/**/*.spec.ts',
-        'features/**/*.d.ts',
-        'hooks/**/*.test.ts',
-        'hooks/**/*.spec.ts',
-        'hooks/**/*.d.ts',
-        'providers/**/*.test.ts',
-        'providers/**/*.spec.ts',
-        'providers/**/*.d.ts',
-        'stores/**/*.test.ts',
-        'stores/**/*.spec.ts',
-        'stores/**/*.d.ts',
-        'utils/**/*.test.ts',
-        'utils/**/*.spec.ts',
-        'utils/**/*.d.ts',
-      ];
+      json.include = getLibTSConfigInclude(folders, json.include, [
+        'd.ts',
+        'spec.ts',
+        'spec.tsx',
+        'test.ts',
+        'test.tsx',
+      ]);
 
       return json;
     }
@@ -335,7 +311,8 @@ function updatePackageJsons(tree: Tree) {
     /* eslint-disable @typescript-eslint/naming-convention */
     packageJson.scripts = {
       ...(packageJson.scripts ?? {}),
-      'web:component:add': 'TS_NODE_PROJECT=tsconfig.base.json bun nx run web:add-component'
+      'web:component:add':
+        'TS_NODE_PROJECT=tsconfig.base.json bun nx run web:add-component',
     };
     /* eslint-enable @typescript-eslint/naming-convention */
 
@@ -360,10 +337,7 @@ function updatePackageJsons(tree: Tree) {
  * @param tree The abstract syntax tree of the workspace.
  * @param options The normalized options for the generator.
  */
-export async function generateWebLib(
-  tree: Tree,
-  options: NormalizedSchema
-) {
+export async function generateWebLib(tree: Tree, options: NormalizedSchema) {
   await libraryGenerator(tree, {
     name: options.projectName,
     directory: options.projectRoot,
