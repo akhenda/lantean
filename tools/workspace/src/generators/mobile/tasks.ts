@@ -93,7 +93,7 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
     tree,
     join(__dirname, 'files'),
     options.projectRoot,
-    templateOptions
+    templateOptions,
   );
 }
 
@@ -110,11 +110,12 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
  */
 function addComponentsJson(tree: Tree, options: NormalizedSchema) {
   const componentsJsonPath = join(options.projectRoot, 'components.json');
+
   if (!tree.exists(componentsJsonPath)) {
     const { design } = options.paths;
     const { designUI: ui, designLib: lib } = options.folderNames;
 
-    writeJson(tree, 'components.json', {
+    writeJson(tree, componentsJsonPath, {
       platforms: 'native-only',
       aliases: {
         components: `${design.path}/${ui}/components`,
@@ -131,18 +132,22 @@ function addComponentsJson(tree: Tree, options: NormalizedSchema) {
  * @param tree The abstract syntax tree of the workspace.
  * @param options The normalized options for the generator.
  */
-function updateProjectConfig(tree: Tree, options: NormalizedSchema) {
-  updateProjectConfiguration(tree, options.projectName, {
-    ...readProjectConfiguration(tree, options.projectName),
+function updateProjectConfig(
+  tree: Tree,
+  { npmScope, projectName, projectRoot }: NormalizedSchema,
+) {
+  updateProjectConfiguration(tree, projectName, {
+    ...readProjectConfiguration(tree, projectName),
     targets: {
       'add-component': {
-        executor: `@${options.npmScope}/workspace:add-mobile-component`,
+        executor: `@${npmScope}/workspace:add-mobile-component`,
+        options: { projectRoot },
       },
       'add-page': {
-        executor: `@${options.npmScope}/workspace:add-mobile-page`,
+        executor: `@${npmScope}/workspace:add-mobile-page`,
       },
       'add-util': {
-        executor: `@${options.npmScope}/workspace:add-mobile-util`,
+        executor: `@${npmScope}/workspace:add-mobile-util`,
       },
     },
   });
@@ -175,18 +180,21 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
         esModuleInterop: true,
         jsx: 'react-native',
       });
-    }
+    },
   );
 
   updateJson<TSConfig>(
     tree,
     join(options.projectRoot, 'tsconfig.lib.json'),
     (json) => {
-      json.include = ['nativewind-env.d.ts', ...getLibTSConfigInclude(folders, json.include)];
+      json.include = [
+        'nativewind-env.d.ts',
+        ...getLibTSConfigInclude(folders, json.include),
+      ];
       json.exclude = getLibTSConfigExclude(folders, json.exclude);
 
       return json;
-    }
+    },
   );
 
   updateJson<TSConfig>(
@@ -202,7 +210,7 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
       ]);
 
       return json;
-    }
+    },
   );
 }
 
@@ -274,7 +282,7 @@ export function updatePrettierConfig(tree: Tree) {
 
   let prettierConfig = readJson<Exclude<SchemaForPrettierrc, string>>(
     tree,
-    prettierConfigFile
+    prettierConfigFile,
   );
 
   prettierConfig = {

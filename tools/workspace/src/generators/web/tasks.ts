@@ -93,7 +93,7 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
     tree,
     join(__dirname, 'files'),
     options.projectRoot,
-    templateOptions
+    templateOptions,
   );
 }
 
@@ -110,11 +110,12 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
  */
 function addComponentsJson(tree: Tree, options: NormalizedSchema) {
   const componentsJsonPath = join(options.projectRoot, 'components.json');
+
   if (!tree.exists(componentsJsonPath)) {
     const { design } = options.paths;
     const { designUI: ui, designUtils: utils } = options.folderNames;
 
-    writeJson(tree, 'components.json', {
+    writeJson(tree, componentsJsonPath, {
       $schema: 'https://ui.shadcn.com/schema.json',
       style: 'default',
       rsc: true,
@@ -143,18 +144,22 @@ function addComponentsJson(tree: Tree, options: NormalizedSchema) {
  * @param tree The abstract syntax tree of the workspace.
  * @param options The normalized options for the generator.
  */
-function updateProjectConfig(tree: Tree, options: NormalizedSchema) {
-  updateProjectConfiguration(tree, options.projectName, {
-    ...readProjectConfiguration(tree, options.projectName),
+function updateProjectConfig(
+  tree: Tree,
+  { npmScope, projectName, projectRoot }: NormalizedSchema,
+) {
+  updateProjectConfiguration(tree, projectName, {
+    ...readProjectConfiguration(tree, projectName),
     targets: {
       'add-component': {
-        executor: `@${options.npmScope}/workspace:add-web-component`,
+        executor: `@${npmScope}/workspace:add-web-component`,
+        options: { projectRoot },
       },
       'add-page': {
-        executor: `@${options.npmScope}/workspace:add-web-page`,
+        executor: `@${npmScope}/workspace:add-web-page`,
       },
       'add-util': {
-        executor: `@${options.npmScope}/workspace:add-web-util`,
+        executor: `@${npmScope}/workspace:add-web-util`,
       },
     },
   });
@@ -187,7 +192,7 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
         esModuleInterop: true,
         jsx: 'react',
       });
-    }
+    },
   );
 
   updateJson<TSConfig>(
@@ -198,7 +203,7 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
       json.exclude = getLibTSConfigExclude(folders, json.exclude);
 
       return json;
-    }
+    },
   );
 
   updateJson<TSConfig>(
@@ -214,7 +219,7 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
       ]);
 
       return json;
-    }
+    },
   );
 }
 
@@ -286,7 +291,7 @@ export function updatePrettierConfig(tree: Tree) {
 
   let prettierConfig = readJson<Exclude<SchemaForPrettierrc, string>>(
     tree,
-    prettierConfigFile
+    prettierConfigFile,
   );
 
   prettierConfig = {

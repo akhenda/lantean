@@ -110,6 +110,7 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
  */
 function addComponentsJson(tree: Tree, options: NormalizedSchema) {
   const componentsJsonPath = join(options.projectRoot, 'components.json');
+
   if (!tree.exists(componentsJsonPath)) {
     const { design } = options.paths;
     const { designUI: ui, designUtils: utils } = options.folderNames;

@@ -3,9 +3,10 @@ import { PromiseExecutor } from '@nx/devkit';
 import { WebComponentAddExecutorSchema } from './schema';
 import { buildCommand, execPackageManagerCommand } from '../../../utils';
 
-const runExecutor: PromiseExecutor<
-  WebComponentAddExecutorSchema
-> = async (options, context) => {
+const runExecutor: PromiseExecutor<WebComponentAddExecutorSchema> = async (
+  options,
+  context,
+) => {
   console.log('Executor ran for WebComponentAdd', options);
   if (!context.workspace) return { success: false };
 
@@ -16,7 +17,12 @@ const runExecutor: PromiseExecutor<
       options.overwrite && '--overwrite',
     ]),
     {},
-    'TS_NODE_PROJECT=tsconfig.base.json'
+    [
+      `cp ./${options.projectRoot}/components.json components.json`,
+      '&&',
+      'TS_NODE_PROJECT=tsconfig.base.json',
+    ],
+    ['&&', 'rm components.json'],
   );
 };
 

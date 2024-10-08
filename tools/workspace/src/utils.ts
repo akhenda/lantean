@@ -336,40 +336,33 @@ export const execCommand = (
 };
 
 /**
- * Run a command using the workspace's package manager.
+ * Runs a command with the package manager. The package manager is determined
+ * by the value of the `NX_COMMAND_USE_NPX` environment variable. If the
+ * variable is set to `true`, the package manager is `npx`. Otherwise, the
+ * package manager is determined by the value of the `npm_package_manager`
+ * option in the `nx.json` file.
  *
- * If the `NX_COMMAND_USE_NPX` environment variable is set, the command is
- * run using `npx`. Otherwise, the command is run using the package manager's
- * `dlx` command.
- *
- * @param command The command to run.
- * @param options Options to pass to the command. If `asString` is true, the
- * result is returned as a string. If `asJSON` is true, the result is returned as
- * JSON. If neither are true, the result is returned as an object with `success`
- * and `output` properties.
- *
- * @example
- * execPackageManagerCommand('install jest --save-dev')
- * > { success: true, output: '' }
- *
- * @example
- * execPackageManagerCommand('install jest --save-dev', { asString: true })
- * > 'jest@^28.1.3 installed'
- *
- * @example
- * execPackageManagerCommand('install jest --save-dev', { asJSON: true })
- * > { "success": true, "output": "" }
+ * @param command The command to run with the package manager.
+ * @param options Options to run the command.
+ * @param preCommand The parts of the command to run before the command.
+ * @param postCommand The parts of the command to run after the command.
+ * @returns The result of running the command. If `asString` is true, the result is
+ * returned as a string. If `asJSON` is true, the result is returned as JSON. If
+ * neither are true, the result is returned as an object with `success` and `output`
+ * properties.
  */
 export function execPackageManagerCommand(
   command: string,
   options?: CommandOptions,
-  env = ''
+  preCommand: string[] = [],
+  postCommand: string[] = [],
 ) {
   return execCommand(
     buildCommand([
-      env,
+      ...preCommand,
       process.env.NX_COMMAND_USE_NPX ? 'npx' : getPackageManagerDlxCommand(),
       command,
+      ...postCommand,
     ]),
     options
   );
