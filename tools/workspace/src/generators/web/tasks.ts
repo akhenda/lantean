@@ -297,6 +297,7 @@ export function updatePrettierConfig(tree: Tree) {
   prettierConfig = {
     ...prettierConfig,
     plugins: [...(prettierConfig.plugins ?? []), 'prettier-plugin-tailwindcss'],
+    tailwindFunctions: ["tva"],
   };
 
   writeJson(tree, prettierConfigFile, prettierConfig);

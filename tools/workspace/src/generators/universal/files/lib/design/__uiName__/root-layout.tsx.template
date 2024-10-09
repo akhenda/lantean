@@ -1,0 +1,14 @@
+import { Slot } from 'expo-router';
+
+import { GluestackUIProvider } from './components/ui/gluestack-ui-provider';
+
+// Import your global CSS file
+import '<%= importPath %>/design/<%= uiName %>/global.css'
+
+export default function RootLayout() {
+  return (
+    <GluestackUIProvider>
+      <Slot />
+    </GluestackUIProvider>
+  );
+}

@@ -49,9 +49,9 @@ If your project does not have a `metro.config.js` run `npx expo customize metro.
 const { getDefaultConfig } = require("expo/metro-config");
 const { withNativeWind } = require('nativewind/metro');
 
-const config = getDefaultConfig(__dirname)
+const config = getDefaultConfig(__dirname, { isCSSEnabled: true });
 
-module.exports = withNativeWind(config, { input: '<%= importPath %>/design/<%= uiName %>/global.css' })
+module.exports = withNativeWind(config, { inlineRem: 16, input: '<%= importPath %>/design/<%= uiName %>/global.css' });
 ```
 
 #### 5. Import your CSS file or use the provided `root-layout.tsx` component

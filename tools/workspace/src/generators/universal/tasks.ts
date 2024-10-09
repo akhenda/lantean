@@ -89,16 +89,18 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
     template: '',
   };
 
+  generateFiles(tree, join(__dirname, 'files', 'patches'), '.', templateOptions);
   generateFiles(
     tree,
-    join(__dirname, 'files'),
+    join(__dirname, 'files', 'lib'),
     options.projectRoot,
-    templateOptions
+    templateOptions,
   );
 }
 
 /**
- * Generates the `components.json` file for the Universal library.
+ * Generates the `gluestack-ui-universal.config.json` file for the Universal
+ * library.
  *
  * This file is used by the `@shadcn/ui` package to configure the
  * Universal library.
@@ -109,27 +111,20 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
  * @param options The normalized options for the generator.
  */
 function addComponentsJson(tree: Tree, options: NormalizedSchema) {
-  const componentsJsonPath = join(options.projectRoot, 'components.json');
+  const componentsJsonPath = join('.', 'gluestack-ui-universal.config.json');
 
   if (!tree.exists(componentsJsonPath)) {
     const { design } = options.paths;
-    const { designUI: ui, designUtils: utils } = options.folderNames;
+    const { designUI: ui } = options.folderNames;
 
-    writeJson(tree, 'components.json', {
-      $schema: 'https://ui.shadcn.com/schema.json',
-      style: 'default',
-      rsc: true,
-      tsx: true,
+    writeJson(tree, 'gluestack-ui-universal.config.json', {
       tailwind: {
         config: join(design.root, 'ui', 'tailwind.config.ts'),
         css: join(design.root, 'ui', 'global.css'),
-        baseColor: 'neutral',
-        cssVariables: true,
       },
-      aliases: {
-        components: `${design.path}/${ui}/components`,
-        ui: `${design.path}/${ui}/components/ui`,
-        utils: `${design.path}/${utils}`,
+      app: {
+        components: `${design.path}/${ui}/components/ui`,
+        entry: '',
       },
     });
   }
@@ -166,9 +161,9 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
       return updateTSConfigCompilerOptions(json, {
         noPropertyAccessFromIndexSignature: false,
         esModuleInterop: true,
-        jsx: 'react-native'
+        jsx: 'react-native',
       });
-    }
+    },
   );
 
   updateJson<TSConfig>(
@@ -179,7 +174,7 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
       json.exclude = getLibTSConfigExclude(folders, json.exclude);
 
       return json;
-    }
+    },
   );
 
   updateJson<TSConfig>(
@@ -195,7 +190,7 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
       ]);
 
       return json;
-    }
+    },
   );
 }
 
@@ -267,12 +262,13 @@ export function updatePrettierConfig(tree: Tree) {
 
   let prettierConfig = readJson<Exclude<SchemaForPrettierrc, string>>(
     tree,
-    prettierConfigFile
+    prettierConfigFile,
   );
 
   prettierConfig = {
     ...prettierConfig,
     plugins: [...(prettierConfig.plugins ?? []), 'prettier-plugin-tailwindcss'],
+    tailwindFunctions: ['tva'],
   };
 
   writeJson(tree, prettierConfigFile, prettierConfig);
@@ -286,7 +282,7 @@ export function updatePrettierConfig(tree: Tree) {
  */
 export async function generateUniversalLib(
   tree: Tree,
-  options: NormalizedSchema
+  options: NormalizedSchema,
 ) {
   await libraryGenerator(tree, {
     name: options.projectName,

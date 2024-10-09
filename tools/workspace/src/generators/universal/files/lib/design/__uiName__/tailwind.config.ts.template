@@ -6,6 +6,9 @@ import type { Config } from 'tailwindcss';
 import type { DarkModeConfig } from 'tailwindcss/types/config';
 import gluestackPlugin from '@gluestack-ui/nativewind-utils/tailwind-plugin';
 
+// const DARK_MODE = (process.env.DARK_MODE ? process.env.DARK_MODE : 'media') as 'media' | 'class'
+// if (!['media', 'class'].includes(DARK_MODE)) throw new Error('Invalid dark mode')
+
 export function buildConfig(appDir: string): Config {
   return {
     darkMode: process.env.DARK_MODE

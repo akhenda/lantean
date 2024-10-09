@@ -1,5 +1,6 @@
-import { createGlobPatternsForDependencies } from '@nx/react/tailwind';
 import { join } from 'node:path';
+
+import { createGlobPatternsForDependencies } from '@nx/react/tailwind';
 import TailwindAnimate from 'tailwindcss-animate';
 import type { Config } from 'tailwindcss';
 import { fontFamily } from 'tailwindcss/defaultTheme';
