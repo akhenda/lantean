@@ -51,7 +51,12 @@ export const dependencies = {
   '@react-native-async-storage/async-storage': '^2.0.0',
   'class-variance-authority': '^0.7.0',
   clsx: '^2.1.1',
+  'expo-navigation-bar': '^3.0.7',
+  'expo-router': '^3.5.23',
+  'expo-status-bar': '^1.12.1',
+  'js-cookie': '^3.0.5',
   'lucide-react': '^0.441.0',
+  'lucide-react-native': '^0.447.0',
   nativewind: '^4.1.10',
   'next-themes': '^0.3.0',
   'prettier-plugin-tailwindcss': '^0.6.6',
@@ -69,6 +74,8 @@ export const dependencies = {
  * Dev Dependencies to be installed
  */
 export const devDependencies = {
+  '@types/js-cookie': '^3.0.6',
+  '@types/react-native-web': '^0.19.0',
   tailwindcss: '^3.4.11',
   prettier: '^3.3.3',
 } as const;

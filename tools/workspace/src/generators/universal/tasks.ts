@@ -89,7 +89,12 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
     template: '',
   };
 
-  generateFiles(tree, join(__dirname, 'files', 'patches'), '.', templateOptions);
+  generateFiles(
+    tree,
+    join(__dirname, 'files', 'patches'),
+    'patches',
+    templateOptions,
+  );
   generateFiles(
     tree,
     join(__dirname, 'files', 'lib'),
@@ -170,7 +175,11 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
     tree,
     join(options.projectRoot, 'tsconfig.lib.json'),
     (json) => {
-      json.include = getLibTSConfigInclude(folders, json.include);
+      json.include = [
+        'nativewind-env.d.ts',
+        'next-env.d.ts',
+        ...getLibTSConfigInclude(folders, json.include),
+      ];
       json.exclude = getLibTSConfigExclude(folders, json.exclude);
 
       return json;

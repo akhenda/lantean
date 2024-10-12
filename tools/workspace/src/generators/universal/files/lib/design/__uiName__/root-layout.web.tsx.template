@@ -2,9 +2,11 @@
 
 import { Inter } from 'next/font/google';
 
-import './globals.css';
+import './global.css';
 
 import { GluestackUIProvider } from './components/ui/gluestack-ui-provider';
+import { ThemeProvider } from './components/ui/theme-provider';
+import { useColorScheme } from './hooks/useColorScheme';
 import StyledJsxRegistry from './registry';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -14,13 +16,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { colorScheme: theme } = useColorScheme();
+
   return (
     <html lang="en">
-      <body className={inter.className} style={{ display: 'flex' }}>
-        <StyledJsxRegistry>
-          <GluestackUIProvider mode="light">{children}</GluestackUIProvider>
-        </StyledJsxRegistry>
-      </body>
+      <ThemeProvider>
+        <body className={inter.className} style={{ display: 'flex' }}>
+          <StyledJsxRegistry>
+            <GluestackUIProvider mode={theme}>{children}</GluestackUIProvider>
+          </StyledJsxRegistry>
+        </body>
+      </ThemeProvider>
     </html>
   );
 }

@@ -12,11 +12,9 @@ const runExecutor: PromiseExecutor<
 
   return execPackageManagerCommand(
     buildCommand([
-      'shadcn@latest add',
+      'gluestack-ui@latest add',
       (options.component ?? '').length === 0 ? '--all' : options.component,
       options.overwrite && '--overwrite',
-      '--path=src',
-      `--cwd=${root}`,
     ]),
     {}
   );

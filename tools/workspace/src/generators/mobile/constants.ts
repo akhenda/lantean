@@ -48,7 +48,7 @@ export const dependencies = {
   'expo-router': '^3.5.23',
   'expo-status-bar': '^1.12.1',
   'lucide-react-native': '^0.447.0',
-  'nativewind': '^4.1.10',
+  nativewind: '^4.1.10',
   'prettier-plugin-tailwindcss': '^0.6.6',
   'react-native-reanimated': '^3.15.4',
   'react-native-svg': '^15.7.1',
