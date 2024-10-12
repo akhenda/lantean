@@ -1,0 +1,17 @@
+'use client';
+
+import './global.css';
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body style={{ display: 'flex' }}>
+        {children}
+      </body>
+    </html>
+  );
+}

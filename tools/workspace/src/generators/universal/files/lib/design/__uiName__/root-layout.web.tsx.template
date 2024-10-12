@@ -5,7 +5,6 @@ import { Inter } from 'next/font/google';
 import './global.css';
 
 import { GluestackUIProvider } from './components/ui/gluestack-ui-provider';
-import { ThemeProvider } from './components/ui/theme-provider';
 import { useColorScheme } from './hooks/useColorScheme';
 import StyledJsxRegistry from './registry';
 
@@ -20,13 +19,11 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <ThemeProvider>
-        <body className={inter.className} style={{ display: 'flex' }}>
-          <StyledJsxRegistry>
-            <GluestackUIProvider mode={theme}>{children}</GluestackUIProvider>
-          </StyledJsxRegistry>
-        </body>
-      </ThemeProvider>
+      <body className={inter.className} style={{ display: 'flex' }}>
+        <StyledJsxRegistry>
+          <GluestackUIProvider mode={theme}>{children}</GluestackUIProvider>
+        </StyledJsxRegistry>
+      </body>
     </html>
   );
 }
