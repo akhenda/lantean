@@ -8,6 +8,7 @@ import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Platform } from 'react-native';
 
+import { ThemeToggle } from './components/theme-toggle';
 import { setAndroidNavigationBar } from '../<%= libName %>/utils';
 import { NAV_THEME } from '../<%= libName %>/constants';
 import { useColorScheme } from '../<%= libName %>/hooks';

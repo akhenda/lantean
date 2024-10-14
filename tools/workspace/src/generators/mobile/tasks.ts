@@ -116,7 +116,7 @@ function addComponentsJson(tree: Tree, options: NormalizedSchema) {
     const { designUI: ui, designLib: lib } = options.folderNames;
 
     writeJson(tree, componentsJsonPath, {
-      platforms: 'native-only',
+      // platforms: 'universal',
       aliases: {
         components: `${design.path}/${ui}/components`,
         lib: `${design.path}/${lib}`,
@@ -138,6 +138,7 @@ function updateProjectConfig(
 ) {
   updateProjectConfiguration(tree, projectName, {
     ...readProjectConfiguration(tree, projectName),
+    sourceRoot: projectRoot,
     targets: {
       'add-component': {
         executor: `@${npmScope}/workspace:add-mobile-component`,

@@ -19,7 +19,7 @@ Nativewind, Tailwind & RN Animated are already installed for you.
 Create a `tailwind.config.js` file at the roor of your expo app/project. Then, extend the base tailwind.config.ts file from this shared UI project.
 
 ```js
-const { buildConfig } = require('<%= importPath %>/design/<%= uiName %>//tailwind.config');
+const { buildConfig } = require('<%= importPath %>/design/<%= uiName %>/tailwind.config');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = buildConfig(__dirname);
@@ -49,19 +49,18 @@ If your project does not have a `metro.config.js` run `npx expo customize metro.
 const { getDefaultConfig } = require("expo/metro-config");
 const { withNativeWind } = require('nativewind/metro');
 
-const config = getDefaultConfig(__dirname, { isCSSEnabled: true });
+const config = getDefaultConfig(__dirname);
 
-module.exports = withNativeWind(config, { inlineRem: 16, input: '<%= importPath %>/design/<%= uiName %>/global.css' });
+module.exports = withNativeWind(config, { input: '<%= importPath %>/design/<%= uiName %>/global.css' });
 ```
 
 #### 5. Import your CSS file or use the provided `root-layout.tsx` component
 
 ```js
 // app/_layout.js
-import { Slot } from 'expo-router';
+import '<%= importPath %>/design/<%= uiName %>/global.css';
 
-// Import your global CSS file
-import '<%= importPath %>/design/<%= uiName %>/global.css'
+import { Slot } from 'expo-router';
 
 export default Slot
 ```
@@ -70,6 +69,8 @@ export default Slot
 
 ```js
 // app/_layout.js
+import '<%= importPath %>/design/<%= uiName %>/global.css';
+
 import RootLayout from "<%= importPath %>/design/<%= uiName %>/root-layout";
 
 export default RootLayout
