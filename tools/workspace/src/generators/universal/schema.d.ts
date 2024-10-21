@@ -1,7 +1,7 @@
 /**
  * The options passed to the generator.
  */
-export interface MobileGeneratorSchema {
+export interface UniversalGeneratorSchema {
   uiName: string;
   libName: string;
 }
@@ -53,7 +53,7 @@ export type LibTags = {
 /**
  * The normalized options passed to the generator.
  */
-export interface NormalizedSchema extends MobileGeneratorSchema {
+export interface NormalizedSchema extends UniversalGeneratorSchema {
   name: string;
   npmScope: string;
   npmScopeTitle: string;

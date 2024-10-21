@@ -50,7 +50,7 @@ function cleanupLib(tree: Tree, libDirectory: string) {
 }
 
 /**
- * Updates the TSConfig paths for the mobile library.
+ * Updates the TSConfig paths for the universal library.
  *
  * The paths are updated to include the paths for the design, features,
  * hooks, providers, stores, and utils directories.
@@ -74,7 +74,7 @@ function updateBaseTSConfigPaths(tree: Tree, options: NormalizedSchema) {
 }
 
 /**
- * Generates the files for the mobile library.
+ * Generates the files for the universal library.
  *
  * This is a separate function from the main generator so that it can be
  * reused in the update generator.
@@ -98,10 +98,10 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
 }
 
 /**
- * Generates the `components.json` file for the mobile library.
+ * Generates the `components.json` file for the universal library.
  *
  * This file is used by the `react-native-reusables` package to configure the
- * mobile library.
+ * universal library.
  *
  * The file is only generated if it does not already exist.
  *
@@ -126,7 +126,7 @@ function addComponentsJson(tree: Tree, options: NormalizedSchema) {
 
 /**
  * Updates the project configuration to include the necessary targets
- * for generating new components, pages, and utilities in the mobile library.
+ * for generating new components, pages, and utilities in the universal library.
  *
  * @param tree The abstract syntax tree of the workspace.
  * @param options The normalized options for the generator.
@@ -140,21 +140,21 @@ function updateProjectConfig(
     sourceRoot: projectRoot,
     targets: {
       'add-component': {
-        executor: `@${npmScope}/workspace:add-mobile-component`,
+        executor: `@${npmScope}/workspace:add-universal-component`,
         options: { projectRoot },
       },
       'add-page': {
-        executor: `@${npmScope}/workspace:add-mobile-page`,
+        executor: `@${npmScope}/workspace:add-universal-page`,
       },
       'add-util': {
-        executor: `@${npmScope}/workspace:add-mobile-util`,
+        executor: `@${npmScope}/workspace:add-universal-util`,
       },
     },
   });
 }
 
 /**
- * Updates the TSConfig files for the mobile library.
+ * Updates the TSConfig files for the universal library.
  *
  * - The main TSConfig is updated to use the `ESNext` module and
  *   `bundler` module resolution.
@@ -298,8 +298,8 @@ export function updatePrettierConfig(tree: Tree) {
  * Updates the root `package.json` to include the necessary scripts for the
  * generator.
  *
- * Adds the `mobile:component:add` script which allows users to easily add
- * components to their mobile project.
+ * Adds the `universal:component:add` script which allows users to easily add
+ * components to their universal project.
  *
  * @param tree The file system tree.
  */
@@ -308,8 +308,8 @@ function updatePackageJsons(tree: Tree) {
     /* eslint-disable @typescript-eslint/naming-convention */
     packageJson.scripts = {
       ...(packageJson.scripts ?? {}),
-      'mobile:component:add':
-        'TS_NODE_PROJECT=tsconfig.base.json bun nx run mobile:add-component',
+      'universal:component:add':
+        'TS_NODE_PROJECT=tsconfig.base.json bun nx run universal:add-component',
     };
     /* eslint-enable @typescript-eslint/naming-convention */
 
@@ -329,12 +329,12 @@ function updatePackageJsons(tree: Tree) {
 }
 
 /**
- * Generates a Mobile Design System (MDS) library.
+ * Generates a Universal Design System (UDS) library.
  *
  * @param tree The abstract syntax tree of the workspace.
  * @param options The normalized options for the generator.
  */
-export async function generateMobileLib(tree: Tree, options: NormalizedSchema) {
+export async function generateUniversalLib(tree: Tree, options: NormalizedSchema) {
   await libraryGenerator(tree, {
     name: options.projectName,
     directory: options.projectRoot,

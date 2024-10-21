@@ -1,11 +1,11 @@
 import { formatFiles, installPackagesTask, Tree } from '@nx/devkit';
 
-import { MobileGeneratorSchema } from './schema';
-import { generateMobileLib, updatePrettierConfig } from './tasks';
+import { UniversalGeneratorSchema } from './schema';
+import { generateUniversalLib, updatePrettierConfig } from './tasks';
 import { normalizeOptions } from './utils';
 
 /**
- * Sets up a Mobile Design System (MDS) using shadcn/ui
+ * Sets up a Universal Design System (UDS) using shadcn/ui
  *
  * @param tree The abstract syntax tree of the workspace.
  * @param schema The options passed to the generator.
@@ -13,10 +13,10 @@ import { normalizeOptions } from './utils';
  * @returns A function that will install the required packages and
  * format the workspace.
  */
-export async function mobileGenerator(tree: Tree, schema: MobileGeneratorSchema) {
+export async function universalGenerator(tree: Tree, schema: UniversalGeneratorSchema) {
   const options = normalizeOptions(tree, schema);
 
-  await generateMobileLib(tree, options);
+  await generateUniversalLib(tree, options);
 
   /**
    * Breaks on Prettier v2
@@ -36,4 +36,4 @@ export async function mobileGenerator(tree: Tree, schema: MobileGeneratorSchema)
   };
 }
 
-export default mobileGenerator;
+export default universalGenerator;

@@ -10,10 +10,10 @@
       "schema": "./src/executors/web/add-component/schema.json",
       "description": "Adds a Web (shadcn/ui) component"
     },
-    "add-mobile-component": {
-      "implementation": "./src/executors/mobile/add-component/executor",
-      "schema": "./src/executors/mobile/add-component/schema.json",
-      "description": "Adds a Mobile (react-native-reusables) component"
+    "add-universal-component": {
+      "implementation": "./src/executors/universal/add-component/executor",
+      "schema": "./src/executors/universal/add-component/schema.json",
+      "description": "Adds a Universal (react-native-reusables) component"
     }
   }
 }

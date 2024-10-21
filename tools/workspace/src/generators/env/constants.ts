@@ -18,7 +18,6 @@ export const defaultLibTags = [
   'web',
   'mobile',
   'server',
-  'gluestack',
   'client',
 ];
 

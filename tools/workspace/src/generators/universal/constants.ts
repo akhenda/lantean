@@ -1,12 +1,12 @@
 /**
  * Name of the library
  */
-export const libName = 'mobile';
+export const libName = 'universal';
 
 /**
  * Common tags for the library
  */
-export const commonTags = ['mobile'] as const;
+export const commonTags = ['universal'] as const;
 
 /**
  * Common Design System tags for the library
@@ -86,7 +86,7 @@ export const vscodeExtensions = ['bradlc.vscode-tailwindcss'] as const;
  */
 export const transpilePackages = [
   // internal lib
-  '@lantean/mobile/design/ui-kit',
+  '@lantean/universal/design/ui-kit',
 
   // core
   'react-native',

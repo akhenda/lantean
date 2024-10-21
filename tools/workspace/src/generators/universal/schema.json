@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/schema",
-  "$id": "Mobile",
+  "$id": "Universal",
   "title": "",
   "type": "object",
   "properties": {

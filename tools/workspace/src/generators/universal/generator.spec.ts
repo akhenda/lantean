@@ -1,8 +1,8 @@
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { Tree, installPackagesTask, readProjectConfiguration } from '@nx/devkit';
 
-import { mobileGenerator } from './generator';
-import { MobileGeneratorSchema } from './schema';
+import { universalGenerator } from './generator';
+import { UniversalGeneratorSchema } from './schema';
 
 jest.mock('@nx/devkit', () => ({
   ...jest.requireActual('@nx/devkit'),
@@ -15,26 +15,26 @@ jest.mock('@nx/js', () => ({
   libraryGenerator: jest.fn(),
 }));
 
-describe('mobile generator', () => {
+describe('universal generator', () => {
   let tree: Tree;
-  const options: MobileGeneratorSchema = { uiName: 'ui-kit', libName: 'lib' };
+  const options: UniversalGeneratorSchema = { uiName: 'ui-kit', libName: 'lib' };
 
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();
 
     tree.write('.vscode/settings.json', '{}');
-    tree.write('libs/mobile/tsconfig.json', '{}');
-    tree.write('libs/mobile/tsconfig.lib.json', '{}');
-    tree.write('libs/mobile/tsconfig.spec.json', '{}');
+    tree.write('libs/universal/tsconfig.json', '{}');
+    tree.write('libs/universal/tsconfig.lib.json', '{}');
+    tree.write('libs/universal/tsconfig.spec.json', '{}');
     tree.write(
-      'libs/mobile/project.json',
+      'libs/universal/project.json',
       JSON.stringify({ targets: { build: { options: {} } } }),
     );
   });
 
   it('should run successfully', async () => {
-    const tasks = await mobileGenerator(tree, options);
-    const config = readProjectConfiguration(tree, 'mobile');
+    const tasks = await universalGenerator(tree, options);
+    const config = readProjectConfiguration(tree, 'universal');
 
     expect(tasks).toBeTruthy();
     expect(installPackagesTask).not.toHaveBeenCalled();

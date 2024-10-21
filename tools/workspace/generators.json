@@ -48,17 +48,17 @@
     "gluestack": {
       "factory": "./src/generators/gluestack/generator",
       "schema": "./src/generators/gluestack/schema.json",
-      "description": "gluestack Design System (UDS) Generator"
+      "description": "Gluestack Design System (GDS) Generator"
     },
     "web": {
       "factory": "./src/generators/web/generator",
       "schema": "./src/generators/web/schema.json",
       "description": "Web Design System (WDS) Generator"
     },
-    "mobile": {
-      "factory": "./src/generators/mobile/generator",
-      "schema": "./src/generators/mobile/schema.json",
-      "description": "Mobile Design System (MDS) Generator"
+    "universal": {
+      "factory": "./src/generators/universal/generator",
+      "schema": "./src/generators/universal/schema.json",
+      "description": "Universal Design System (UDS) Generator"
     }
   }
 }
