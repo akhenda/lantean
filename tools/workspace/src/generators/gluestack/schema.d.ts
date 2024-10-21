@@ -1,7 +1,7 @@
 /**
  * The options passed to the generator.
  */
-export interface UniversalGeneratorSchema {
+export interface GluestackGeneratorSchema {
   uiName: string;
   utilsName: string;
 }
@@ -53,7 +53,7 @@ export type LibTags = {
 /**
  * The normalized options passed to the generator.
  */
-export interface NormalizedSchema extends UniversalGeneratorSchema {
+export interface NormalizedSchema extends GluestackGeneratorSchema {
   name: string;
   npmScope: string;
   npmScopeTitle: string;

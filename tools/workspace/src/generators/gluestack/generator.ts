@@ -1,11 +1,11 @@
 import { formatFiles, installPackagesTask, Tree } from '@nx/devkit';
 
-import { UniversalGeneratorSchema } from './schema';
-import { generateUniversalLib, updatePrettierConfig } from './tasks';
+import { GluestackGeneratorSchema } from './schema';
+import { generateGluestackLib, updatePrettierConfig } from './tasks';
 import { normalizeOptions } from './utils';
 
 /**
- * Sets up a Universal Design System (UDS) using Gluestack.io
+ * Sets up a Gluestack Design System (GDS) using Gluestack.io
  *
  * @param tree The abstract syntax tree of the workspace.
  * @param schema The options passed to the generator.
@@ -13,13 +13,13 @@ import { normalizeOptions } from './utils';
  * @returns A function that will install the required packages and
  * format the workspace.
  */
-export async function universalGenerator(
+export async function gluestackGenerator(
   tree: Tree,
-  schema: UniversalGeneratorSchema
+  schema: GluestackGeneratorSchema
 ) {
   const options = normalizeOptions(tree, schema);
 
-  await generateUniversalLib(tree, options);
+  await generateGluestackLib(tree, options);
 
   /**
    * Breaks on Prettier v2
@@ -39,4 +39,4 @@ export async function universalGenerator(
   };
 }
 
-export default universalGenerator;
+export default gluestackGenerator;

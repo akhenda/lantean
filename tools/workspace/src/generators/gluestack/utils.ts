@@ -2,11 +2,11 @@ import { getWorkspaceLayout, names, Tree } from '@nx/devkit';
 
 import { getImportPath, getNpmScope } from '../../utils';
 
-import { NormalizedSchema, UniversalGeneratorSchema } from './schema';
+import { NormalizedSchema, GluestackGeneratorSchema } from './schema';
 import { folderNames, libName, uiTags, utilsTags } from './constants';
 
 /**
- * Normalize options for the Universal generator.
+ * Normalize options for the Gluestack generator.
  *
  * @param tree The virtual file system tree.
  * @param options The options passed to the generator.
@@ -39,7 +39,7 @@ import { folderNames, libName, uiTags, utilsTags } from './constants';
  */
 export function normalizeOptions(
   tree: Tree,
-  options: UniversalGeneratorSchema
+  options: GluestackGeneratorSchema,
 ): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
   const appsDir = layout.appsDir === '.' ? 'apps' : layout.appsDir;
@@ -78,11 +78,7 @@ export function normalizeOptions(
     projectName: name,
     projectRoot,
 
-    folderNames: {
-      ...folderNames,
-      designUI: ui,
-      designUtils: utils,
-    },
+    folderNames: { ...folderNames, designUI: ui, designUtils: utils },
     paths: {
       design: { path: designPath, root: designRoot },
       features: { path: featuresPath, root: featuresRoot },

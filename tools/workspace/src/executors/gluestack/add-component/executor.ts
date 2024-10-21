@@ -1,14 +1,12 @@
 import { PromiseExecutor } from '@nx/devkit';
 
-import { UniversalComponentAddExecutorSchema } from './schema';
+import { GluestackComponentAddExecutorSchema } from './schema';
 import { buildCommand, execPackageManagerCommand } from '../../../utils';
 
 const runExecutor: PromiseExecutor<
-  UniversalComponentAddExecutorSchema
+  GluestackComponentAddExecutorSchema
 > = async (options, context) => {
   if (!context.workspace) return { success: false };
-
-  const { root } = context.workspace.projects[context.projectName];
 
   return execPackageManagerCommand(
     buildCommand([

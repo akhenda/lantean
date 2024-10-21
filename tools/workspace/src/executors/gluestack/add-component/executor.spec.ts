@@ -1,8 +1,8 @@
-import { UniversalComponentAddExecutorSchema } from './schema';
+import { GluestackComponentAddExecutorSchema } from './schema';
 import executor from './executor';
 import * as utils from '../../../utils';
 
-const options = {} as UniversalComponentAddExecutorSchema;
+const options = {} as GluestackComponentAddExecutorSchema;
 const context = utils.createFakeContext({
   workspaceRoot: '/root',
   cwd: process.cwd(),
@@ -14,7 +14,7 @@ const context = utils.createFakeContext({
   ],
 });
 
-describe('UniversalComponentAdd Executor', () => {
+describe('GluestackComponentAdd Executor', () => {
   it('can run', async () => {
     jest
       .spyOn(utils, 'execCommand')

@@ -116,7 +116,6 @@ function addComponentsJson(tree: Tree, options: NormalizedSchema) {
     const { designUI: ui, designLib: lib } = options.folderNames;
 
     writeJson(tree, componentsJsonPath, {
-      // platforms: 'universal',
       aliases: {
         components: `${design.path}/${ui}/components`,
         lib: `${design.path}/${lib}`,

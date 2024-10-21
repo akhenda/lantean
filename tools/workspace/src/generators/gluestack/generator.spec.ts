@@ -1,8 +1,8 @@
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { Tree, installPackagesTask, readProjectConfiguration } from '@nx/devkit';
 
-import { universalGenerator } from './generator';
-import { UniversalGeneratorSchema } from './schema';
+import { gluestackGenerator } from './generator';
+import { GluestackGeneratorSchema } from './schema';
 
 jest.mock('@nx/devkit', () => ({
   ...jest.requireActual('@nx/devkit'),
@@ -15,26 +15,26 @@ jest.mock('@nx/js', () => ({
   libraryGenerator: jest.fn(),
 }));
 
-describe('universal generator', () => {
+describe('gluestack generator', () => {
   let tree: Tree;
-  const options: UniversalGeneratorSchema = { uiName: 'ui-kit', utilsName: 'utils' };
+  const options: GluestackGeneratorSchema = { uiName: 'ui-kit', utilsName: 'utils' };
 
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();
 
     tree.write('.vscode/settings.json', '{}');
-    tree.write('libs/universal/tsconfig.json', '{}');
-    tree.write('libs/universal/tsconfig.lib.json', '{}');
-    tree.write('libs/universal/tsconfig.spec.json', '{}');
+    tree.write('libs/gluestack/tsconfig.json', '{}');
+    tree.write('libs/gluestack/tsconfig.lib.json', '{}');
+    tree.write('libs/gluestack/tsconfig.spec.json', '{}');
     tree.write(
-      'libs/universal/project.json',
+      'libs/gluestack/project.json',
       JSON.stringify({ targets: { build: { options: {} } } }),
     );
   });
 
   it('should run successfully', async () => {
-    const tasks = await universalGenerator(tree, options);
-    const config = readProjectConfiguration(tree, 'universal');
+    const tasks = await gluestackGenerator(tree, options);
+    const config = readProjectConfiguration(tree, 'gluestack');
 
     expect(tasks).toBeTruthy();
     expect(installPackagesTask).not.toHaveBeenCalled();

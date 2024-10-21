@@ -30,13 +30,13 @@ import {
 } from '../../utils';
 
 /**
- * Deletes unnecessary files from the Universal library.
+ * Deletes unnecessary files from the Gluestack library.
  *
- * The Universal library is created by `@nx/js` and contains unnecessary
+ * The Gluestack library is created by `@nx/js` and contains unnecessary
  * files such as `package.json` and `src/index.ts` that need to be deleted.
  *
  * @param tree The file system tree.
- * @param libDirectory The directory of the Universal library.
+ * @param libDirectory The directory of the Gluestack library.
  */
 function cleanupLib(tree: Tree, libDirectory: string) {
   tree.delete(`${libDirectory}/package.json`);
@@ -50,7 +50,7 @@ function cleanupLib(tree: Tree, libDirectory: string) {
 }
 
 /**
- * Updates the TSConfig paths for the Universal library.
+ * Updates the TSConfig paths for the Gluestack library.
  *
  * The paths are updated to include the paths for the design, features,
  * hooks, providers, stores, and utils directories.
@@ -74,7 +74,7 @@ function updateBaseTSConfigPaths(tree: Tree, options: NormalizedSchema) {
 }
 
 /**
- * Generates the files for the Universal library.
+ * Generates the files for the Gluestack library.
  *
  * This is a separate function from the main generator so that it can be
  * reused in the update generator.
@@ -104,11 +104,11 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
 }
 
 /**
- * Generates the `gluestack-ui-universal.config.json` file for the Universal
+ * Generates the `gluestack-ui.config.json` file for the Gluestack
  * library.
  *
  * This file is used by the `@shadcn/ui` package to configure the
- * Universal library.
+ * Gluestack library.
  *
  * The file is only generated if it does not already exist.
  *
@@ -116,13 +116,13 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
  * @param options The normalized options for the generator.
  */
 function addComponentsJson(tree: Tree, options: NormalizedSchema) {
-  const componentsJsonPath = join('.', 'gluestack-ui-universal.config.json');
+  const componentsJsonPath = join('.', 'gluestack-ui.config.json');
 
   if (!tree.exists(componentsJsonPath)) {
     const { design } = options.paths;
     const { designUI: ui } = options.folderNames;
 
-    writeJson(tree, 'gluestack-ui-universal.config.json', {
+    writeJson(tree, 'gluestack-ui.config.json', {
       tailwind: {
         config: join(design.root, 'ui', 'tailwind.config.ts'),
         css: join(design.root, 'ui', 'global.css'),
@@ -137,10 +137,10 @@ function addComponentsJson(tree: Tree, options: NormalizedSchema) {
 
 /**
  * Updates the project configuration to include a new target called
- * `add-component` that runs the `${options.importPath}/add-universal-component`
+ * `add-component` that runs the `${options.importPath}/add-gluestack-component`
  * executor.
  *
- * This target is used to generate new components in the Universal library.
+ * This target is used to generate new components in the Gluestack library.
  *
  * @param tree The abstract syntax tree of the workspace.
  * @param options The normalized options for the generator.
@@ -150,7 +150,7 @@ function updateProjectConfig(tree: Tree, options: NormalizedSchema) {
     ...readProjectConfiguration(tree, options.projectName),
     targets: {
       'add-component': {
-        executor: `@${options.npmScope}/workspace:add-universal-component`,
+        executor: `@${options.npmScope}/workspace:add-gluestack-component`,
       },
     },
   });
@@ -284,12 +284,12 @@ export function updatePrettierConfig(tree: Tree) {
 }
 
 /**
- * Generates a Universal Design System (UDS) library.
+ * Generates a Gluestack Design System (UDS) library.
  *
  * @param tree The abstract syntax tree of the workspace.
  * @param options The normalized options for the generator.
  */
-export async function generateUniversalLib(
+export async function generateGluestackLib(
   tree: Tree,
   options: NormalizedSchema,
 ) {

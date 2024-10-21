@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/schema",
-  "$id": "Universal",
+  "$id": "Gluestack",
   "title": "Configures Gluestack",
-  "description": "Configures a Universal Design System (UDS) using Gluestack.io",
+  "description": "Configures a Gluestack Design System (GDS) using Gluestack.io",
   "type": "object",
   "properties": {
     "uiName": {

@@ -1,12 +1,12 @@
 /**
  * Name of the library
  */
-export const libName = 'universal';
+export const libName = 'gluestack';
 
 /**
  * Common tags for the library
  */
-export const commonTags = ['universal'] as const;
+export const commonTags = ['gluestack'] as const;
 
 /**
  * Common Design System tags for the library

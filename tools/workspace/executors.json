@@ -1,9 +1,9 @@
 {
   "executors": {
-    "add-universal-component": {
-      "implementation": "./src/executors/universal/add-component/executor",
-      "schema": "./src/executors/universal/add-component/schema.json",
-      "description": "Adds a Universal (Gluestack) component"
+    "add-gluestack-component": {
+      "implementation": "./src/executors/gluestack/add-component/executor",
+      "schema": "./src/executors/gluestack/add-component/schema.json",
+      "description": "Adds a gluestack (Gluestack) component"
     },
     "add-web-component": {
       "implementation": "./src/executors/web/add-component/executor",
