@@ -59,6 +59,11 @@
       "factory": "./src/generators/universal/generator",
       "schema": "./src/generators/universal/schema.json",
       "description": "Universal Design System (UDS) Generator"
+    },
+    "universal-expo": {
+      "factory": "./src/generators/universal-expo/generator",
+      "schema": "./src/generators/universal-expo/schema.json",
+      "description": "Expo with Universal Design System (UDS) Generator"
     }
   }
 }

@@ -35,11 +35,12 @@ export function normalizeOptions(
   const libsDir = layout.libsDir === '.' ? 'libs' : layout.libsDir;
   const projectDirectory = `${project}/${name}`;
   const projectRoot = `${libsDir}/${projectDirectory}`;
+  const importPath = getImportPath(tree, name);
 
   return {
     ...options,
     appsDir,
-    importPath: getImportPath(tree, name),
+    importPath,
     libsDir,
     name: eslintLibName,
     parsedTags: eslintLibTags,

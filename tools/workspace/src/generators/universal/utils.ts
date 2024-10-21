@@ -52,6 +52,7 @@ export function normalizeOptions(
   const projectRoot = `${libsDir}/${projectDirectory}`;
   const importPath = getImportPath(tree, name);
   const npmScope = getNpmScope(tree) ?? name;
+  const npmScopeTitle = names(npmScope).className;
 
   const designPath = `${importPath}/design`;
   const designRoot = `${projectRoot}/design`;
@@ -69,11 +70,11 @@ export function normalizeOptions(
   return {
     ...options,
     appsDir,
-    importPath: getImportPath(tree, name),
+    importPath,
     libsDir,
     name: libName,
     npmScope,
-    npmScopeTitle: names(npmScope).className,
+    npmScopeTitle,
     projectDirectory,
     projectName: name,
     projectRoot,

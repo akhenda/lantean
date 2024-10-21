@@ -4,6 +4,7 @@
 export interface UniversalGeneratorSchema {
   uiName: string;
   libName: string;
+  skipFormat: boolean;
 }
 
 /**

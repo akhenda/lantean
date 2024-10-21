@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@expo/cli": "~0.18.13",
+    "@nx/detox": "19.6.4",
     "@nx/devkit": "19.6.4",
     "@nx/eslint": "19.6.4",
     "@nx/eslint-plugin": "19.6.4",
@@ -29,6 +30,7 @@
     "@nx/playwright": "19.6.4",
     "@nx/plugin": "^19.6.4",
     "@nx/workspace": "19.6.4",
+    "@phenomnomnominal/tsquery": "^6.1.3",
     "@playwright/test": "^1.36.0",
     "@schemastore/eslintrc": "^0.0.8",
     "@schemastore/package": "^0.0.10",

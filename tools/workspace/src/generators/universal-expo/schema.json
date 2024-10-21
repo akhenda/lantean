@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "UniversalExpo",
+  "title": "Configures Expo with Universal",
+  "description": "Configures Expo with Universal Design System (UDS)",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The expo app name",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use?"
+    },
+    "displayName": {
+      "type": "string",
+      "description": "The mobile app display name",
+      "$default": {
+        "$source": "argv",
+        "index": 1
+      },
+      "x-prompt": "What display name would you like to use?"
+    },
+    "uiName": {
+      "type": "string",
+      "description": "The name for the Universal UI Lib",
+      "$default": {
+        "$source": "argv",
+        "index": 2
+      },
+      "x-prompt": "What name would you like to use for the ui lib?"
+    },
+    "libName": {
+      "type": "string",
+      "description": "The name for the Universal Utils Lib",
+      "$default": {
+        "$source": "argv",
+        "index": 3
+      },
+      "x-prompt": "What name would you like to use for the lib folder?"
+    }
+  },
+  "required": ["name"]
+}

@@ -56,9 +56,8 @@ export const dependencies = {
   'expo-router': '^3.5.23',
   'expo-status-bar': '^1.12.1',
   'lucide-react-native': '^0.447.0',
-  nativewind: 'canary',
+  nativewind: '4.1.20',
   'next-themes': '^0.3.0',
-  'prettier-plugin-tailwindcss': '^0.6.6',
   'react-native-reanimated': '3.10.1',
   'react-native-screens': '^3.34.0',
   'react-native-svg': '^15.7.1',
@@ -74,6 +73,7 @@ export const dependencies = {
 export const devDependencies = {
   tailwindcss: '^3.4.11',
   prettier: '^3.3.3',
+  'prettier-plugin-tailwindcss': '^0.6.6',
 } as const;
 
 /**

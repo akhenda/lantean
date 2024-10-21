@@ -1,0 +1,6 @@
+const { buildConfig } = require('../../libs/<%= universalLibName %>/design/<%= uiName %>/tailwind.config');
+
+/** @type {import('tailwindcss').Config} */
+const config = buildConfig(__dirname);
+
+module.exports = config;

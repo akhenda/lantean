@@ -25,7 +25,7 @@ export async function universalGenerator(tree: Tree, schema: UniversalGeneratorS
    *
    * TODO(akhenda): Enable later when Prettier v3 is standard
    */
-  await formatFiles(tree);
+  if (!options.skipFormat) await formatFiles(tree);
 
   // We need to call this after we format the files otherwise prettier
   // will fail since the tailwind plugin is not yet installed
@@ -33,6 +33,8 @@ export async function universalGenerator(tree: Tree, schema: UniversalGeneratorS
 
   return () => {
     installPackagesTask(tree);
+
+    return { options }
   };
 }
 
