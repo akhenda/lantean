@@ -100,7 +100,6 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
 }
 
 function updateMetroConfig(tree: Tree, options: NormalizedSchema) {
-  console.log('options: ', options);
   const metroConfigFilePath = join(options.projectRoot, 'metro.config.js');
   const contents = tree.read(metroConfigFilePath).toString();
   const newContents = tsquery.replace(contents, 'ExpressionStatement', (node) => {

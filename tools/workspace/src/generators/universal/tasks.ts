@@ -346,6 +346,7 @@ export async function generateUniversalLib(tree: Tree, options: NormalizedSchema
     projectNameAndRootFormat: 'as-provided',
     setParserOptionsProject: true,
     strict: true,
+    skipFormat: options.skipFormat,
     tags: unique([...options.tags.ui, ...options.tags.lib]).join(','),
   });
 

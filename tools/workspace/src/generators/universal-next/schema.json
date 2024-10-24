@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "UniversalNext",
+  "title": "Configures Next.js with Universal",
+  "description": "Configures Next.js with Universal Design System (UDS)",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The Next.js app name",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use?"
+    },
+    "displayName": {
+      "type": "string",
+      "description": "The mobile app display name",
+      "$default": {
+        "$source": "argv",
+        "index": 1
+      },
+      "x-prompt": "What display name would you like to use?"
+    },
+    "uiName": {
+      "type": "string",
+      "description": "The name for the Universal UI Lib",
+      "$default": {
+        "$source": "argv",
+        "index": 2
+      },
+      "x-prompt": "What name would you like to use for the ui lib?"
+    },
+    "libName": {
+      "type": "string",
+      "description": "The name for the Universal Utils Lib",
+      "$default": {
+        "$source": "argv",
+        "index": 3
+      },
+      "x-prompt": "What name would you like to use for the lib folder?"
+    }
+  },
+  "required": ["name"]
+}
