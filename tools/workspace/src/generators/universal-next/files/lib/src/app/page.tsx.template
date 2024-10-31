@@ -1,0 +1,13 @@
+'use client';
+
+import RickyScreen from '<%= universalLibImportPath %>/features/ricky';
+
+function Page() {
+  return (
+    <div className="w-full h-full flex items-center justify-center bg-secondary/30">
+      <RickyScreen />
+    </div>
+  );
+}
+
+export default Page;

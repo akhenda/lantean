@@ -21,7 +21,9 @@ export const libTags = [...commonTags, 'universal-next'] as const;
 /**
  * Dependencies to be installed
  */
-export const dependencies = {} as const;
+export const dependencies = {
+  'patch-package': '^8.0.0',
+} as const;
 
 /**
  * Dev Dependencies to be installed

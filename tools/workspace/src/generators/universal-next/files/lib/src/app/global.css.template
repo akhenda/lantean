@@ -85,4 +85,8 @@
     --radius: 0.5rem;
   }
 }
-# Original Styles Here
+
+html {
+  @apply h-dvh;
+}
+/* Original Styles Here */

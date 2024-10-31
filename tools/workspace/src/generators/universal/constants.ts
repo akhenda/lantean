@@ -86,7 +86,7 @@ export const vscodeExtensions = ['bradlc.vscode-tailwindcss'] as const;
  */
 export const transpilePackages = [
   // internal lib
-  '@lantean/universal/design/ui-kit',
+  // e.g. '@lantean/universal/design/ui-kit',
 
   // core
   'react-native',

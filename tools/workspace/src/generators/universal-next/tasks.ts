@@ -18,29 +18,17 @@ import { normalizeOptions } from './utils';
 
 import universalGenerator from '../universal/generator';
 import { buildCommand, execCommand } from '../../utils';
-import { transpilePackages } from '../universal/constants';
 import { VariableDeclaration } from 'typescript';
 
 function cleanupLib(tree: Tree, appDirectory: string) {
-  // tree.write(
-  //   `${appDirectory}/src/__tests__/welcome.spec.tsx`,
-  //   tree.read(`${appDirectory}/src/app/App.spec.tsx`),
-  // );
   tree.write(
     `${appDirectory}/src/app/nx/page.tsx`,
     tree.read(`${appDirectory}/src/app/page.tsx`),
   );
-  // tree.write(
-  //   `${appDirectory}/src/app/nx/layout.tsx`,
-  //   tree.read(`${appDirectory}/src/app/layout.tsx`),
-  // );
   tree.write(
     `${appDirectory}/src/app/global.css.orig`,
     tree.read(`${appDirectory}/src/app/global.css`),
   );
-  // tree.delete(`${appDirectory}/index.js`);
-  // tree.delete(`${appDirectory}/src/app/App.tsx`);
-  // tree.delete(`${appDirectory}/src/app/App.spec.tsx`);
 }
 
 function addLibFiles(tree: Tree, options: NormalizedSchema) {
@@ -52,7 +40,13 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
 
   generateFiles(
     tree,
-    join(__dirname, 'files'),
+    join(__dirname, 'files', 'patches'),
+    'patches',
+    templateOptions,
+  );
+  generateFiles(
+    tree,
+    join(__dirname, 'files', 'lib'),
     options.projectRoot,
     templateOptions,
   );
@@ -66,7 +60,7 @@ function updateGlobalCSS(tree: Tree, options: NormalizedSchema) {
     .read(filePath)
     .toString()
     .replace(
-      '# Original Styles Here',
+      '/* Original Styles Here */',
       tree
         .read(originalFilePath)
         .toString()
@@ -95,7 +89,8 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
 function updateNextConfig(tree: Tree, options: NormalizedSchema) {
   let newConfig;
 
-  const nextConfigFilePath = join(options.projectRoot, 'next.config.js');
+  const { uiName, libName, projectRoot, universalLibImportPath } = options;
+  const nextConfigFilePath = join(projectRoot, 'next.config.js');
   const config = tree.read(nextConfigFilePath).toString();
 
   // Create the `const { withExpo } = require('@expo/next-adapter');` statement
@@ -126,7 +121,19 @@ function updateNextConfig(tree: Tree, options: NormalizedSchema) {
   if (nextConfigNode) {
     // Extract the existing `nextConfig` object as a string
     const existingConfigText = nextConfigNode.initializer.getText();
+    const transpilePackages = [
+      // internal libs
+      `${universalLibImportPath}/design/${uiName}`,
+      `${universalLibImportPath}/design/${libName}`,
+      `${universalLibImportPath}/features`,
 
+      // core libs
+      'expo',
+      'nativewind',
+      'react-native',
+      'react-native-css-interop',
+      'react-native-web',
+    ]
     // Create the additional properties
     const additionalConfig = `
     reactStrictMode: true,
@@ -142,88 +149,31 @@ function updateNextConfig(tree: Tree, options: NormalizedSchema) {
     newConfig = newConfig.replace(nextConfigNode.getFullText(), nextConfig);
   }
 
-  console.log('newConfig: ', newConfig);
-
-  // const newContents = tsquery
-  //   .replace(
-  //     contents,
-  //     'VariableDeclaration[name.name="nextConfig"]',
-  //     (node) => {
-  //       const text = node.getText();
-  //       console.log('text: ', text);
-
-  //       if (text.includes('nextConfig = {')) {
-  //         const result = tsquery.replace(
-  //           text,
-  //           'ObjectLiteralExpression:nth-child(1)',
-  //           (n) => {
-  //             console.log('n: ', n.getText());
-  //             return `withExpo(${n.getText()});`;
-  //           },
-  //         );
-
-  //         console.log('result: ', result);
-
-  //         // const newText = text
-  //         //   .replace('nextConfig = {', 'nextConfig = withExpo({')
-  //         //   .replace('};', '});');
-
-  //         // console.log('newText: ', newText);
-
-  //         // tsquery.replace(
-  //         //   newText,
-  //         //   'ObjectLiteralExpression > PropertyAssignment[name.name=transpilePackages]',
-  //         //   (nextConfig) => {
-  //         //     return `${nextConfig},
-  //         //       transpilePackages: ${JSON.stringify(transpilePackages)}
-  //         //     `;
-  //         //   },
-  //         // );
-
-  //         tsquery.replace(
-  //           text,
-  //           'ObjectLiteralExpression > PropertyAssignment[name.name="nx"]',
-  //           (nextConfig) => {
-  //             return `${nextConfig},
-  //             reactStrictMode: true,
-  //             swcMinify: true,
-  //             experimental: { forceSwcTransforms: true },
-  //             transpilePackages: ${JSON.stringify(transpilePackages)}
-  //           `;
-  //           },
-  //         );
-
-  //         return text;
-  //       }
-  //       // return undefined does not replace anything
-  //     },
-  //   )
-  //   .replace(
-  //     "const { composePlugins, withNx } = require('@nx/next');",
-  //     `const { composePlugins, withNx } = require('@nx/next');
-  //     const { withExpo } = require('@expo/next-adapter');`,
-  //   );
-
-  // console.log(newContents);
-
   // only write the file if something has changed
   if (newConfig !== config) tree.write(nextConfigFilePath, newConfig);
 }
 
-function updatePackageJsons(tree: Tree, options: NormalizedSchema) {
-  // updateJson(tree, join(options.projectRoot, 'package.json'), (packageJson) => {
-  //   /* eslint-disable */
-  //   /* eslint-disable sort-keys-fix/sort-keys-fix */
-  //   return {
-  //     name: packageJson.name,
-  //     version: packageJson.version,
-  //     private: packageJson.private,
-  //     scripts: packageJson.scripts,
-  //     ...packageJson,
-  //   };
-  //   /* eslint-enable sort-keys-fix/sort-keys-fix */
-  //   /* eslint-enable */
-  // });
+function updatePackageJsons(tree: Tree) {
+  updateJson(tree, 'package.json', (packageJson) => {
+    packageJson.scripts = {
+      ...(packageJson.scripts ?? {}),
+      postinstall: 'patch-package'
+    };
+
+    /* eslint-disable */
+    /* eslint-disable sort-keys-fix/sort-keys-fix */
+    return {
+      name: packageJson.name,
+      version: packageJson.version,
+      private: packageJson.private,
+      license: packageJson.license,
+      workspaces: packageJson.workspaces,
+      scripts: packageJson.scripts,
+      ...packageJson,
+    };
+    /* eslint-enable sort-keys-fix/sort-keys-fix */
+    /* eslint-enable */
+  });
 }
 
 function addDependencies(tree: Tree) {
@@ -246,7 +196,7 @@ export async function generateNextUniversalApp(
   tree: Tree,
   schema: UniversalNextGeneratorSchema,
 ) {
-  const skipFormat = true;
+  const skipFormat = false;
   const { uiName, libName } = normalizeOptions(tree, schema, {});
   const result = await universalGenerator(tree, {
     uiName,
@@ -276,6 +226,6 @@ export async function generateNextUniversalApp(
   updateGlobalCSS(tree, options);
   updateTSConfigs(tree, options);
   updateNextConfig(tree, options);
-  updatePackageJsons(tree, options);
+  updatePackageJsons(tree);
   addDependencies(tree);
 }
