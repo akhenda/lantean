@@ -17,8 +17,7 @@ import { NormalizedSchema, UniversalNextGeneratorSchema } from './schema';
 import { normalizeOptions } from './utils';
 
 import universalGenerator from '../universal/generator';
-import { buildCommand, execCommand } from '../../utils';
-import { VariableDeclaration } from 'typescript';
+import { CallExpression, VariableDeclaration } from 'typescript';
 
 function cleanupLib(tree: Tree, appDirectory: string) {
   tree.write(
@@ -79,7 +78,11 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
     join(options.projectRoot, 'tsconfig.json'),
     (json) => {
       json.compilerOptions.jsxImportSource = 'nativewind';
-      json.include = [...(json.include as string[]), 'nativewind-env.d.ts'];
+      json.include = [
+        ...(json.include as string[]),
+        'nativewind-env.d.ts',
+        '.next/types/**/*.ts',
+      ];
 
       return json;
     },
@@ -133,7 +136,7 @@ function updateNextConfig(tree: Tree, options: NormalizedSchema) {
       'react-native',
       'react-native-css-interop',
       'react-native-web',
-    ]
+    ];
     // Create the additional properties
     const additionalConfig = `
     reactStrictMode: true,
@@ -157,7 +160,7 @@ function updatePackageJsons(tree: Tree) {
   updateJson(tree, 'package.json', (packageJson) => {
     packageJson.scripts = {
       ...(packageJson.scripts ?? {}),
-      postinstall: 'patch-package'
+      postinstall: 'patch-package',
     };
 
     /* eslint-disable */
@@ -180,16 +183,68 @@ function addDependencies(tree: Tree) {
   addDependenciesToPackageJson(tree, dependencies, devDependencies);
 }
 
-export function installAFewUniversalComponents() {
-  const commands = [
-    'bun nx run universal:add-component avatar',
-    'bun nx run universal:add-component button',
-    'bun nx run universal:add-component card',
-    'bun nx run universal:add-component progress',
-    'bun nx run universal:add-component tooltip',
-  ];
+function updateEslintConfig(tree: Tree, options: NormalizedSchema) {
+  const contents = tree
+    .read(join(options.projectRoot, '.eslintrc.json'))
+    .toString();
 
-  return execCommand(buildCommand([...commands.join(' && ').split(' ')]));
+  const newContents = contents.replace(
+    'apps/books/tsconfig.*?.json',
+    'apps/books/tsconfig?.*?.json',
+  );
+
+  if (newContents !== contents) {
+    tree.write(join(options.projectRoot, '.eslintrc.json'), newContents);
+  }
+}
+
+export function updateProgressUniversalComponent(
+  tree: Tree,
+  options: NormalizedSchema,
+) {
+  const isDryRun = process.env.NX_DRY_RUN === 'true';
+  const { uiName, libsDir, universalLibName } = options;
+
+  if (isDryRun) return;
+
+  // The "Progress" RNR component needs a dependency array to run on web
+  // This is because it uses the useAnimatedStyle hook.
+  const progressComponentPath = join(
+    libsDir,
+    universalLibName,
+    'design',
+    uiName,
+    'components',
+    'ui',
+    'progress.tsx',
+  );
+
+  // Step 1: Read the code
+  const progressSource = tree.read(progressComponentPath)?.toString() ?? '';
+
+  // Step 2: Find the `useAnimatedStyle` call
+  const [useAnimatedStyleCall] = tsquery(
+    progressSource,
+    'CallExpression:has(Identifier[name="useAnimatedStyle"])',
+  ) as CallExpression[];
+
+  if (useAnimatedStyleCall) {
+    // Step 3: Check if it already has a second argument (dependency array)
+    const args = useAnimatedStyleCall.arguments;
+
+    if (args.length < 2) {
+      // Add the `[progress]` dependency array as the second argument
+      const updatedCode =
+        progressSource.slice(0, useAnimatedStyleCall.getEnd() - 1) +
+        `, [progress])` +
+        progressSource.slice(useAnimatedStyleCall.getEnd());
+
+      // Step 4: Write the updated code
+      tree.write(progressComponentPath, updatedCode);
+    } else {
+      console.log('Dependency array already exists');
+    }
+  }
 }
 
 export async function generateNextUniversalApp(
@@ -228,4 +283,8 @@ export async function generateNextUniversalApp(
   updateNextConfig(tree, options);
   updatePackageJsons(tree);
   addDependencies(tree);
+  updateEslintConfig(tree, options);
+  updateProgressUniversalComponent(tree, options);
+
+  return options;
 }

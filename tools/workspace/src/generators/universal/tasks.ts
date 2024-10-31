@@ -24,6 +24,8 @@ import {
 } from './constants';
 import { NormalizedSchema } from './schema';
 import {
+  buildCommand,
+  execCommand,
   getLibTSConfigExclude,
   getLibTSConfigInclude,
   updateTSConfigCompilerOptions,
@@ -288,7 +290,7 @@ export function updatePrettierConfig(tree: Tree) {
   prettierConfig = {
     ...prettierConfig,
     plugins: [...(prettierConfig.plugins ?? []), 'prettier-plugin-tailwindcss'],
-    tailwindFunctions: ["tva"],
+    tailwindFunctions: ['tva'],
   };
 
   writeJson(tree, prettierConfigFile, prettierConfig);
@@ -329,12 +331,53 @@ function updatePackageJsons(tree: Tree) {
 }
 
 /**
+ * Installs a few components in a Universal Design System (UDS) library.
+ *
+ * The following components are installed:
+ *
+ * - Avatar
+ * - Button
+ * - Card
+ * - Progress
+ * - Tooltip
+ *
+ * The `NX_DRY_RUN` environment variable can be set to `true` to prevent the
+ * task from running. The `projectName` option is used to determine the name
+ * of the library to install the components in.
+ *
+ * @param options The normalized options for the generator.
+ */
+export function installAFewUniversalComponents(universalLibName: string) {
+  const isDryRun = process.env.NX_DRY_RUN === 'true';
+  const commands = [
+    `bun nx run ${universalLibName}:add-component avatar`,
+    `bun nx run ${universalLibName}:add-component button`,
+    `bun nx run ${universalLibName}:add-component card`,
+    `bun nx run ${universalLibName}:add-component progress`,
+    `bun nx run ${universalLibName}:add-component tooltip`,
+  ];
+
+  try {
+    execCommand(
+      buildCommand([...commands.join(' && ').split(' ')]),
+      { asString: false, asJSON: false },
+      isDryRun,
+    );
+  } catch (error) {
+    console.log('There was a problem installing universal components.');
+  }
+}
+
+/**
  * Generates a Universal Design System (UDS) library.
  *
  * @param tree The abstract syntax tree of the workspace.
  * @param options The normalized options for the generator.
  */
-export async function generateUniversalLib(tree: Tree, options: NormalizedSchema) {
+export async function generateUniversalLib(
+  tree: Tree,
+  options: NormalizedSchema,
+) {
   await libraryGenerator(tree, {
     name: options.projectName,
     directory: options.projectRoot,

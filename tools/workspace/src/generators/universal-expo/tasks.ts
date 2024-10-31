@@ -17,7 +17,6 @@ import { NormalizedSchema, UniversalExpoGeneratorSchema } from './schema';
 import { normalizeOptions } from './utils';
 
 import universalGenerator from '../universal/generator';
-import { buildCommand, execCommand } from '../../utils';
 
 function cleanupLib(tree: Tree, appDirectory: string) {
   tree.write(
@@ -129,8 +128,6 @@ function updateMetroConfig(tree: Tree, options: NormalizedSchema) {
       const { withNativeWind } = require('nativewind/metro');`,
   );
 
-  console.log(newContents);
-
   // only write the file if something has changed
   if (newContents !== contents) tree.write(metroConfigFilePath, newContents);
 }
@@ -154,18 +151,6 @@ function updatePackageJsons(tree: Tree, options: NormalizedSchema) {
 
 function addDependencies(tree: Tree) {
   addDependenciesToPackageJson(tree, dependencies, devDependencies);
-}
-
-export function installAFewUniversalComponents() {
-  const commands = [
-    'bun nx run universal:add-component avatar',
-    'bun nx run universal:add-component button',
-    'bun nx run universal:add-component card',
-    'bun nx run universal:add-component progress',
-    'bun nx run universal:add-component tooltip',
-  ];
-
-  return execCommand(buildCommand([...commands.join(' && ').split(' ')]))
 }
 
 export async function generateExpoUniversalApp(
@@ -199,4 +184,6 @@ export async function generateExpoUniversalApp(
   updateMetroConfig(tree, options);
   updatePackageJsons(tree, options);
   addDependencies(tree);
+
+  return options;
 }

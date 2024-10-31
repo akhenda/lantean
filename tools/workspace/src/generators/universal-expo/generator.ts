@@ -1,15 +1,21 @@
 import { formatFiles, installPackagesTask, Tree } from '@nx/devkit';
 
 import { UniversalExpoGeneratorSchema } from './schema';
-import { generateExpoUniversalApp, installAFewUniversalComponents } from './tasks';
+import { generateExpoUniversalApp } from './tasks';
 
-export async function universalExpoGenerator(tree: Tree, schema: UniversalExpoGeneratorSchema) {
-  await generateExpoUniversalApp(tree, schema);
+import { installAFewUniversalComponents } from '../universal/tasks';
+
+export async function universalExpoGenerator(
+  tree: Tree,
+  schema: UniversalExpoGeneratorSchema,
+) {
+  const options = await generateExpoUniversalApp(tree, schema);
+
   await formatFiles(tree);
 
   return () => {
     installPackagesTask(tree);
-    installAFewUniversalComponents()
+    installAFewUniversalComponents(options.universalLibName);
   };
 }
 
