@@ -1,0 +1,3 @@
+import NXLayout from '<%= universalLibImportPath %>/design/<%= uiName %>/layouts/nx';
+
+export default NXLayout;

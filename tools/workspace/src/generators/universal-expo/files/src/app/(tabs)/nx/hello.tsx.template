@@ -1,0 +1,3 @@
+import HelloScreen from '<%= universalLibImportPath %>/features/hello';
+
+export default HelloScreen;

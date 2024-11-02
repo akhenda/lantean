@@ -1,0 +1,3 @@
+import HTMLLayout from '<%= universalLibImportPath %>/design/<%= uiName %>/layouts/html';
+
+export default HTMLLayout;

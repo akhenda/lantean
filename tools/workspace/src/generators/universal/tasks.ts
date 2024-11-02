@@ -120,7 +120,7 @@ function addComponentsJson(tree: Tree, options: NormalizedSchema) {
     writeJson(tree, componentsJsonPath, {
       aliases: {
         components: `${design.path}/${ui}/components`,
-        lib: `${design.path}/${lib}`,
+        lib: `libs/${options.projectName}/design/${lib}`,
       },
     });
   }
@@ -353,8 +353,11 @@ export function installAFewUniversalComponents(universalLibName: string) {
     `bun nx run ${universalLibName}:add-component avatar`,
     `bun nx run ${universalLibName}:add-component button`,
     `bun nx run ${universalLibName}:add-component card`,
+    `bun nx run ${universalLibName}:add-component input`,
     `bun nx run ${universalLibName}:add-component progress`,
+    `bun nx run ${universalLibName}:add-component select`,
     `bun nx run ${universalLibName}:add-component tooltip`,
+    `bun nx run ${universalLibName}:add-component typography`,
   ];
 
   try {

@@ -45,7 +45,9 @@ export const folderNames = {
  */
 export const dependencies = {
   '@expo/next-adapter': '^6.0.0',
+  '@gorhom/bottom-sheet': '^5.0.5',
   '@react-native-async-storage/async-storage': '^2.0.0',
+  '@react-navigation/material-top-tabs': '^6.6.14',
   '@react-navigation/native': '^6.1.18',
   '@rn-primitives/portal': '^1.0.4',
   'class-variance-authority': '^0.7.0',
@@ -58,6 +60,8 @@ export const dependencies = {
   'lucide-react-native': '^0.447.0',
   nativewind: '4.1.20',
   'next-themes': '^0.3.0',
+  'react-native-gesture-handler': '^2.20.2',
+  'react-native-pager-view': '6.3.0',
   'react-native-reanimated': '3.10.1',
   'react-native-screens': '^3.34.0',
   'react-native-svg': '^15.7.1',

@@ -1,11 +1,7 @@
 import { formatFiles, installPackagesTask, Tree } from '@nx/devkit';
 
 import { UniversalGeneratorSchema } from './schema';
-import {
-  generateUniversalLib,
-  installAFewUniversalComponents,
-  updatePrettierConfig,
-} from './tasks';
+import { generateUniversalLib, updatePrettierConfig } from './tasks';
 import { normalizeOptions } from './utils';
 
 /**
@@ -40,7 +36,6 @@ export async function universalGenerator(
 
   return () => {
     installPackagesTask(tree);
-    installAFewUniversalComponents(options.projectName);
 
     return { options };
   };

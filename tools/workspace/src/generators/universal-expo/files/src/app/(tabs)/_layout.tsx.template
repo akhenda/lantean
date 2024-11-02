@@ -1,0 +1,3 @@
+import TabsLayout from '<%= universalLibImportPath %>/design/<%= uiName %>/layouts/tabs';
+
+export default TabsLayout;
