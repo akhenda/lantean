@@ -37,12 +37,8 @@ import { normalizeOptions } from './utils';
  */
 export function hasFlatConfig(tree: Tree) {
   if (!tree.exists(eslintConfigFile) && !tree.exists('eslint.config.js')) {
-    console.error(
-      `Sheriff needs this NX Monorepo to be converted to Eslint Flat Config.`,
-    );
-    console.error(
-      `Try to convert it first using nx g @nx/eslint:convert-to-flat-config`,
-    );
+    console.error(`Sheriff needs this NX Monorepo to be converted to Eslint Flat Config.`);
+    console.error(`Try to convert it first using nx g @nx/eslint:convert-to-flat-config`);
 
     return false;
   }
@@ -70,12 +66,7 @@ export function addLibFiles(tree: Tree, options: NormalizedSchema) {
     template: '',
   };
 
-  generateFiles(
-    tree,
-    join(__dirname, 'files'),
-    options.projectRoot,
-    templateOptions,
-  );
+  generateFiles(tree, join(__dirname, 'files'), options.projectRoot, templateOptions);
 }
 
 /**
@@ -255,10 +246,7 @@ function updateVSCodeSettings(tree: Tree) {
     updateJson(tree, extensionsFilePath, (extensionsJson) => {
       return {
         ...extensionsJson,
-        recommendations: unique([
-          ...extensionsJson.recommendations,
-          ...vscodeExtensions,
-        ]),
+        recommendations: unique([...extensionsJson.recommendations, ...vscodeExtensions]),
       };
     });
   } else {
@@ -273,6 +261,7 @@ function updateVSCodeSettings(tree: Tree) {
 
       'files.eol': '\n',
       'editor.tabSize': 2,
+      'editor.insertSpaces': true,
 
       'search.exclude': {
         'yarn.lock': true,
@@ -323,21 +312,12 @@ function updateVSCodeSettings(tree: Tree) {
       // so enable linting for these files
       // Also JSONC eslint plugin needs it
       // https://github.com/ota-meshi/eslint-plugin-jsonc#visual-studio-code
-      'eslint.validate': [
-        'javascript',
-        'javascriptreact',
-        'vue',
-        'typescript',
-        'typescriptreact',
-        'json5',
-      ],
+      'eslint.validate': ['javascript', 'javascriptreact', 'vue', 'typescript', 'typescriptreact', 'json5'],
 
       'css.customData': [`.vscode/${vscodeCSSSettingsFile}`],
       'files.associations': { '*.css': 'tailwindcss' },
 
-      'tailwindCSS.experimental.classRegex': [
-        ['tva\\((([^()]*|\\([^()]*\\))*)\\)', '["\'`]([^"\'`]*).*?["\'`]'],
-      ],
+      'tailwindCSS.experimental.classRegex': [['tva\\((([^()]*|\\([^()]*\\))*)\\)', '["\'`]([^"\'`]*).*?["\'`]']],
 
       // https://blog.adarshkonchady.com/fixing-vscode-issues-with-eslint-on-nx-monorepo
       // 'eslint.workingDirectories': [
@@ -477,11 +457,7 @@ function updateGitIgnoreFile(tree: Tree, options: NormalizedSchema) {
   const ignores = tree.read(ignoreFilePath, 'utf8').split('\n');
 
   if (!ignores.includes(`# ${getImportPath(tree, options.projectDirectory)}`)) {
-    const files = [
-      `# ${getImportPath(tree, options.projectDirectory)}`,
-      '*.orig',
-      `!.vscode/${vscodeCSSSettingsFile}`,
-    ];
+    const files = [`# ${getImportPath(tree, options.projectDirectory)}`, '*.orig', `!.vscode/${vscodeCSSSettingsFile}`];
 
     if (files.length) ignores.push(...files, '');
   }
@@ -495,10 +471,7 @@ function updateGitIgnoreFile(tree: Tree, options: NormalizedSchema) {
  * @param tree The virtual file system tree.
  * @param options The options passed to the generator.
  */
-export async function generateConfigLib(
-  tree: Tree,
-  options: SheriffGeneratorSchema = {},
-) {
+export async function generateConfigLib(tree: Tree, options: SheriffGeneratorSchema = {}) {
   const normalizedOptions = normalizeOptions(tree, options);
 
   await libraryGenerator(tree, {
@@ -528,10 +501,6 @@ export async function generateConfigLib(
   updateEslintConfig(tree, normalizedOptions);
   updateVSCodeSettings(tree);
   addDependencies(tree);
-  addDevDependencyToPackageJson(
-    tree,
-    normalizedOptions.importPath,
-    'workspace:*',
-  );
+  addDevDependencyToPackageJson(tree, normalizedOptions.importPath, 'workspace:*');
   updatePackageJsons(tree, normalizedOptions);
 }

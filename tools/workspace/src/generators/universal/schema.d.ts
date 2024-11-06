@@ -10,13 +10,7 @@ export interface UniversalGeneratorSchema {
 /**
  * The possible lib folders.
  */
-export type LibFolder =
-  | 'design'
-  | 'features'
-  | 'hooks'
-  | 'providers'
-  | 'stores'
-  | 'utils';
+export type LibFolder = 'core' | 'design' | 'features';
 
 /**
  * The path of the lib folder.

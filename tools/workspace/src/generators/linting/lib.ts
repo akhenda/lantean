@@ -258,6 +258,7 @@ function updateVSCodeSettings(tree: Tree) {
 
       'files.eol': '\n',
       'editor.tabSize': 2,
+      'editor.insertSpaces': true,
 
       'search.exclude': {
         'yarn.lock': true,

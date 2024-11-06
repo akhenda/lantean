@@ -33,4 +33,8 @@ export const devDependencies = {
 /**
  * VSCode extensions to be installed
  */
-export const vscodeExtensions = [] as const;
+export const vscodeExtensions = [
+  // 'biomejs.biome',
+  'expo.vscode-expo-tools',
+  'bradlc.vscode-tailwindcss',
+] as const;
