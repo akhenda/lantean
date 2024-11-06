@@ -40,9 +40,8 @@ class Logger {
   }
 
   private configure() {
-    this.logger = createLogger({
-      prefix: Logger.project,
-      shouldShowTime: () => true
+    this.logger = createLogger(Logger.project, {
+      shouldShowTime: () => true,
     });
   }
 
@@ -78,7 +77,7 @@ class Logger {
   }
 
   info(message: string, ...args: unknown[]) {
-    this.logger?.info('info', message, ...args);
+    this.logger?.info(message, ...args);
   }
 
   debug(message: string, ...args: unknown[]) {

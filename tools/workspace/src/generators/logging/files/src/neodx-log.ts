@@ -2,7 +2,7 @@
 // https://adrianhall.github.io/cloud/2019/06/30/building-an-efficient-logger-in-typescript/
 import isError from 'lodash/isError';
 
-import { createLogger } from '@neodx/log';
+import { createLogger, DEFAULT_LOGGER_LEVELS } from '@neodx/log';
 import { pretty } from '@neodx/log/node';
 
 import { LogLevel } from './config';
@@ -45,6 +45,7 @@ class Logger {
       name: Logger.project,
       level: Logger.level,
       levels: {
+        ...DEFAULT_LOGGER_LEVELS,
         fatal: 'error',
         success: 'info',
         trace: 'debug',
@@ -54,7 +55,7 @@ class Logger {
   }
 
   fatal(message: string, ...args: unknown[]) {
-    this.logger?.fatal(message, ...args);
+    this.logger?.error(message, ...args);
   }
 
   error(error: Error, message = '') {
@@ -85,7 +86,7 @@ class Logger {
   }
 
   info(message: string, ...args: unknown[]) {
-    this.logger?.info('info', message, ...args);
+    this.logger?.info(message, ...args);
   }
 
   debug(message: string, ...args: unknown[]) {
@@ -93,7 +94,7 @@ class Logger {
   }
 
   trace(message: string, ...args: unknown[]) {
-    this.logger?.trace(message, ...args);
+    this.logger?.debug(message, ...args);
   }
 
   success(message: string, ...args: unknown[]) {

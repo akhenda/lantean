@@ -1,7 +1,8 @@
 import { join } from 'path';
 
-import { addDependenciesToPackageJson, generateFiles, readProjectConfiguration, Tree } from '@nx/devkit';
+import { addDependenciesToPackageJson, generateFiles, readProjectConfiguration, Tree, updateJson } from '@nx/devkit';
 import { libraryGenerator } from '@nx/js';
+import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
 
 import { deps } from './constants';
 import { LoggingGeneratorSchema, NormalizedSchema } from './schema';
@@ -9,6 +10,8 @@ import { normalizeOptions } from './utils';
 
 import typesGenerator from '../types/generator';
 import { normalizeOptions as normalizeTypesOptions } from '../types/utils';
+
+import { updateTSConfigCompilerOptions } from '../../utils';
 
 function cleanupLib(tree: Tree, libDirectory: string) {
   tree.delete(`${libDirectory}/src/index.ts`);
@@ -33,14 +36,39 @@ export function addLibFiles(tree: Tree, options: NormalizedSchema) {
   generateFiles(tree, join(__dirname, 'files'), options.projectRoot, templateOptions);
 }
 
+function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
+  updateJson<TSConfig>(tree, join(options.projectRoot, 'tsconfig.json'), (json) => {
+    return updateTSConfigCompilerOptions(json, {
+      noPropertyAccessFromIndexSignature: false,
+      esModuleInterop: true,
+    });
+  });
+
+  updateJson<TSConfig>(tree, join(options.projectRoot, 'tsconfig.lib.json'), (json) => {
+    json.include = [...(json.include as string[]), 'app.d.ts'];
+
+    return json;
+  });
+}
+
 export async function generateLoggingLib(tree: Tree, schema: LoggingGeneratorSchema) {
   let options: NormalizedSchema;
 
   const skipFormat = false;
-  const { projectName: typesLibName } = normalizeTypesOptions(tree, { name: schema.typesLibName, skipFormat });
+  const { projectName: typesLibName, importPath: typesImportPath } = normalizeTypesOptions(tree, {
+    name: schema.typesLibName,
+    skipFormat,
+  });
 
   try {
-    readProjectConfiguration(tree, typesLibName);
+    const typesConfig = readProjectConfiguration(tree, typesLibName);
+
+    if (typesConfig) {
+      options = normalizeOptions(tree, schema, {
+        projectName: typesLibName,
+        importPath: typesImportPath,
+      });
+    }
   } catch (error) {
     const result = await typesGenerator(tree, { name: typesLibName, skipFormat });
     const { options: universalLibOptions } = result();
@@ -62,5 +90,6 @@ export async function generateLoggingLib(tree: Tree, schema: LoggingGeneratorSch
 
   cleanupLib(tree, options.projectRoot);
   addLibFiles(tree, options);
+  updateTSConfigs(tree, options);
   addDependencies(tree);
 }

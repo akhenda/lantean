@@ -32,7 +32,7 @@ import { NormalizedSchema as TypesLibNormalizedSchema } from '../types/schema';
 export function normalizeOptions(
   tree: Tree,
   options: LoggingGeneratorSchema,
-  extra: Partial<TypesLibNormalizedSchema> = {},
+  extra: Pick<TypesLibNormalizedSchema, 'projectName' | 'importPath'>,
 ): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
   const name = names(options.name ?? defaultLibName).fileName;

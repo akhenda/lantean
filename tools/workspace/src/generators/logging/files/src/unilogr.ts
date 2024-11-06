@@ -11,9 +11,11 @@ import {
   Logger as UnilogrLogger,
   markSlot,
   writeTo,
+  discardLessSevereThan,
+  LogLevel,
 } from 'unilogr';
 
-import { LogLevel, LOGS_CONFIG } from './config';
+import { LOGS_CONFIG } from './config';
 
 /**
  * The Logger class defines the `getInstance` method that lets clients access
@@ -56,7 +58,8 @@ class Logger {
    * information and icons. The final formatted message is written to the console.
    */
   private configure() {
-    this.logger = UnilogrLogger([
+    this.logger = new UnilogrLogger([
+      discardLessSevereThan(Logger.level),
       capitalizeField('level'), // Capitalize the "level" field
       colorizeField('level'), // Colorize the "level" field according to severity
       addTimestamp(), // Add the "timestamp" field
@@ -103,7 +106,7 @@ class Logger {
   }
 
   info(message: string, ...args: unknown[]) {
-    this.logger?.info('info', message, ...args);
+    this.logger?.info(message, ...args);
   }
 
   debug(message: string, ...args: unknown[]) {

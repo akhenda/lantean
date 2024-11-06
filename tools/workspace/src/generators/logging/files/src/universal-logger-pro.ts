@@ -2,7 +2,7 @@
 // https://adrianhall.github.io/cloud/2019/06/30/building-an-efficient-logger-in-typescript/
 import isError from 'lodash/isError';
 
-import { Logger as UniversalLoggerPro } from 'universal-logger-pro';
+import { LogMetadata, LogSeverity, Logger as UniversalLoggerPro } from 'universal-logger-pro';
 
 import { LogLevel } from './config';
 
@@ -46,7 +46,7 @@ class Logger {
       colors: process.stdout.isTTY, // Colors in dev, plain in prod
       timestamp: true,
       format: 'json', // Structured logging in prod
-      minLevel: Logger.level,
+      minLevel: Logger.level as LogSeverity,
 
       // Timestamp formatting
       timeFormat: 'ISO', // 'ISO' | 'UTC' | 'UNIX' | 'locale'
@@ -96,7 +96,7 @@ class Logger {
     });
   }
 
-  fatal(message: string, ...args: unknown[]) {
+  fatal(message: string, ...args: LogMetadata[]) {
     this.logger?.fatal(message, ...args);
   }
 
@@ -123,23 +123,23 @@ class Logger {
     this.logger?.error(msg, error);
   }
 
-  warn(message: string, ...args: unknown[]) {
+  warn(message: string, ...args: LogMetadata[]) {
     this.logger?.warn(message, ...args);
   }
 
-  info(message: string, ...args: unknown[]) {
-    this.logger?.info('info', message, ...args);
+  info(message: string, ...args: LogMetadata[]) {
+    this.logger?.info(message, ...args);
   }
 
-  debug(message: string, ...args: unknown[]) {
+  debug(message: string, ...args: LogMetadata[]) {
     this.logger?.debug(message, ...args);
   }
 
-  trace(message: string, ...args: unknown[]) {
+  trace(message: string, ...args: LogMetadata[]) {
     this.logger?.trace(message, ...args);
   }
 
-  success(message: string, ...args: unknown[]) {
+  success(message: string, ...args: LogMetadata[]) {
     this.logger?.success(message, ...args);
   }
 }

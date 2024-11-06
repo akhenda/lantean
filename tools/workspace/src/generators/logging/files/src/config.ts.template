@@ -1,4 +1,4 @@
-import type { Union2Tuple } from '@lantean/types';
+import type { Union2Tuple } from '<%= typesLibImportPath %>';
 
 export const LOGS_CONFIG = {
   colorize(str: string, level: string) {

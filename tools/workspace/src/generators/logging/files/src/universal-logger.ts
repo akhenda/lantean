@@ -107,7 +107,7 @@ class Logger {
   }
 
   info(message: string, ...args: unknown[]) {
-    this.logger?.info('info', message, ...args);
+    this.logger?.info(message, ...args);
   }
 
   debug(message: string, ...args: unknown[]) {
