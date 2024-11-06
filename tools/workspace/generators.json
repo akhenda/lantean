@@ -45,6 +45,16 @@
       "schema": "./src/generators/env/schema.json",
       "description": "Env Generator"
     },
+    "types": {
+      "factory": "./src/generators/types/generator",
+      "schema": "./src/generators/types/schema.json",
+      "description": "Types Generator"
+    },
+    "logging": {
+      "factory": "./src/generators/logging/generator",
+      "schema": "./src/generators/logging/schema.json",
+      "description": "Logging library Generator"
+    },
     "gluestack": {
       "factory": "./src/generators/gluestack/generator",
       "schema": "./src/generators/gluestack/schema.json",
