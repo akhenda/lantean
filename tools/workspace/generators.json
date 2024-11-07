@@ -53,7 +53,12 @@
     "logging": {
       "factory": "./src/generators/logging/generator",
       "schema": "./src/generators/logging/schema.json",
-      "description": "Logging library Generator"
+      "description": "Logging Library Generator"
+    },
+    "monitoring": {
+      "factory": "./src/generators/monitoring/generator",
+      "schema": "./src/generators/monitoring/schema.json",
+      "description": "Monitoring Library Generator"
     },
     "gluestack": {
       "factory": "./src/generators/gluestack/generator",

@@ -1,15 +1,17 @@
 import { getWorkspaceLayout, names, offsetFromRoot, Tree } from '@nx/devkit';
 
 import { defaultLibDirectory, defaultLibName, defaultLibTags } from './constants';
-import { NormalizedSchema, TypesGeneratorSchema } from './schema';
+import { NormalizedSchema, MonitoringGeneratorSchema } from './schema';
 
+import { NormalizedSchema as TypesLibNormalizedSchema } from '../types/schema';
 import { getImportPath, getNpmScope } from '../../utils';
 
 /**
- * Normalize options for the Types generator.
+ * Normalize options for the Logging generator.
  *
  * @param tree The virtual file system tree.
  * @param options The options passed to the generator.
+ * @param extra The extra options passed to the generator.
  * @returns The normalized options.
  *
  * The normalized options include the following:
@@ -20,11 +22,18 @@ import { getImportPath, getNpmScope } from '../../utils';
  * - `importPath`: The import path for the library.
  * - `appsDir`: The path to the apps directory.
  * - `libsDir`: The path to the libs directory.
+ * - `parsedTags`: The parsed tags for the project.
  * - `npmScope`: The npm scope for the library.
  * - `npmScopeTitle`: The title cased npm scope for the library.
  * - `offsetFromRoot`: The relative path from the workspace root to the library.
+ * - `typesLibName`: The name of the types library.
+ * - `typesLibImportPath`: The import path for the types library.
  */
-export function normalizeOptions(tree: Tree, options: TypesGeneratorSchema): NormalizedSchema {
+export function normalizeOptions(
+  tree: Tree,
+  options: MonitoringGeneratorSchema,
+  extra: Pick<TypesLibNormalizedSchema, 'projectName' | 'importPath'>,
+): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
   const name = names(options.name ?? defaultLibName).fileName;
   const project = names(defaultLibDirectory).fileName;
@@ -50,5 +59,7 @@ export function normalizeOptions(tree: Tree, options: TypesGeneratorSchema): Nor
     npmScope,
     npmScopeTitle,
     offsetFromRoot: offsetFromRootPath,
+    typesLibName: extra.projectName,
+    typesLibImportPath: extra.importPath,
   };
 }

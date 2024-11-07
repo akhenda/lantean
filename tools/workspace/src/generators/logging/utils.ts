@@ -1,10 +1,10 @@
 import { getWorkspaceLayout, names, offsetFromRoot, Tree } from '@nx/devkit';
 
-import { getImportPath, getNpmScope } from '../../utils';
-
 import { defaultLibDirectory, defaultLibName, defaultLibTags } from './constants';
 import { NormalizedSchema, LoggingGeneratorSchema } from './schema';
+
 import { NormalizedSchema as TypesLibNormalizedSchema } from '../types/schema';
+import { getImportPath, getNpmScope } from '../../utils';
 
 /**
  * Normalize options for the Logging generator.

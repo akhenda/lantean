@@ -1,0 +1,15 @@
+import type { StartSpanOptions, Span } from '@sentry/types';
+
+import { PossibleSentry } from './types';
+
+export function getProjectPerformanceMonitoring<T extends PossibleSentry>(Sentry: T) {
+  return {
+    startTransaction<T>(context: StartSpanOptions, callback: (span: Span | undefined) => T) {
+      Sentry.startSpan(context, callback);
+    },
+
+    startIndependentTransaction(context: StartSpanOptions) {
+      Sentry.startInactiveSpan(context);
+    },
+  };
+}
