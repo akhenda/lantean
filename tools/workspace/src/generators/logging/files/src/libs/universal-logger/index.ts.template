@@ -155,7 +155,7 @@ class Logger {
    * @param error - The Error object to be logged.
    * @param message - An optional message to provide additional context for the error.
    */
-  error(error: Error, message = '') {
+  error(error: unknown, message = '') {
     let msg = message;
 
     if (isError(error)) {

@@ -1,0 +1,63 @@
+'use client';
+
+import { usePathname, useSearchParams } from 'next/navigation';
+import { ReactNode, useEffect } from 'react';
+import posthog from 'posthog-js';
+import { PostHogProvider, usePostHog } from 'posthog-js/react';
+
+import { Config } from './types';
+import { NoOp } from './utils';
+
+export function PHProvider({
+  children,
+  host,
+  apiKey,
+  personProfiles = 'identified_only',
+}: {
+  children: ReactNode;
+  host: Config['apiHost'];
+  apiKey: string;
+  personProfiles: Config['personProfiles'];
+}) {
+  useEffect(() => {
+    posthog.init(apiKey, {
+      api_host: host,
+      person_profiles: personProfiles,
+      capture_pageview: false, // Disable automatic pageview capture, as we capture manually
+    });
+  }, []);
+
+  return <PostHogProvider client={posthog}>{children}</PostHogProvider>;
+}
+
+export default function PostHogPageView() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    // Track pageviews
+    if (pathname && posthog) {
+      let url = window.origin + pathname;
+
+      if (searchParams.toString()) url = url + `?${searchParams.toString()}`;
+
+      posthog.capture('$pageview', { $current_url: url });
+    }
+  }, [pathname, searchParams, posthog]);
+
+  return null;
+}
+
+export function setupAnalytics({ apiKey, apiHost, personProfiles }: Config, env: { isProd: boolean }) {
+  if (!env.isProd) return { PostHogProvider: NoOp, PostHogPageView: NoOp };
+
+  return {
+    PostHogProvider: ({ children, ...props }: { children: ReactNode }) => (
+      <PHProvider apiKey={apiKey} host={apiHost} personProfiles={personProfiles} {...props}>
+        {children}
+      </PHProvider>
+    ),
+    PostHogPageView,
+  };
+}

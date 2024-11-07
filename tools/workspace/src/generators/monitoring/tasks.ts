@@ -80,9 +80,9 @@ export async function generateMonitoringLib(tree: Tree, schema: MonitoringGenera
     }
   } catch (error) {
     const result = await typesGenerator(tree, { name: typesLibName, skipFormat });
-    const { options: universalLibOptions } = result();
+    const { options: typesLibOptions } = result();
 
-    options = normalizeOptions(tree, schema, universalLibOptions);
+    options = normalizeOptions(tree, schema, typesLibOptions);
   }
 
   await libraryGenerator(tree, {
