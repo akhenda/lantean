@@ -1,11 +1,9 @@
-// https://github.com/nestjs/nest/issues/507#issuecomment-374221089
-// https://adrianhall.github.io/cloud/2019/06/30/building-an-efficient-logger-in-typescript/
 import isError from 'lodash/isError';
 
-import universalLogger, { TRACE, DEBUG, INFO, WARN, ERROR } from 'universal-logger';
-import { styleable } from 'universal-logger-browser';
+import { createLogger, DEFAULT_LOGGER_LEVELS } from '@neodx/log';
+import { pretty } from '@neodx/log/node';
 
-import { LogLevel } from './config';
+import { LogLevel } from '../config';
 
 /**
  * The Logger class defines the `getInstance` method that lets clients access
@@ -15,7 +13,7 @@ class Logger {
   private static instance?: Logger;
   private static level?: LogLevel;
   private static project?: string;
-  private logger?: ReturnType<typeof universalLogger>;
+  private logger?: ReturnType<typeof createLogger>;
 
   /**
    * The Logger's constructor should always be private to prevent direct
@@ -40,39 +38,18 @@ class Logger {
     return Logger.instance;
   }
 
-  private getLevel() {
-    switch (Logger.level) {
-      case 'verbose':
-        return TRACE;
-      case 'success':
-        return DEBUG;
-      case 'info':
-        return INFO;
-      case 'debug':
-        return DEBUG;
-      case 'trace':
-        return TRACE;
-      case 'warn':
-        return WARN;
-      case 'error':
-        return ERROR;
-      case 'fatal':
-        return ERROR;
-      default:
-        return TRACE;
-    }
-  }
-
   private configure() {
-    this.logger = universalLogger(Logger.project)
-      .use(styleable({ showSource: true, showTimestamp: true }))
-      .on('log', () => {
-        // If context.level === Error
-        // Call snetry
-      });
-
-    this.logger.disableStackTrace();
-    this.logger.setLevel(this.getLevel());
+    this.logger = createLogger({
+      name: Logger.project,
+      level: Logger.level,
+      levels: {
+        ...DEFAULT_LOGGER_LEVELS,
+        fatal: 'error',
+        success: 'info',
+        trace: 'debug',
+      },
+      target: pretty(),
+    });
   }
 
   fatal(message: string, ...args: unknown[]) {
@@ -115,7 +92,7 @@ class Logger {
   }
 
   trace(message: string, ...args: unknown[]) {
-    this.logger?.trace(message, ...args);
+    this.logger?.debug(message, ...args);
   }
 
   success(message: string, ...args: unknown[]) {

@@ -1,73 +1,92 @@
+import chalk from 'chalk';
+
 import type { Union2Tuple } from '<%= typesLibImportPath %>';
 
-export const LOGS_CONFIG = {
-  colorize(str: string, level: string) {
-    level = level.toLowerCase();
+export const LOG_LEVELS = {
+  verbose: 0,
+  trace: 1,
+  debug: 2,
+  success: 3,
+  info: 4,
+  warn: 5,
+  error: 6,
+  fatal: 7,
+} as const;
 
-    switch (level as keyof typeof this.icons) {
-      case 'error':
-      case 'fatal':
-        return `\x1b[41m\x1b[30m${str}\x1b[0m`;
-      case 'warn':
-        return `\x1b[43m\x1b[30m${str}\x1b[0m`;
-      case 'info':
-      case 'verbose':
-      case 'log':
-        return `\x1b[44m\x1b[30m${str}\x1b[0m`;
-      case 'debug':
-        return `\x1b[47m\x1b[30m${str}\x1b[0m`;
-      case 'trace':
-        return `\x1b[47m\x1b[30m${str}\x1b[0m`;
-      case 'success':
-        return `\x1b[42m\x1b[30m${str}\x1b[0m`;
-      default:
-        return str;
-    }
+export const LOG_COLORS = {
+  bg: {
+    verbose: '#FEFEFE',
+    trace: '#DFF2BF',
+    debug: '#FFF',
+    success: '#77C926',
+    info: '#BDE5F8',
+    warn: '#EFEFB3',
+    error: '#FFBABA',
+    fatal: '#FF805C',
   },
-  colors: {
-    debug: 'gray',
-    error: 'red',
-    fatal: 'red',
-    info: 'cyan',
-    log: 'cyan',
-    verbose: 'cyan',
-    success: 'green',
-    trace: 'orange',
-    warn: 'yellow',
+  border: {
+    verbose: '#AAAAAA',
+    trace: '#4F8A10',
+    debug: '#222222',
+    success: '#30740C',
+    info: '#00529B',
+    warn: '#9F6000',
+    error: '#D8000C',
+    fatal: '#7A071A',
   },
-
-  getIcon(icon: string) {
-    const level = icon.toLowerCase() as keyof typeof this.icons;
-
-    return this.icons[level];
-  },
-  icons: {
-    debug: '⚙',
-    error: '⨯',
-    fatal: '⨯',
-    info: 'ℹ',
-    log: 'ℹ',
-    verbose: 'ℹ',
-    success: '✓',
-    trace: '→',
-    warn: '⚠️',
-  },
-
-  levels: {
-    verbose: 7,
-    success: 6,
-    info: 5,
-    debug: 4,
-    trace: 3,
-    warn: 2,
-    error: 1,
-    fatal: 0,
+  text: {
+    verbose: '#AAAAAA',
+    trace: '#4F8A10',
+    debug: '#222222',
+    success: '#FEFEFE',
+    info: '#00529B',
+    warn: '#9F6000',
+    error: '#D8000C',
+    fatal: '#7A071A',
   },
 } as const;
 
+const LOG_ICONS = {
+  verbose: 'ℹ',
+  trace: '→',
+  debug: '⚙',
+  success: '✓',
+  info: 'ℹ',
+  warn: '⚠️',
+  error: '⨯',
+  fatal: '⨯',
+};
+
+function getIcon(icon: string) {
+  const level = icon.toLowerCase() as keyof typeof LOG_ICONS;
+
+  return LOG_ICONS[level];
+}
+
+function colorize(str: string, level: LogLevel) {
+  level = level.toLowerCase() as LogLevel;
+
+  return chalk.bgHex(LOG_COLORS.bg[level]).hex(LOG_COLORS.text[level])(str);
+}
+
+function colorizeText(str: string, level: LogLevel) {
+  level = level.toLowerCase() as LogLevel;
+
+  return chalk.hex(LOG_COLORS.text[level])(str);
+}
+
+export const LOGS_CONFIG = {
+  colors: LOG_COLORS,
+  icons: LOG_ICONS,
+  levels: LOG_LEVELS,
+  getIcon,
+  colorize,
+  colorizeText,
+} as const;
+
 export const logLevels = LOGS_CONFIG.levels;
-export const logColors = LOGS_CONFIG.colors;
 export const logIcons = LOGS_CONFIG.icons;
+export const logColors = LOGS_CONFIG.colors;
 
 export type LogLevel = keyof typeof logLevels;
 export type LogLevels = Union2Tuple<LogLevel>;

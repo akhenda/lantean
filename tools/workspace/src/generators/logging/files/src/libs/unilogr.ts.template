@@ -1,21 +1,31 @@
-// https://github.com/nestjs/nest/issues/507#issuecomment-374221089
-// https://adrianhall.github.io/cloud/2019/06/30/building-an-efficient-logger-in-typescript/
 import isError from 'lodash/isError';
+import isEmpty from 'lodash/isEmpty';
 
-import { createLogger, DEFAULT_LOGGER_LEVELS } from '@neodx/log';
-import { pretty } from '@neodx/log/node';
+import {
+  addInterval,
+  addTimestamp,
+  capitalizeField,
+  colorizeField,
+  ConsoleOutput,
+  Logger as UnilogrLogger,
+  markSlot,
+  writeTo,
+  discardLessSevereThan,
+  LogLevel,
+} from 'unilogr';
 
-import { LogLevel } from './config';
+import { LOGS_CONFIG } from '../config';
 
 /**
  * The Logger class defines the `getInstance` method that lets clients access
  * the unique singleton instance.
  */
 class Logger {
+  // eslint-disable-next-line no-use-before-define
   private static instance?: Logger;
   private static level?: LogLevel;
   private static project?: string;
-  private logger?: ReturnType<typeof createLogger>;
+  private logger?: UnilogrLogger;
 
   /**
    * The Logger's constructor should always be private to prevent direct
@@ -40,22 +50,36 @@ class Logger {
     return Logger.instance;
   }
 
+  /**
+   * Configures the logger by setting up a series of transformations and formatting
+   * rules for log messages. This includes capitalizing and colorizing the log level,
+   * adding timestamps and intervals, and formatting the message with project-specific
+   * information and icons. The final formatted message is written to the console.
+   */
   private configure() {
-    this.logger = createLogger({
-      name: Logger.project,
-      level: Logger.level,
-      levels: {
-        ...DEFAULT_LOGGER_LEVELS,
-        fatal: 'error',
-        success: 'info',
-        trace: 'debug',
+    this.logger = new UnilogrLogger([
+      discardLessSevereThan(Logger.level),
+      capitalizeField('level'), // Capitalize the "level" field
+      colorizeField('level'), // Colorize the "level" field according to severity
+      addTimestamp(), // Add the "timestamp" field
+      addInterval(), // Add the "interval" field
+
+      markSlot(), // Mark this spot for extensions
+
+      ({ timestamp, level, message, interval, ...rest }) => {
+        // console.log('rest: ', rest);
+        const theLevel = rest[Symbol.for('level')];
+        const logPrefix = LOGS_CONFIG.colorize(` ${timestamp} ${LOGS_CONFIG.getIcon(theLevel)} (${Logger.project}) `, theLevel);
+
+        return `${logPrefix} [${level}]: ${message} (${interval})${isEmpty(rest) ? '' : '\n' + JSON.stringify(rest, null, 2)}`; // Format message
       },
-      target: pretty(),
-    });
+
+      writeTo(new ConsoleOutput()), // Write formatted message to console
+    ]);
   }
 
   fatal(message: string, ...args: unknown[]) {
-    this.logger?.error(message, ...args);
+    this.logger?.debug(message, ...args);
   }
 
   error(error: Error, message = '') {
@@ -93,12 +117,8 @@ class Logger {
     this.logger?.debug(message, ...args);
   }
 
-  trace(message: string, ...args: unknown[]) {
-    this.logger?.debug(message, ...args);
-  }
-
-  success(message: string, ...args: unknown[]) {
-    this.logger?.info(message, ...args);
+  verbose(message: string, ...args: unknown[]) {
+    this.logger?.verbose(message, ...args);
   }
 }
 

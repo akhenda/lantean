@@ -1,0 +1,15 @@
+import { LogLevel, LOGS_CONFIG } from './config';
+
+export const noop = () => null;
+
+export function isServer() {
+  return !(typeof window != 'undefined' && window.document);
+}
+
+export function isClient() {
+  return typeof window != 'undefined' && window.document;
+}
+
+export function colorize(str: string, level: LogLevel, bothTextAndBackground = false) {
+  return bothTextAndBackground ? LOGS_CONFIG.colorize(str, level) : LOGS_CONFIG.colorizeText(str, level);
+}

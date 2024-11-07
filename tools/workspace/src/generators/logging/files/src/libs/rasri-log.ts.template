@@ -1,10 +1,8 @@
-// https://github.com/nestjs/nest/issues/507#issuecomment-374221089
-// https://adrianhall.github.io/cloud/2019/06/30/building-an-efficient-logger-in-typescript/
 import isError from 'lodash/isError';
 
 import createLogger from '@rasri/log';
 
-import { LogLevel } from './config';
+import { LogLevel } from '../config';
 
 /**
  * The Logger class defines the `getInstance` method that lets clients access
@@ -42,6 +40,9 @@ class Logger {
   private configure() {
     this.logger = createLogger(Logger.project, {
       shouldShowTime: () => true,
+      // shouldPrint: (level: string) => {
+      //   return level === Logger.level;
+      // }
     });
   }
 

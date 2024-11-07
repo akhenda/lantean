@@ -1,10 +1,8 @@
-// https://github.com/nestjs/nest/issues/507#issuecomment-374221089
-// https://adrianhall.github.io/cloud/2019/06/30/building-an-efficient-logger-in-typescript/
 import isError from 'lodash/isError';
 
 import { LogMetadata, LogSeverity, Logger as UniversalLoggerPro } from 'universal-logger-pro';
 
-import { LogLevel } from './config';
+import { LogLevel } from '../config';
 
 /**
  * The Logger class defines the `getInstance` method that lets clients access
@@ -41,12 +39,16 @@ class Logger {
   }
 
   private configure() {
+    const logPrefix = ''
+
     this.logger = UniversalLoggerPro.getInstance({
       // Basic configuration
-      colors: process.stdout.isTTY, // Colors in dev, plain in prod
+      colors: true, // Colors in dev, plain in prod
       timestamp: true,
       format: 'json', // Structured logging in prod
       minLevel: Logger.level as LogSeverity,
+      prefix: logPrefix,
+      prettyPrint: true,
 
       // Timestamp formatting
       timeFormat: 'ISO', // 'ISO' | 'UTC' | 'UNIX' | 'locale'
@@ -56,7 +58,7 @@ class Logger {
       indentation: 2, // Spaces for metadata formatting
       levelColumnWidth: 7, // Width of level column
       colorizeObjects: true, // Colorize object output
-      prettyPrint: false, // Pretty print objects
+      // prettyPrint: false, // Pretty print objects
 
       // Development helpers
       debugMode: false, // Extra debug information
@@ -91,7 +93,7 @@ class Logger {
       // Metadata
       metadata: {
         app: Logger.project,
-        env: process.env.NODE_ENV,
+        // env: process.env.NODE_ENV,
       },
     });
   }

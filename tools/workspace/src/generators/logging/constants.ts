@@ -19,8 +19,8 @@ export const defaultLibTags = ['web', 'mobile', 'server', 'client', 'logging'];
 export const deps = {
   '@neodx/log': '^0.4.1',
   '@rasri/log': '^1.3.0',
-  'unilogr': '^0.0.27',
+  chalk: '^5.3.0',
+  unilogr: '^0.0.27',
   'universal-logger-pro': '^1.2.1',
   'universal-logger': '^1.0.1',
-  'universal-logger-browser': '^1.0.2',
 } as const;

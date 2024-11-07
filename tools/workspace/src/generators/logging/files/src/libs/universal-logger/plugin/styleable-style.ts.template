@@ -1,0 +1,33 @@
+import css from './object-to-css';
+
+import { logColors, LogLevel } from '../../../config';
+
+function getLogStyle(level: LogLevel) {
+  return css({
+    lineHeight: 1.3,
+    padding: '2px 5px',
+    border: `1px solid ${logColors.border[level]}`,
+    color: logColors.text[level],
+    background: logColors.bg[level],
+  });
+}
+
+export default {
+  timestamp: css({
+    lineHeight: 1.5,
+    padding: '2px 0',
+    color: '#3B5998',
+    background: '#EDEFF4',
+  }),
+  namespace: css({ lineHeight: 2, color: '#036F96' }),
+  level: {
+    verbose: getLogStyle('verbose'),
+    trace: getLogStyle('trace'),
+    debug: getLogStyle('debug'),
+    success: getLogStyle('success'),
+    info: getLogStyle('info'),
+    warn: getLogStyle('warn'),
+    error: getLogStyle('error'),
+    fatal: getLogStyle('fatal'),
+  },
+};
