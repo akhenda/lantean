@@ -60,6 +60,11 @@
       "schema": "./src/generators/monitoring/schema.json",
       "description": "Monitoring Library Generator"
     },
+    "date": {
+      "factory": "./src/generators/date/generator",
+      "schema": "./src/generators/date/schema.json",
+      "description": "Date Library Generator"
+    },
     "gluestack": {
       "factory": "./src/generators/gluestack/generator",
       "schema": "./src/generators/gluestack/schema.json",
