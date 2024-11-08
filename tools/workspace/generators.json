@@ -75,6 +75,11 @@
       "schema": "./src/generators/email/schema.json",
       "description": "Email Library Generator"
     },
+    "jobs": {
+      "factory": "./src/generators/jobs/generator",
+      "schema": "./src/generators/jobs/schema.json",
+      "description": "Jobs Library Generator"
+    },
     "gluestack": {
       "factory": "./src/generators/gluestack/generator",
       "schema": "./src/generators/gluestack/schema.json",
