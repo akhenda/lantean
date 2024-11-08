@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/schema",
-  "$id": "Jobs",
-  "title": "Generate Jobs Library",
-  "description": "Generates a jobs library that uses trigger.dev",
+  "$id": "Kv",
+  "title": "Generate KV Library",
+  "description": "Generates a kv library that uses upstash for kv storage",
   "type": "object",
   "properties": {
     "name": {

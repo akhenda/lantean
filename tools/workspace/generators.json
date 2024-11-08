@@ -80,6 +80,11 @@
       "schema": "./src/generators/jobs/schema.json",
       "description": "Jobs Library Generator"
     },
+    "kv": {
+      "factory": "./src/generators/kv/generator",
+      "schema": "./src/generators/kv/schema.json",
+      "description": "KV Library generator"
+    },
     "gluestack": {
       "factory": "./src/generators/gluestack/generator",
       "schema": "./src/generators/gluestack/schema.json",

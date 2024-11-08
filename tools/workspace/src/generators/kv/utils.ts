@@ -1,7 +1,7 @@
 import { getWorkspaceLayout, names, offsetFromRoot, Tree } from '@nx/devkit';
 
 import { defaultLibDirectory, defaultLibName, defaultLibTags } from './constants';
-import { NormalizedSchema, JobsGeneratorSchema } from './schema';
+import { NormalizedSchema, KvGeneratorSchema } from './schema';
 
 import { getImportPath, getNpmScope } from '../../utils';
 
@@ -26,7 +26,7 @@ import { getImportPath, getNpmScope } from '../../utils';
  * - `npmScopeTitle`: The title cased npm scope for the library.
  * - `offsetFromRoot`: The relative path from the workspace root to the library.
  */
-export function normalizeOptions(tree: Tree, options: JobsGeneratorSchema): NormalizedSchema {
+export function normalizeOptions(tree: Tree, options: KvGeneratorSchema): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
   const name = names(options.name ?? defaultLibName).fileName;
   const project = names(defaultLibDirectory).fileName;
