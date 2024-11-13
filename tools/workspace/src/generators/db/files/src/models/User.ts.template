@@ -1,0 +1,75 @@
+import { createProjectLogger } from '<%= loggingLibImportPath %>';
+
+import type { NewUser, User } from '../types';
+
+import BaseModel from './Base';
+
+const Logger = createProjectLogger('<%= importPath %>', 'debug');
+
+export default class UserModel extends BaseModel<'user'> {
+  table = this.tables.user;
+  query = this.db.query.user;
+
+  init(userUpdate: Partial<NewUser>) {
+    return this.withClerkUser(async (user) => {
+      const userData = await this._upsert(this.table.email, userUpdate, {
+        avatarUrl: user.imageUrl,
+        email: user.emailAddresses[0].emailAddress,
+        id: user.id,
+        name: `${user.firstName} ${user.lastName}`,
+        role: userUpdate.role || 'READER',
+      });
+
+      await this.updateClerkUserRole(user.id, userUpdate.role);
+
+      return userData;
+    });
+  }
+
+  get(id: User['id']) {
+    return super._get(id);
+  }
+
+  async create(newUser: NewUser) {
+    const result = await this._create(newUser);
+
+    return result;
+  }
+
+  async update(userId: User['id'], userUpdate: Partial<NewUser>) {
+    const result = await this._update(userId, userUpdate);
+
+    await this.updateClerkUserRole(result.id, userUpdate.role);
+
+    Logger.debug('User updated');
+
+    return result;
+  }
+
+  async delete(userId: User['id']) {
+    await this.updateClerkUserRole(userId, null);
+
+    const deletedUser = this._delete(userId);
+
+    Logger.debug('User deleted');
+
+    return deletedUser;
+  }
+
+  getAuthUserDetails() {
+    return this.withClerkUser((user) =>
+      this.query.findFirst({
+        where: (users, { eq }) => eq(users.email, user.emailAddresses[0].emailAddress),
+        with: { authored: true, borrowed: true },
+      }),
+    );
+  }
+
+  async getByEmailAddress(email: string) {
+    const user = await this.query.findFirst({
+      where: (users, { eq }) => eq(users.email, email),
+    });
+
+    return user;
+  }
+}

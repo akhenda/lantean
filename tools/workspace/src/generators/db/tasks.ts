@@ -1,11 +1,18 @@
 import { join } from 'path';
 
-import { addDependenciesToPackageJson, generateFiles, Tree, updateJson } from '@nx/devkit';
+import {
+  addDependenciesToPackageJson,
+  generateFiles,
+  readProjectConfiguration,
+  Tree,
+  updateJson,
+  updateProjectConfiguration,
+} from '@nx/devkit';
 import { libraryGenerator } from '@nx/js';
 import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
 import { JSONSchemaForESLintConfigurationFiles as ESLintConfig } from '@schemastore/package';
 
-import { deps } from './constants';
+import { deps, devDeps } from './constants';
 import { NormalizedSchema } from './schema';
 
 import { updateTSConfigCompilerOptions } from '../../utils';
@@ -22,7 +29,7 @@ function cleanupLib(tree: Tree, libDirectory: string) {
 
 export function addDependencies(tree: Tree) {
   const dependencies: Record<string, string> = deps;
-  const devDependencies: Record<string, string> = {};
+  const devDependencies: Record<string, string> = devDeps;
 
   return addDependenciesToPackageJson(tree, dependencies, devDependencies);
 }
@@ -46,10 +53,7 @@ function updateESLintConfig(tree: Tree, options: NormalizedSchema) {
     if (json.overrides && json.overrides.length) {
       json.overrides.forEach((override) => {
         if (override.files && override.files.includes('*.json')) {
-          override.rules['@nx/dependency-checks'] = [
-            'error',
-            { ignoredDependencies: [...Object.keys(deps)] },
-          ];
+          override.rules['@nx/dependency-checks'] = ['error', { ignoredDependencies: [...Object.keys(deps)] }];
         }
       });
     }
@@ -58,7 +62,40 @@ function updateESLintConfig(tree: Tree, options: NormalizedSchema) {
   });
 }
 
-export async function generateKVLib(tree: Tree, options: NormalizedSchema) {
+function updateProjectJson(tree: Tree, options: NormalizedSchema) {
+  // Reference:
+  // https://medium.com/@tomas.gabrs/setting-up-drizzle-orm-with-fastify-in-an-nx-monorepo-fdd34229254c
+  const { projectName, libsDir } = options;
+  const projectConfig = readProjectConfiguration(tree, projectName);
+
+  updateProjectConfiguration(tree, projectName, {
+    ...projectConfig,
+    targets: {
+      ...projectConfig.targets,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      'db:generate': {
+        executor: 'nx:run-commands',
+        options: {
+          command: 'drizzle-kit generate --config=./drizzle.config.ts',
+          cwd: `${libsDir}/${projectName}`,
+        },
+      },
+      'db:migrate': {
+        executor: 'nx:run-commands',
+        defaultConfiguration: 'local',
+        options: {
+          command: 'drizzle-kit migrate --config=./drizzle.config.ts',
+          cwd: `${libsDir}/${projectName}`,
+        },
+        configurations: {
+          local: {},
+        },
+      },
+    },
+  });
+}
+
+export async function generateDBLib(tree: Tree, options: NormalizedSchema) {
   await libraryGenerator(tree, {
     compiler: 'tsc',
     directory: options.projectRoot,
@@ -74,5 +111,6 @@ export async function generateKVLib(tree: Tree, options: NormalizedSchema) {
   addLibFiles(tree, options);
   updateTSConfigs(tree, options);
   updateESLintConfig(tree, options);
+  updateProjectJson(tree, options);
   addDependencies(tree);
 }

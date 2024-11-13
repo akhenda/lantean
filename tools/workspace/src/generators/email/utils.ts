@@ -6,7 +6,7 @@ import { NormalizedSchema, EmailGeneratorSchema } from './schema';
 import { getImportPath, getNpmScope } from '../../utils';
 
 /**
- * Normalize options for the Logging generator.
+ * Normalize options for the Email generator.
  *
  * @param tree The virtual file system tree.
  * @param options The options passed to the generator.

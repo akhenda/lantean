@@ -1,0 +1,2 @@
+export * from './book.table';
+export * from './book.relations';

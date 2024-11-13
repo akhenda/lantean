@@ -85,6 +85,11 @@
       "schema": "./src/generators/kv/schema.json",
       "description": "KV Library generator"
     },
+    "db": {
+      "factory": "./src/generators/db/generator",
+      "schema": "./src/generators/db/schema.json",
+      "description": "DB Library Generator"
+    },
     "gluestack": {
       "factory": "./src/generators/gluestack/generator",
       "schema": "./src/generators/gluestack/schema.json",

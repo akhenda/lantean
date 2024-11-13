@@ -1,13 +1,13 @@
 import { formatFiles, installPackagesTask, Tree } from '@nx/devkit';
 
 import { KvGeneratorSchema } from './schema';
-import { generateJobsLib } from './tasks';
+import { generateKVLib } from './tasks';
 import { normalizeOptions } from './utils';
 
 export async function kvGenerator(tree: Tree, schema: KvGeneratorSchema) {
   const options = normalizeOptions(tree, schema);
 
-  await generateJobsLib(tree, options);
+  await generateKVLib(tree, options);
   await formatFiles(tree);
 
   return () => {

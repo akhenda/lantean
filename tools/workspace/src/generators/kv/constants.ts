@@ -11,7 +11,7 @@ export const defaultLibDirectory = '';
 /**
  * Default tags of the library.
  */
-export const defaultLibTags = ['web', 'mobile', 'server', 'client', 'kv'];
+export const defaultLibTags = ['server', 'kv'];
 
 /**
  * Dependencies of the library.

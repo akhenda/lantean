@@ -7,7 +7,7 @@ import { NormalizedSchema as TypesLibNormalizedSchema } from '../types/schema';
 import { getImportPath, getNpmScope } from '../../utils';
 
 /**
- * Normalize options for the Logging generator.
+ * Normalize options for the Monitoring generator.
  *
  * @param tree The virtual file system tree.
  * @param options The options passed to the generator.

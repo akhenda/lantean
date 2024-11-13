@@ -1,0 +1,97 @@
+import { getOperators } from 'drizzle-orm';
+import type { IndexColumn, PgUpdateSetSource } from 'drizzle-orm/pg-core';
+
+import { auth } from '../auth';
+import { db } from '../drizzle';
+import type { DB, InsertedRecord, Query, ReturnedRecord, Schema, Table, TableNames, Tables } from '../schema';
+import schema, { tables } from '../schema';
+
+export default abstract class BaseModel<TableName extends TableNames> {
+  protected readonly db: DB;
+  protected readonly schema: Schema;
+  protected readonly tables: Tables;
+  protected readonly operators = getOperators();
+
+  protected abstract readonly table: Table<TableName>;
+  protected abstract readonly query: Query<TableName>;
+
+  protected readonly withClerkUser = auth.server.withClerkUser;
+  protected readonly updateClerkUserRole = auth.server.updateUserRole;
+  protected readonly inviteClerkUser = auth.server.inviteUser;
+
+  constructor() {
+    this.db = db;
+    this.schema = schema;
+    this.tables = tables;
+  }
+
+  async _get(id: string) {
+    const record = await this.query.findFirst({
+      where: (table, { eq }) => eq((table as Table<TableName>).id, id),
+    });
+
+    return record;
+  }
+
+  async _getAll() {
+    const records = await this.query.findMany();
+
+    return records;
+  }
+
+  async _create<NewRecord extends InsertedRecord<TableName>>(
+    newRecord: NewRecord,
+  ): Promise<ReturnedRecord<TableName> | null> {
+    const [result] = await this.db.insert(this.table).values(newRecord).returning();
+
+    return result;
+  }
+
+  async _update<Id extends string, RecordUpdate extends PgUpdateSetSource<Tables[TableName]>>(
+    id: Id,
+    recordUpdate: RecordUpdate,
+  ): Promise<ReturnedRecord<TableName> | null> {
+    const [result] = await this.db
+      .update(this.table)
+      .set(recordUpdate)
+      .where(this.operators.eq(this.table.id, id))
+      .returning();
+
+    return result;
+  }
+
+  async _upsert<
+    Target extends IndexColumn = IndexColumn,
+    RecordUpdate extends PgUpdateSetSource<Tables[TableName]> = PgUpdateSetSource<Tables[TableName]>,
+  >(
+    /**
+     * The field that causes the conflict .i.e. tells us
+     * whether or not a doc exists e.g. an `Id` or an `Email`
+     */
+    target: Target,
+
+    /**
+     * If the record exists only update these fields
+     */
+    recordUpdate: RecordUpdate,
+
+    /**
+     * If the record does not exist insert these fields
+     */
+    newRecord: InsertedRecord<TableName>,
+  ): Promise<ReturnedRecord<TableName> | null> {
+    const [result] = await this.db
+      .insert(this.table)
+      .values(newRecord)
+      .onConflictDoUpdate({ set: recordUpdate, target })
+      .returning();
+
+    return result;
+  }
+
+  async _delete<Id extends string>(id: Id): Promise<ReturnedRecord<TableName> | null> {
+    const [deletedRecord] = await this.db.delete(this.table).where(this.operators.eq(this.table.id, id)).returning();
+
+    return deletedRecord;
+  }
+}

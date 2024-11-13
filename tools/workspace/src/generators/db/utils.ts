@@ -1,12 +1,13 @@
 import { getWorkspaceLayout, names, offsetFromRoot, Tree } from '@nx/devkit';
 
 import { defaultLibDirectory, defaultLibName, defaultLibTags } from './constants';
-import { NormalizedSchema, KvGeneratorSchema } from './schema';
+import { NormalizedSchema, DbGeneratorSchema } from './schema';
 
+import { NormalizedSchema as LoggingLibNormalizedSchema } from '../logging/schema';
 import { getImportPath, getNpmScope } from '../../utils';
 
 /**
- * Normalize options for the KV generator.
+ * Normalize options for the DB generator.
  *
  * @param tree The virtual file system tree.
  * @param options The options passed to the generator.
@@ -25,8 +26,16 @@ import { getImportPath, getNpmScope } from '../../utils';
  * - `npmScope`: The npm scope for the library.
  * - `npmScopeTitle`: The title cased npm scope for the library.
  * - `offsetFromRoot`: The relative path from the workspace root to the library.
+ * - `loggingLibName`: The name of the logging library.
+ * - `loggingLibImportPath`: The import path for the logging library.
+ * - `typesLibName`: The name of the types library.
+ * - `typesLibImportPath`: The import path for the types library.
  */
-export function normalizeOptions(tree: Tree, options: KvGeneratorSchema): NormalizedSchema {
+export function normalizeOptions(
+  tree: Tree,
+  options: DbGeneratorSchema,
+  extra: Pick<LoggingLibNormalizedSchema, 'projectName' | 'importPath' | 'typesLibName' | 'typesLibImportPath'>,
+): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
   const name = names(options.name ?? defaultLibName).fileName;
   const project = names(defaultLibDirectory).fileName;
@@ -52,5 +61,9 @@ export function normalizeOptions(tree: Tree, options: KvGeneratorSchema): Normal
     npmScope,
     npmScopeTitle,
     offsetFromRoot: offsetFromRootPath,
+    loggingLibName: extra.projectName,
+    loggingLibImportPath: extra.importPath,
+    typesLibName: extra.typesLibName,
+    typesLibImportPath: extra.typesLibImportPath,
   };
 }

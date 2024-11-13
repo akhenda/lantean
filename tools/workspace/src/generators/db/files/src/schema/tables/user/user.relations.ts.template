@@ -1,0 +1,10 @@
+import { relations } from 'drizzle-orm';
+
+import { user } from './user.table';
+
+import { book } from '../book/book.table';
+
+export const userRelations = relations(user, ({ many }) => ({
+  authored: many(book),
+  borrowed: many(book),
+}));

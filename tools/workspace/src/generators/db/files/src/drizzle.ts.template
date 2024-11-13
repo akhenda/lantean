@@ -1,0 +1,25 @@
+import { drizzle as drizzleORM } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+
+import schema, { type DB } from './schema';
+
+import env from '../env';
+
+declare global {
+  // eslint-disable-next-line no-var
+  var drizzle: DB | undefined;
+}
+
+export const connection = postgres(env.DATABASE_URL, {
+  max: env.DB_MIGRATING || env.DB_SEEDING ? 1 : undefined,
+  onnotice: env.DB_SEEDING ? () => null : undefined,
+});
+
+export const db =
+  globalThis.drizzle ||
+  drizzleORM(connection, {
+    logger: env.DB_LOG_LEVEL === 'debug',
+    schema,
+  });
+
+if (env.NODE_ENV === 'development') globalThis.drizzle = db;

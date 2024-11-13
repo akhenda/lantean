@@ -1,0 +1,46 @@
+/* eslint-disable sort-keys-fix/sort-keys-fix */
+import { index, pgTable, uniqueIndex } from 'drizzle-orm/pg-core';
+
+import { getColumns } from '../columns';
+
+const tableName = 'user';
+const {
+  id,
+  name,
+  avatarUrl,
+  phone,
+  phoneVerified,
+  email,
+  emailVerified,
+  confirmationCode,
+  password,
+  role,
+  createdAt,
+  updatedAt,
+} = getColumns();
+
+export const user = pgTable(
+  tableName,
+  {
+    id,
+    name,
+    avatarUrl,
+    phone,
+    phoneVerified,
+    email,
+    emailVerified,
+    confirmationCode,
+    password,
+    role,
+    createdAt,
+    updatedAt,
+  },
+  (table) => ({
+    emailIdx: uniqueIndex(`${tableName}_email_idx`).on(table.email),
+    phoneIdx: uniqueIndex(`${tableName}_phone_idx`).on(table.phone),
+    roleIdx: index(`${tableName}_role_idx`).on(table.role),
+  }),
+);
+
+export type User = typeof user.$inferSelect;
+export type NewUser = typeof user.$inferInsert;

@@ -1,0 +1,22 @@
+import { book, bookRelations } from './book';
+import { user, userRelations } from './user';
+
+export * from './columns';
+export * from './book';
+export * from './user';
+
+export const tables = {
+  book,
+  user,
+} as const;
+
+export const relations = {
+  bookRelations,
+  userRelations,
+} as const;
+
+export type Tables = typeof tables;
+export type TableNames = keyof Tables;
+export type Table<TableName extends TableNames> = Tables[TableName];
+export type InsertedRecord<TableName extends TableNames> = Table<TableName>['$inferInsert'];
+export type ReturnedRecord<TableName extends TableNames> = Table<TableName>['$inferSelect'];

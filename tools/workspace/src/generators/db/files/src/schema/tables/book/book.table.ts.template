@@ -1,0 +1,27 @@
+/* eslint-disable sort-keys-fix/sort-keys-fix */
+import { index, pgTable } from 'drizzle-orm/pg-core';
+
+import { getColumns } from '../columns';
+
+const tableName = 'book';
+const { id, title, isbn, authorId, borrowerId, createdAt, updatedAt } = getColumns();
+
+export const book = pgTable(
+  tableName,
+  {
+    id,
+    title,
+    authorId,
+    borrowerId,
+    isbn,
+    createdAt,
+    updatedAt,
+  },
+  (table) => ({
+    authorIdIdx: index(`${tableName}_author_id_idx`).on(table.authorId),
+    borrowerIdIdx: index(`${tableName}_borrower_id_idx`).on(table.borrowerId),
+  }),
+);
+
+export type Book = typeof book.$inferSelect;
+export type NewBook = typeof book.$inferInsert;

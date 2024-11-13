@@ -1,0 +1,12 @@
+import BookModel from './Book';
+import UserModel from './User';
+
+export const bookModel = new BookModel();
+export const userModel = new UserModel();
+
+const models = {
+  book: bookModel,
+  user: userModel,
+};
+
+export default models;

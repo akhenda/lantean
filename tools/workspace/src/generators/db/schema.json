@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "Db",
+  "title": "Generate Database Library",
+  "description": "Generates a db library that uses drizzle-orm for database access",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use?"
+    },
+    "loggingLibName": {
+      "type": "string",
+      "description": "The logging library to use",
+      "$default": {
+        "$source": "projectName"
+      },
+      "x-prompt": "What name would you like to use for the logging lib?"
+    },
+    "typesLibName": {
+      "type": "string",
+      "description": "The types library to use",
+      "$default": {
+        "$source": "projectName"
+      },
+      "x-prompt": "What name would you like to use for the types lib?"
+    }
+  },
+  "required": []
+}

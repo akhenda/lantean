@@ -1,0 +1,22 @@
+import BaseModel from './Base';
+
+import type { Book } from '../types';
+
+export default class BookModel extends BaseModel<'book'> {
+  table = this.tables.book;
+  query = this.db.query.book;
+
+  async upsert(book: Book) {
+    const [result] = await this.db
+      .insert(this.table)
+      .values(book)
+      .onConflictDoUpdate({ set: book, target: this.table.id })
+      .returning();
+
+    return result;
+  }
+
+  delete(id: Book['id']) {
+    return this._delete(id);
+  }
+}
