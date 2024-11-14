@@ -5,6 +5,6 @@ import { book } from './book.table';
 import { user } from '../user/user.table';
 
 export const bookRelations = relations(book, ({ many, one }) => ({
-  authors: many(user, { fields: [book.authorId], references: [user.id] }),
+  authors: many(user, { fields: [book.authorId], references: [user.id], relationName: 'authored' }),
   borrowedBy: one(user, { fields: [book.borrowerId], references: [user.id] }),
 }));

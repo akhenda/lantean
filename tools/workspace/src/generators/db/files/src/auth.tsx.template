@@ -9,6 +9,8 @@ import { dark } from '@clerk/themes';
 
 import { createProjectLogger } from '<%= loggingLibImportPath %>';
 
+import { Role } from './schema/types';
+
 const Logger = createProjectLogger('<%= importPath %>', 'debug');
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -35,8 +37,6 @@ const server = {
    * Get the currently logged in user on the server
    */
   async authUser() {
-    'user server';
-
     const user = await serverCurrentUser();
 
     return user;
@@ -51,8 +51,6 @@ const server = {
    * @returns the invitation object
    */
   async inviteUser(this: void, emailAddress: string, role: Role) {
-    'use server';
-
     Logger.debug('Inviting Clerk user', { emailAddress });
 
     const invitation = await clerkClient.invitations.createInvitation({
@@ -78,8 +76,6 @@ const server = {
     userId: string,
     role: Role | null = 'SUBACCOUNT_USER',
   ) {
-    'use server';
-
     Logger.debug('Updating Clerk user role', { role, userId });
     await clerkClient.users.updateUserMetadata(userId, { privateMetadata: { role } });
     Logger.debug('Clerk user role updated');
@@ -98,8 +94,6 @@ const server = {
     next: (user: User) => Promise<Result>,
     onDoesNotExist?: () => OnDoesNotExist,
   ) {
-    'use server';
-
     Logger.info('Starting With Clerk user...');
     // Logger.info('Starting With Clerk user...');
     // Logger.fatal('Starting With Clerk user...');

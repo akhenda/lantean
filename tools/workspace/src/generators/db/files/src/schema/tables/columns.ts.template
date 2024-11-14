@@ -3,7 +3,7 @@
 // https://planetscale.com/blog/working-with-related-data-using-drizzle-and-planetscale
 // https://planetscale.com/docs/learn/operating-without-foreign-key-constraints#why-does-planetscale-not-recommend-constraints-
 // https://planetscale.com/blog/challenges-of-supporting-foreign-key-constraints
-import { serial, timestamp, varchar, boolean, integer } from 'drizzle-orm/pg-core';
+import { text, timestamp, varchar, boolean, integer } from 'drizzle-orm/pg-core';
 import { monotonicFactory } from 'ulid';
 
 import type { Union2Tuple } from '<%= typesLibImportPath %>';
@@ -29,7 +29,7 @@ export function getId<T extends string>(name: T) {
   if (name === 'users') prefix = 'U_';
   if (name === 'books') prefix = 'BK_';
 
-  return serial('id')
+  return text('id')
     .primaryKey()
     .$defaultFn(() => getULID(prefix));
 }
@@ -57,3 +57,44 @@ export function getColumns() {
     borrowerId: integer('borrower_id'),
   };
 }
+
+// function pickColumns<T, K extends keyof T>(obj: T, ...keys: K[]): Pick<T, K> {
+//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   const ret: any = {};
+
+//   keys.forEach((key) => {
+//     ret[key] = obj[key];
+//   });
+
+//   return ret;
+// }
+
+// function getAllColumns<T extends PgColumnsBuilders>(t: T) {
+//   return {
+//     // user
+//     id: t.serial().primaryKey(),
+//     name: t.varchar('name', { length: 255 }).notNull(),
+//     avatarUrl: t.varchar('avatar_url', { length: 255 }).notNull(),
+//     phone: t.varchar('contact_phone', { length: 255 }).notNull().unique(),
+//     phoneVerified: t.boolean('phone_verified').notNull(),
+//     email: t.varchar('email', { length: 255 }).notNull().unique(),
+//     emailVerified: t.boolean('email_verified').notNull(),
+//     confirmationCode: t.varchar('confirmation_code', { length: 255 }),
+//     password: t.varchar('password', { length: 255 }).notNull(),
+//     role: t.varchar('role', { enum: roleNames, length: 50 }).default(roles.READER).notNull(),
+//     createdAt: t.timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
+//     updatedAt: t.timestamp('updated_at', { mode: 'string' }).notNull().defaultNow(),
+
+//     // book
+//     title: t.varchar('title', { length: 255 }).notNull(),
+//     isbn: t.varchar('isbn', { length: 20 }).notNull(),
+//     authorId: t.integer('author_id').notNull(),
+//     borrowerId: t.integer('borrower_id'),
+//   };
+// }
+
+// export type Column = keyof ReturnType<typeof getAllColumns>;
+
+// export function getColumns<T extends PgColumnsBuilders>(t: T, ...columns: Column[]) {
+//   return pickColumns(getAllColumns(t), ...columns);
+// }

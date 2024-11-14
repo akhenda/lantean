@@ -44,6 +44,8 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
   updateJson<TSConfig>(tree, join(options.projectRoot, 'tsconfig.json'), (json) => {
     return updateTSConfigCompilerOptions(json, {
       noPropertyAccessFromIndexSignature: false,
+      esModuleInterop: true,
+      jsx: 'react',
     });
   });
 }
@@ -53,7 +55,17 @@ function updateESLintConfig(tree: Tree, options: NormalizedSchema) {
     if (json.overrides && json.overrides.length) {
       json.overrides.forEach((override) => {
         if (override.files && override.files.includes('*.json')) {
-          override.rules['@nx/dependency-checks'] = ['error', { ignoredDependencies: [...Object.keys(deps)] }];
+          override.rules['@nx/dependency-checks'] = [
+            'error',
+            {
+              ignoredDependencies: [
+                ...Object.keys(deps),
+                ...Object.keys(devDeps),
+                options.loggingLibImportPath,
+                options.typesLibImportPath,
+              ],
+            },
+          ];
         }
       });
     }

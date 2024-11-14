@@ -1,4 +1,4 @@
-import type { PgDatabase } from 'drizzle-orm/pg-core';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 import { tables, relations, type TableNames } from './tables';
 
@@ -7,5 +7,5 @@ export const schema = { ...tables, ...relations } as const;
 export default schema;
 
 export type Schema = typeof schema;
-export type DB = PgDatabase<typeof schema>;
+export type DB = PostgresJsDatabase<typeof schema>;
 export type Query<T extends TableNames> = DB['query'][T];

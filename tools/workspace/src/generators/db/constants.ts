@@ -26,6 +26,7 @@ export const deps = {
   pg: '^8.13.1',
   postgres: '^3.4.5',
   ulid: '^2.3.0',
+  zod: '^3.23.8',
 } as const;
 
 export const devDeps = {
