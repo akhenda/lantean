@@ -1,21 +1,13 @@
-import {
-  clerkClient,
-  ClerkProvider,
-  currentUser as clientCurrentUser,
-} from '@clerk/nextjs';
+import { clerkClient, currentUser as clientCurrentUser } from '@clerk/nextjs';
 import type { User } from '@clerk/nextjs/server';
 import { currentUser as serverCurrentUser } from '@clerk/nextjs/server';
-import { dark } from '@clerk/themes';
 
 import { createProjectLogger } from '<%= loggingLibImportPath %>';
 
+import { AuthProvider } from './provider';
 import { Role } from './schema/types';
 
 const Logger = createProjectLogger('<%= importPath %>', 'debug');
-
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  return <ClerkProvider appearance={{ baseTheme: dark }}>{children}</ClerkProvider>;
-};
 
 const client = {
   AuthProvider,
@@ -24,8 +16,6 @@ const client = {
    * Get the currently logged in user in the browser
    */
   async authUser() {
-    'use server';
-
     const user = await clientCurrentUser();
 
     return user;
@@ -71,11 +61,7 @@ const server = {
    * @param userId - the user id of the user we need to update role for
    * @param role - the new role
    */
-  async updateUserRole(
-    this: void,
-    userId: string,
-    role: Role | null = 'SUBACCOUNT_USER',
-  ) {
+  async updateUserRole(this: void, userId: string, role: Role | null = 'SUBACCOUNT_USER') {
     Logger.debug('Updating Clerk user role', { role, userId });
     await clerkClient.users.updateUserMetadata(userId, { privateMetadata: { role } });
     Logger.debug('Clerk user role updated');
@@ -118,7 +104,4 @@ const server = {
   },
 };
 
-export const auth = {
-  client,
-  server,
-};
+export const auth = { client, server };

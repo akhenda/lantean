@@ -1,0 +1,36 @@
+import { eq } from 'drizzle-orm';
+
+import users from './fixtures/users.json';
+
+import { type DB, Role, schema } from '../schema';
+
+export default async function seed(db: DB) {
+  await Promise.all(
+    users.map(async (user) => {
+      const [insertedUser] = await db
+        .insert(schema.user)
+        .values({
+          ...user,
+          emailVerified: user.email_verified,
+          phoneVerified: user.phone_verified,
+          avatarUrl: user.avatar_url,
+          confirmationCode: user.confirmation_code,
+          password: user.password,
+          role: (user.role as Role) || 'READER',
+        })
+        .returning();
+
+      await Promise.all(
+        user.authored.map(async (bookId: number) => {
+          await db.update(schema.book).set({ authorId: insertedUser.id }).where(eq(schema.book.id, bookId));
+        })
+      );
+
+      await Promise.all(
+        user.borrowed.map(async (bookId: number) => {
+          await db.update(schema.book).set({ borrowerId: insertedUser.id }).where(eq(schema.book.id, bookId));
+        })
+      );
+    }),
+  );
+}

@@ -25,7 +25,7 @@ export default abstract class BaseModel<TableName extends TableNames> {
     this.tables = tables;
   }
 
-  async _get(id: string) {
+  async _get(id: number) {
     const record = await this.query.findFirst({
       where: (table, { eq }) => eq((table as Table<TableName>).id, id),
     });
@@ -47,7 +47,7 @@ export default abstract class BaseModel<TableName extends TableNames> {
     return result;
   }
 
-  async _update<Id extends string, RecordUpdate extends PgUpdateSetSource<Tables[TableName]>>(
+  async _update<Id extends number, RecordUpdate extends PgUpdateSetSource<Tables[TableName]>>(
     id: Id,
     recordUpdate: RecordUpdate,
   ): Promise<ReturnedRecord<TableName> | null> {
@@ -89,7 +89,7 @@ export default abstract class BaseModel<TableName extends TableNames> {
     return result;
   }
 
-  async _delete<Id extends string>(id: Id): Promise<ReturnedRecord<TableName> | null> {
+  async _delete<Id extends number>(id: Id): Promise<ReturnedRecord<TableName> | null> {
     const [deletedRecord] = await this.db.delete(this.table).where(this.operators.eq(this.table.id, id)).returning();
 
     return deletedRecord;

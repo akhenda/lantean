@@ -3,7 +3,7 @@
 // https://planetscale.com/blog/working-with-related-data-using-drizzle-and-planetscale
 // https://planetscale.com/docs/learn/operating-without-foreign-key-constraints#why-does-planetscale-not-recommend-constraints-
 // https://planetscale.com/blog/challenges-of-supporting-foreign-key-constraints
-import { text, timestamp, varchar, boolean, integer } from 'drizzle-orm/pg-core';
+import { serial, text, timestamp, varchar, boolean, integer } from 'drizzle-orm/pg-core';
 import { monotonicFactory } from 'ulid';
 
 import type { Union2Tuple } from '<%= typesLibImportPath %>';

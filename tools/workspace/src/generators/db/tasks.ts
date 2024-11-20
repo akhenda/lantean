@@ -46,6 +46,7 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
       noPropertyAccessFromIndexSignature: false,
       esModuleInterop: true,
       jsx: 'react',
+      resolveJsonModule: true,
     });
   });
 }

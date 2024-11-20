@@ -1,0 +1,16 @@
+import books from './fixtures/books.json';
+
+import { DB, schema } from '../schema';
+
+export default async function seed(db: DB) {
+  await Promise.all(
+    books.map(async (book) => {
+      const [newBook] = await db
+        .insert(schema.book)
+        .values({ ...book, authorId: 0, borrowerId: null })
+        .returning();
+
+      console.log('Inserted book...', newBook);
+    }),
+  );
+}
