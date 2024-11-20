@@ -57,13 +57,8 @@ export function isHuskyInstalled(tree: Tree) {
  * @returns The updated TSConfig.
  */
 export function updateTSConfigCompilerOptions(
-  {
-    compileOnSave,
-    compilerOptions = {},
-    extends: _extends = null,
-    ...json
-  }: TSConfig,
-  options: TSConfig['compilerOptions'] = {}
+  { compileOnSave, compilerOptions = {}, extends: _extends = null, ...json }: TSConfig,
+  options: TSConfig['compilerOptions'] = {},
 ) {
   const { baseUrl, paths, ...defaultCompilerOptions } = compilerOptions;
 
@@ -79,9 +74,7 @@ export function updateTSConfigCompilerOptions(
  * Read the npm scope that a workspace should use by default
  */
 export function getNpmScope(tree: Tree): string | undefined {
-  const { name } = tree.exists('package.json')
-    ? readJson<{ name?: string }>(tree, 'package.json')
-    : { name: null };
+  const { name } = tree.exists('package.json') ? readJson<{ name?: string }>(tree, 'package.json') : { name: null };
 
   if (name?.startsWith('@')) return name.split('/')[0].substring(1);
 
@@ -107,9 +100,7 @@ export function getImportPath(tree: Tree, dir: string): string {
  * @returns An array of globs.
  */
 export function getTSConfigGlobs(folders: string[] = [], exts: string[] = []) {
-  return folders
-    .map((directory) => exts.map((ext) => `${directory}/**/*.${ext}`))
-    .flat();
+  return folders.map((directory) => exts.map((ext) => `${directory}/**/*.${ext}`)).flat();
 }
 
 /**
@@ -120,10 +111,7 @@ export function getTSConfigGlobs(folders: string[] = [], exts: string[] = []) {
  *
  * @returns A list of unique globs.
  */
-export function getTSConfigInclude(
-  globs: string[] = [],
-  include: string[] = []
-) {
+export function getTSConfigInclude(globs: string[] = [], include: string[] = []) {
   return Array.from(new Set([...include, ...globs]));
 }
 
@@ -135,10 +123,7 @@ export function getTSConfigInclude(
  *
  * @returns A list of unique globs.
  */
-export function getTSConfigExclude(
-  globs: string[] = [],
-  exclude: string[] = []
-) {
+export function getTSConfigExclude(globs: string[] = [], exclude: string[] = []) {
   return Array.from(new Set([...exclude, ...globs]));
 }
 
@@ -154,7 +139,7 @@ export function getTSConfigExclude(
 export function getLibTSConfigInclude(
   folders: string[] = [],
   include: TSConfig['include'] = [],
-  extensions = ['ts', 'tsx']
+  extensions = ['ts', 'tsx'],
 ) {
   const globs = getTSConfigGlobs(folders, extensions);
 
@@ -173,7 +158,7 @@ export function getLibTSConfigInclude(
 export function getLibTSConfigExclude(
   folders: string[] = [],
   exclude: TSConfig['exclude'] = [],
-  extensions = ['spec.ts', 'spec.tsx', 'test.ts', 'test.tsx']
+  extensions = ['spec.ts', 'spec.tsx', 'test.ts', 'test.tsx'],
 ) {
   const globs = getTSConfigGlobs(folders, extensions);
 
@@ -193,17 +178,20 @@ function assembleAdditionalProjects(
     project: string;
     projectRoot: string;
     targets?: Record<string, TargetConfiguration>;
-  }[]
+  }[],
 ) {
   return additionalProjects.reduce<{
     [projectName: string]: ProjectConfiguration;
-  }>((acc, p) => {
-    acc[p.project] = {
-      root: p.projectRoot,
-      targets: p.targets || {},
-    };
-    return acc;
-  }, {} satisfies { [project: string]: ProjectConfiguration });
+  }>(
+    (acc, p) => {
+      acc[p.project] = {
+        root: p.projectRoot,
+        targets: p.targets || {},
+      };
+      return acc;
+    },
+    {} satisfies { [project: string]: ProjectConfiguration },
+  );
 }
 
 /**
@@ -281,8 +269,7 @@ export interface CommandOptions extends ExecOptions {
  * buildCommand(['npm', 'install', '--save-dev', 'jest'])
  * > 'npm install --save-dev jest'
  */
-export const buildCommand = (parts: CommandPart[]): string =>
-  parts.filter(Boolean).join(' ');
+export const buildCommand = (parts: CommandPart[]): string => parts.filter(Boolean).join(' ');
 
 /**
  * Returns the `dlx` command of the detected package manager.
@@ -318,7 +305,7 @@ export function getPackageManagerDlxCommand() {
 export const execCommand = (
   command: string,
   options: CommandOptions = { asString: false, asJSON: false },
-  isDryRun = false
+  isDryRun = false,
 ) => {
   if (!options.silent || isDryRun) {
     console.log('\nRunning:');
@@ -364,6 +351,27 @@ export function execPackageManagerCommand(
       command,
       ...postCommand,
     ]),
-    options
+    options,
+  );
+}
+
+export function readNxVersion(tree: Tree): string {
+  const packageJson = readJson(tree, 'package.json');
+
+  const nxVersion = packageJson.devDependencies['@nx/workspace']
+    ? packageJson.devDependencies['@nx/workspace']
+    : packageJson.dependencies['@nx/workspace'];
+
+  if (!nxVersion) throw new Error('@nx/workspace is not a dependency.');
+
+  return nxVersion;
+}
+
+export function hasNxPackage(tree: Tree, nxPackage: string): boolean {
+  const packageJson = readJson(tree, 'package.json');
+
+  return (
+    (packageJson.dependencies && packageJson.dependencies[nxPackage]) ||
+    (packageJson.devDependencies && packageJson.devDependencies[nxPackage])
   );
 }

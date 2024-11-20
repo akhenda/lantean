@@ -90,6 +90,11 @@
       "schema": "./src/generators/db/schema.json",
       "description": "DB Library Generator"
     },
+    "convex": {
+      "factory": "./src/generators/convex/generator",
+      "schema": "./src/generators/convex/schema.json",
+      "description": "Convex Library Generator"
+    },
     "gluestack": {
       "factory": "./src/generators/gluestack/generator",
       "schema": "./src/generators/gluestack/schema.json",

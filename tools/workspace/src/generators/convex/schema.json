@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "Convex",
+  "title": "Generate Convex Library",
+  "description": "Generates a backend library that uses convex as a BaaS",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use?"
+    },
+    "directory": {
+      "type": "string",
+      "description": "Project directory",
+      "alias": "d",
+      "$default": {
+        "$source": "argv",
+        "index": 1
+      },
+      "x-prompt": "Where do you want to place the project?"
+    },
+    "tags": {
+      "type": "string",
+      "description": "Add tags to the project (used for linting)",
+      "alias": "t"
+    }
+  },
+  "required": []
+}
