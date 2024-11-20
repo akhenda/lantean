@@ -1,22 +1,14 @@
 import { join } from 'path';
 
-import {
-  addDependenciesToPackageJson,
-  generateFiles,
-  offsetFromRoot,
-  Tree,
-  updateJson,
-} from '@nx/devkit';
+import { addDependenciesToPackageJson, generateFiles, offsetFromRoot, Tree, updateJson } from '@nx/devkit';
 import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
 import { applicationGenerator } from '@nx/next';
 import { tsquery } from '@phenomnomnominal/tsquery';
 import { unique } from 'radash';
 
 import { dependencies, devDependencies } from './constants';
-import { NormalizedSchema, UniversalNextGeneratorSchema } from './schema';
-import { normalizeOptions } from './utils';
+import { NormalizedSchema } from './schema';
 
-import universalGenerator from '../universal/generator';
 import { CallExpression, VariableDeclaration } from 'typescript';
 
 /**
@@ -29,14 +21,8 @@ import { CallExpression, VariableDeclaration } from 'typescript';
  * @param appDirectory The directory of the Next.js application.
  */
 function cleanupLib(tree: Tree, appDirectory: string) {
-  tree.write(
-    `${appDirectory}/src/app/nx/page.tsx`,
-    tree.read(`${appDirectory}/src/app/page.tsx`),
-  );
-  tree.write(
-    `${appDirectory}/src/app/global.css.orig`,
-    tree.read(`${appDirectory}/src/app/global.css`),
-  );
+  tree.write(`${appDirectory}/src/app/nx/page.tsx`, tree.read(`${appDirectory}/src/app/page.tsx`));
+  tree.write(`${appDirectory}/src/app/global.css.orig`, tree.read(`${appDirectory}/src/app/global.css`));
 }
 
 /**
@@ -55,18 +41,8 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
     template: '',
   };
 
-  generateFiles(
-    tree,
-    join(__dirname, 'files', 'patches'),
-    'patches',
-    templateOptions,
-  );
-  generateFiles(
-    tree,
-    join(__dirname, 'files', 'lib'),
-    options.projectRoot,
-    templateOptions,
-  );
+  generateFiles(tree, join(__dirname, 'files', 'root'), '', templateOptions);
+  generateFiles(tree, join(__dirname, 'files', 'lib'), options.projectRoot, templateOptions);
 }
 
 /**
@@ -113,20 +89,12 @@ function updateGlobalCSS(tree: Tree, options: NormalizedSchema) {
  * the project root path.
  */
 function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
-  updateJson<TSConfig>(
-    tree,
-    join(options.projectRoot, 'tsconfig.json'),
-    (json) => {
-      json.compilerOptions.jsxImportSource = 'nativewind';
-      json.include = [
-        ...(json.include as string[]),
-        'nativewind-env.d.ts',
-        '.next/types/**/*.ts',
-      ];
+  updateJson<TSConfig>(tree, join(options.projectRoot, 'tsconfig.json'), (json) => {
+    json.compilerOptions.jsxImportSource = 'nativewind';
+    json.include = [...(json.include as string[]), 'nativewind-env.d.ts', '.next/types/**/*.ts'];
 
-      return json;
-    },
-  );
+    return json;
+  });
 }
 
 /**
@@ -161,10 +129,7 @@ function updateNextConfig(tree: Tree, options: NormalizedSchema) {
   const newReqStmt = `const { withExpo } = require('@expo/next-adapter');`;
 
   // Find existing import/require statements
-  const reqStmts = tsquery(
-    config,
-    'VariableStatement:has(CallExpression Identifier[name="require"])',
-  );
+  const reqStmts = tsquery(config, 'VariableStatement:has(CallExpression Identifier[name="require"])');
 
   // Check if `withExpo` is already imported; if not, insert the new import
   // after the last existing import
@@ -266,14 +231,9 @@ function addDependencies(tree: Tree) {
  * @param options The normalized options for the generator.
  */
 function updateEslintConfig(tree: Tree, options: NormalizedSchema) {
-  const contents = tree
-    .read(join(options.projectRoot, '.eslintrc.json'))
-    .toString();
+  const contents = tree.read(join(options.projectRoot, '.eslintrc.json')).toString();
 
-  const newContents = contents.replace(
-    'apps/books/tsconfig.*?.json',
-    'apps/books/tsconfig?.*?.json',
-  );
+  const newContents = contents.replace('apps/books/tsconfig.*?.json', 'apps/books/tsconfig?.*?.json');
 
   if (newContents !== contents) {
     tree.write(join(options.projectRoot, '.eslintrc.json'), newContents);
@@ -290,10 +250,7 @@ function updateEslintConfig(tree: Tree, options: NormalizedSchema) {
  * @param tree The file system tree.
  * @param options The normalized options for the generator.
  */
-export function updateProgressUniversalComponent(
-  tree: Tree,
-  options: NormalizedSchema,
-) {
+export function updateProgressUniversalComponent(tree: Tree, options: NormalizedSchema) {
   const isDryRun = process.env.NX_DRY_RUN === 'true';
   const { uiName, libsDir, universalLibName } = options;
 
@@ -301,15 +258,7 @@ export function updateProgressUniversalComponent(
 
   // The "Progress" RNR component needs a dependency array to run on web
   // This is because it uses the useAnimatedStyle hook.
-  const progressComponentPath = join(
-    libsDir,
-    universalLibName,
-    'design',
-    uiName,
-    'components',
-    'ui',
-    'progress.tsx',
-  );
+  const progressComponentPath = join(libsDir, universalLibName, 'design', uiName, 'components', 'ui', 'progress.tsx');
 
   // Step 1: Read the code
   const progressSource = tree.read(progressComponentPath)?.toString() ?? '';
@@ -356,20 +305,7 @@ export function updateProgressUniversalComponent(
  * @param schema The options passed to the generator.
  * @returns The normalized options for the generator.
  */
-export async function generateNextUniversalApp(
-  tree: Tree,
-  schema: UniversalNextGeneratorSchema,
-) {
-  const skipFormat = false;
-  const { uiName, libName } = normalizeOptions(tree, schema, {});
-  const result = await universalGenerator(tree, {
-    uiName,
-    libName,
-    skipFormat,
-  });
-  const { options: universalLibOptions } = result();
-  const options = normalizeOptions(tree, schema, universalLibOptions);
-
+export async function generateNextUniversalApp(tree: Tree, options: NormalizedSchema) {
   await applicationGenerator(tree, {
     name: options.projectName,
     directory: options.projectRoot,
@@ -380,7 +316,7 @@ export async function generateNextUniversalApp(
     linter: 'eslint',
     setParserOptionsProject: true,
     e2eTestRunner: 'playwright',
-    skipFormat,
+    skipFormat: options.skipFormat,
     js: false,
     swc: true,
   });

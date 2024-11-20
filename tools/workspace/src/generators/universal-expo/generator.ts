@@ -1,8 +1,10 @@
-import { formatFiles, installPackagesTask, Tree } from '@nx/devkit';
+import { formatFiles, installPackagesTask, readProjectConfiguration, Tree } from '@nx/devkit';
 
 import { UniversalExpoGeneratorSchema } from './schema';
 import { generateExpoUniversalApp } from './tasks';
+import { normalizeOptions } from './utils';
 
+import universalGenerator from '../universal/generator';
 import { installAFewUniversalComponents } from '../universal/tasks';
 
 /**
@@ -14,17 +16,24 @@ import { installAFewUniversalComponents } from '../universal/tasks';
  * @returns A function that will install the required packages and
  * format the workspace.
  */
-export async function universalExpoGenerator(
-  tree: Tree,
-  schema: UniversalExpoGeneratorSchema,
-) {
-  const options = await generateExpoUniversalApp(tree, schema);
+export async function universalExpoGenerator(tree: Tree, schema: UniversalExpoGeneratorSchema) {
+  const skipFormat = false;
+  const options = normalizeOptions(tree, { ...schema, skipFormat: schema.skipFormat ?? skipFormat });
+  const { universalLibName, uiName, libName } = options;
+
+  try {
+    readProjectConfiguration(tree, universalLibName);
+  } catch (error) {
+    await universalGenerator(tree, { uiName, libName, skipFormat });
+  }
+
+  await generateExpoUniversalApp(tree, options);
 
   await formatFiles(tree);
 
   return () => {
     installPackagesTask(tree);
-    installAFewUniversalComponents(options.universalLibName);
+    installAFewUniversalComponents(universalLibName);
   };
 }
 

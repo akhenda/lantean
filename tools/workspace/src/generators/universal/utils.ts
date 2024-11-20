@@ -35,7 +35,6 @@ export function normalizeOptions(
   tree: Tree,
   options: UniversalGeneratorSchema,
 ): NormalizedSchema {
-  console.log('options: ', options);
   const layout = getWorkspaceLayout(tree);
   const appsDir = layout.appsDir === '.' ? 'apps' : layout.appsDir;
   const libsDir = layout.libsDir === '.' ? 'libs' : layout.libsDir;

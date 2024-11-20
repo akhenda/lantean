@@ -1,22 +1,13 @@
 import { join } from 'path';
 
-import {
-  addDependenciesToPackageJson,
-  generateFiles,
-  offsetFromRoot,
-  Tree,
-  updateJson,
-} from '@nx/devkit';
+import { addDependenciesToPackageJson, generateFiles, offsetFromRoot, Tree, updateJson } from '@nx/devkit';
 import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
 import { expoApplicationGenerator } from '@nx/expo';
 import { tsquery } from '@phenomnomnominal/tsquery';
 import { unique } from 'radash';
 
 import { dependencies, devDependencies } from './constants';
-import { NormalizedSchema, UniversalExpoGeneratorSchema } from './schema';
-import { normalizeOptions } from './utils';
-
-import universalGenerator from '../universal/generator';
+import { NormalizedSchema } from './schema';
 
 /**
  * Deletes unnecessary files from the Expo library.
@@ -28,14 +19,8 @@ import universalGenerator from '../universal/generator';
  * @param appDirectory The directory of the Expo library.
  */
 function cleanupLib(tree: Tree, appDirectory: string) {
-  tree.write(
-    `${appDirectory}/src/__tests__/welcome.spec.tsx`,
-    tree.read(`${appDirectory}/src/app/App.spec.tsx`),
-  );
-  tree.write(
-    `${appDirectory}/src/app/(tabs)/nx/index.tsx`,
-    tree.read(`${appDirectory}/src/app/App.tsx`),
-  );
+  tree.write(`${appDirectory}/src/__tests__/welcome.spec.tsx`, tree.read(`${appDirectory}/src/app/App.spec.tsx`));
+  tree.write(`${appDirectory}/src/app/(tabs)/nx/index.tsx`, tree.read(`${appDirectory}/src/app/App.tsx`));
   tree.delete(`${appDirectory}/src/app/App.tsx`);
   tree.delete(`${appDirectory}/src/app/App.spec.tsx`);
 }
@@ -57,12 +42,7 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
     template: '',
   };
 
-  generateFiles(
-    tree,
-    join(__dirname, 'files'),
-    options.projectRoot,
-    templateOptions,
-  );
+  generateFiles(tree, join(__dirname, 'files'), options.projectRoot, templateOptions);
 }
 
 /**
@@ -137,20 +117,11 @@ function updateBabelConfig(tree: Tree, options: NormalizedSchema) {
  * @param options The normalized options for the generator.
  */
 function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
-  updateJson<TSConfig>(
-    tree,
-    join(options.projectRoot, 'tsconfig.app.json'),
-    (json) => {
-      json.include = [
-        ...(json.include as string[]),
-        'nativewind-env.d.ts',
-        '.expo/types/**/*.ts',
-        'expo-env.d.ts',
-      ];
+  updateJson<TSConfig>(tree, join(options.projectRoot, 'tsconfig.app.json'), (json) => {
+    json.include = [...(json.include as string[]), 'nativewind-env.d.ts', '.expo/types/**/*.ts', 'expo-env.d.ts'];
 
-      return json;
-    },
-  );
+    return json;
+  });
 }
 
 /**
@@ -259,20 +230,7 @@ function addDependencies(tree: Tree) {
  * @param schema The options passed to the generator.
  * @returns The normalized options for the generator.
  */
-export async function generateExpoUniversalApp(
-  tree: Tree,
-  schema: UniversalExpoGeneratorSchema,
-) {
-  const skipFormat = false;
-  const { uiName, libName } = normalizeOptions(tree, schema, {});
-  const result = await universalGenerator(tree, {
-    uiName,
-    libName,
-    skipFormat,
-  });
-  const { options: universalLibOptions } = result();
-  const options = normalizeOptions(tree, schema, universalLibOptions);
-
+export async function generateExpoUniversalApp(tree: Tree, options: NormalizedSchema) {
   await expoApplicationGenerator(tree, {
     name: options.projectName,
     displayName: options.displayName,
@@ -283,7 +241,7 @@ export async function generateExpoUniversalApp(
     linter: 'eslint',
     setParserOptionsProject: true,
     e2eTestRunner: 'detox',
-    skipFormat,
+    skipFormat: options.skipFormat,
     js: false,
   });
 

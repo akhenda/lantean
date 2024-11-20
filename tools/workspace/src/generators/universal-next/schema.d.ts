@@ -7,6 +7,7 @@ export interface UniversalNextGeneratorSchema {
   name: string;
   uiName: string;
   libName: string;
+  skipFormat?: boolean;
 }
 
 /**

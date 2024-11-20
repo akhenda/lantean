@@ -23,12 +23,22 @@
       },
       "x-prompt": "What display name would you like to use?"
     },
+    "universalLibName": {
+      "type": "string",
+      "description": "The name for the Universal Lib",
+      "default": "universal",
+      "$default": {
+        "$source": "projectName",
+        "index": 2
+      },
+      "x-prompt": "What universal lib would you like to use?"
+    },
     "uiName": {
       "type": "string",
       "description": "The name for the Universal UI Lib",
       "$default": {
         "$source": "argv",
-        "index": 2
+        "index": 3
       },
       "x-prompt": "What name would you like to use for the ui lib?"
     },
@@ -37,7 +47,7 @@
       "description": "The name for the Universal Utils Lib",
       "$default": {
         "$source": "argv",
-        "index": 3
+        "index": 4
       },
       "x-prompt": "What name would you like to use for the lib folder?"
     }

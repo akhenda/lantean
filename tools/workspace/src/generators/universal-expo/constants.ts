@@ -1,12 +1,14 @@
+export const defaultUniversalLibName = 'universal';
+
 /**
  * Name of the UI library
  */
-export const uiName = 'ui-kit';
+export const defaultUIName = 'ui-kit';
 
 /**
  * Name of the utils library
  */
-export const libName = 'lib';
+export const defaultLibName = 'lib';
 
 /**
  * Common tags for the app

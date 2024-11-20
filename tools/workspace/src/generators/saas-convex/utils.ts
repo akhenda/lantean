@@ -19,37 +19,35 @@ import { normalizeOptions as normalizeUniversalExpoOptions } from '../universal-
 import { normalizeOptions as normalizeUniversalNextOptions } from '../universal-next/utils';
 import { defaultUniversalLibLibName, defaultUniversalLibUIName } from './constants';
 
-  /**
-   * Normalize options for the SaasConvex generator.
-   *
-   * @param tree The virtual file system tree.
-   * @param options The options passed to the generator.
-   * @returns The normalized options.
-   *
-   * The normalized options include the following:
-   * - `appsDir`: The path to the apps directory.
-   * - `libsDir`: The path to the libs directory.
-   * - `lintStagedConfigFileName`: The file name for the lint-staged config file.
-   * - `commitLintConfigFileName`: The file name for the commitlint config file.
-   * - `envLibName`: The name of the env library.
-   * - `typesLibName`: The name of the types library.
-   * - `loggingLibName`: The name of the logging library.
-   * - `monitoringLibName`: The name of the monitoring library.
-   * - `analyticsLibName`: The name of the analytics library.
-   * - `dateLibName`: The name of the date library.
-   * - `emailLibName`: The name of the email library.
-   * - `jobsLibName`: The name of the jobs library.
-   * - `kvLibName`: The name of the KV library.
-   * - `convexLibName`: The name of the Convex library.
-   * - `universalLibUIName`: The name of the universal library for the UI.
-   * - `universalLibLibName`: The name of the universal library for utils.
-   * - `expoAppName`: The name of the Expo app.
-   * - `expoAppDisplayName`: The display name of the Expo app.
-   * - `nextJSAppName`: The name of the Next.js app.
-   */
+/**
+ * Normalize options for the SaasConvex generator.
+ *
+ * @param tree The virtual file system tree.
+ * @param options The options passed to the generator.
+ * @returns The normalized options.
+ *
+ * The normalized options include the following:
+ * - `appsDir`: The path to the apps directory.
+ * - `libsDir`: The path to the libs directory.
+ * - `lintStagedConfigFileName`: The file name for the lint-staged config file.
+ * - `commitLintConfigFileName`: The file name for the commitlint config file.
+ * - `envLibName`: The name of the env library.
+ * - `typesLibName`: The name of the types library.
+ * - `loggingLibName`: The name of the logging library.
+ * - `monitoringLibName`: The name of the monitoring library.
+ * - `analyticsLibName`: The name of the analytics library.
+ * - `dateLibName`: The name of the date library.
+ * - `emailLibName`: The name of the email library.
+ * - `jobsLibName`: The name of the jobs library.
+ * - `kvLibName`: The name of the KV library.
+ * - `convexLibName`: The name of the Convex library.
+ * - `universalLibUIName`: The name of the universal library for the UI.
+ * - `universalLibLibName`: The name of the universal library for utils.
+ * - `expoAppName`: The name of the Expo app.
+ * - `expoAppDisplayName`: The display name of the Expo app.
+ * - `nextJSAppName`: The name of the Next.js app.
+ */
 export function normalizeOptions(tree: Tree, { skipFormat, ...options }: SaasConvexGeneratorSchema): NormalizedSchema {
-  console.log('skipFormat: ', skipFormat);
-  console.log('options: ', options);
   const layout = getWorkspaceLayout(tree);
   const appsDir = layout.appsDir === '.' ? 'apps' : layout.appsDir;
   const libsDir = layout.libsDir === '.' ? 'libs' : layout.libsDir;
@@ -96,35 +94,22 @@ export function normalizeOptions(tree: Tree, { skipFormat, ...options }: SaasCon
   const { projectName: convexLibName } = normalizeConvexOptions(tree, {
     name: options.convexLibName,
   });
-  const {
-    projectName: universalLibName,
-    importPath: universalLibImportPath,
-    uiName: universalLibUIName,
-    libName: universalLibLibName,
-  } = normalizeUniversalOptions(tree, {
+  const { uiName: universalLibUIName, libName: universalLibLibName } = normalizeUniversalOptions(tree, {
     uiName: options.universalLibUIName ?? defaultUniversalLibUIName,
     libName: options.universalLibLibName ?? defaultUniversalLibLibName,
     skipFormat,
   });
-  console.log('universalLibName: ', universalLibName);
-  console.log('universalLibImportPath: ', universalLibImportPath);
-  console.log('universalLibUIName: ', universalLibUIName);
-  console.log('universalLibLibName: ', universalLibLibName);
-  const { projectName: expoAppName, displayName: expoAppDisplayName } = normalizeUniversalExpoOptions(
-    tree,
-    {
-      name: options.expoAppName,
-      displayName: options.expoAppDisplayName,
-      uiName: universalLibUIName,
-      libName: universalLibLibName,
-    },
-    { projectName: universalLibName, importPath: universalLibImportPath },
-  );
-  const { projectName: nextJSAppName } = normalizeUniversalNextOptions(
-    tree,
-    { name: options.nextJSAppName, uiName: universalLibUIName, libName: universalLibLibName },
-    { projectName: universalLibName, importPath: universalLibImportPath },
-  );
+  const { projectName: expoAppName, displayName: expoAppDisplayName } = normalizeUniversalExpoOptions(tree, {
+    name: options.expoAppName,
+    displayName: options.expoAppDisplayName,
+    uiName: universalLibUIName,
+    libName: universalLibLibName,
+  });
+  const { projectName: nextJSAppName } = normalizeUniversalNextOptions(tree, {
+    name: options.nextJSAppName,
+    uiName: universalLibUIName,
+    libName: universalLibLibName,
+  });
 
   return {
     ...options,

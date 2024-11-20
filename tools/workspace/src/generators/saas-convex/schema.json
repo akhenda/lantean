@@ -247,7 +247,7 @@
       },
       "x-prompt": "What name would you like to use for the ui lib?"
     },
-    "universalLibUtilsName": {
+    "universalLibLibName": {
       "type": "string",
       "description": "",
       "$default": {

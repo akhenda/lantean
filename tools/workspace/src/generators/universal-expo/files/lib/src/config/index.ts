@@ -1,4 +1,4 @@
-import base from '@latean/universal/configs/expo';
+import base from '<%= universalLibImportPath %>/configs/expo';
 
 const config = { ...base, apiURL: 'fake-api' };
 

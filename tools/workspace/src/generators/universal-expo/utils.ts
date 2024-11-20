@@ -1,13 +1,13 @@
 import { getWorkspaceLayout, names, Tree } from '@nx/devkit';
 
+import { libTags, defaultUIName, defaultLibName } from './constants';
+import { NormalizedSchema, UniversalExpoGeneratorSchema } from './schema';
+
+import { normalizeOptions as normalizeUniversalOptions } from '../universal/utils';
 import { getImportPath, getNpmScope } from '../../utils';
 
-import { libTags, uiName, libName } from './constants';
-import { NormalizedSchema, UniversalExpoGeneratorSchema } from './schema';
-import { NormalizedSchema as UniversalLibNormalizedOptions } from '../universal/schema';
-
 /**
- * Normalize options for the Universal generator.
+ * Normalize options for the Universal Expo generator.
  *
  * @param tree The virtual file system tree.
  * @param options The options passed to the generator.
@@ -24,11 +24,7 @@ import { NormalizedSchema as UniversalLibNormalizedOptions } from '../universal/
  * - `libsDir`: The path to the libs directory.
  * - `tags`: The tags for the lib.
  */
-export function normalizeOptions(
-  tree: Tree,
-  { displayName, ...options }: UniversalExpoGeneratorSchema,
-  extra: Partial<UniversalLibNormalizedOptions> = {},
-): NormalizedSchema {
+export function normalizeOptions(tree: Tree, options: UniversalExpoGeneratorSchema): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
   const appsDir = layout.appsDir === '.' ? 'apps' : layout.appsDir;
   const libsDir = layout.libsDir === '.' ? 'libs' : layout.libsDir;
@@ -40,13 +36,24 @@ export function normalizeOptions(
   const npmScope = getNpmScope(tree) ?? name;
   const npmScopeTitle = names(npmScope).className;
 
+  const {
+    projectName: universalLibName,
+    importPath: universalLibImportPath,
+    uiName: universalLibUIName,
+    libName: universalLibLibName,
+  } = normalizeUniversalOptions(tree, {
+    uiName: options.uiName ?? defaultUIName,
+    libName: options.libName ?? defaultLibName,
+    skipFormat: options.skipFormat,
+  });
+
   return {
     ...options,
     appsDir,
     importPath,
     libsDir,
     name,
-    displayName: displayName ?? options.name,
+    displayName: options.displayName ?? options.name,
     npmScope,
     npmScopeTitle,
     projectDirectory,
@@ -56,9 +63,9 @@ export function normalizeOptions(
 
     names: names(name),
 
-    uiName: options.uiName ?? uiName,
-    libName: options.libName ?? libName,
-    universalLibName: extra.projectName,
-    universalLibImportPath: extra.importPath,
+    uiName: universalLibUIName,
+    libName: universalLibLibName,
+    universalLibName,
+    universalLibImportPath,
   };
 }

@@ -8,6 +8,8 @@ export interface UniversalExpoGeneratorSchema {
   displayName: string;
   uiName: string;
   libName: string;
+  universalLibName?: string;
+  skipFormat?: boolean;
 }
 
 /**

@@ -2,9 +2,9 @@ import { getWorkspaceLayout, names, Tree } from '@nx/devkit';
 
 import { getImportPath, getNpmScope } from '../../utils';
 
-import { libTags, uiName, libName } from './constants';
+import { libTags, defaultUIName, defaultLibName } from './constants';
 import { NormalizedSchema, UniversalNextGeneratorSchema } from './schema';
-import { NormalizedSchema as UniversalLibNormalizedOptions } from '../universal/schema';
+import { normalizeOptions as normalizeUniversalOptions } from '../universal/utils';
 
 /**
  * Normalize options for the Universal generator.
@@ -25,8 +25,7 @@ import { NormalizedSchema as UniversalLibNormalizedOptions } from '../universal/
  */
 export function normalizeOptions(
   tree: Tree,
-  options: UniversalNextGeneratorSchema,
-  extra: Partial<UniversalLibNormalizedOptions> = {},
+  { skipFormat, ...options }: UniversalNextGeneratorSchema,
 ): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
   const appsDir = layout.appsDir === '.' ? 'apps' : layout.appsDir;
@@ -38,6 +37,17 @@ export function normalizeOptions(
   const importPath = getImportPath(tree, name);
   const npmScope = getNpmScope(tree) ?? name;
   const npmScopeTitle = names(npmScope).className;
+
+  const {
+    projectName: universalLibName,
+    importPath: universalLibImportPath,
+    uiName,
+    libName,
+  } = normalizeUniversalOptions(tree, {
+    uiName: options.uiName ?? defaultUIName,
+    libName: options.libName ?? defaultLibName,
+    skipFormat,
+  });
 
   return {
     ...options,
@@ -54,9 +64,9 @@ export function normalizeOptions(
 
     names: names(name),
 
-    uiName: options.uiName ?? uiName,
-    libName: options.libName ?? libName,
-    universalLibName: extra.projectName,
-    universalLibImportPath: extra.importPath,
+    uiName,
+    libName,
+    universalLibName,
+    universalLibImportPath,
   };
 }
