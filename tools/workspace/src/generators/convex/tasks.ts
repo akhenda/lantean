@@ -85,14 +85,14 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
   const folders = ['convex'];
 
   updateJson<TSConfig>(tree, join(options.projectRoot, 'tsconfig.lib.json'), (json) => {
-    json.include = [...getLibTSConfigInclude(folders, json.include, ['ts'])];
-    json.exclude = [...getLibTSConfigExclude(folders, json.exclude, ['ts']), './convex/_generated/**/*'];
+    json.include = [...getLibTSConfigInclude(folders, json.include)];
+    json.exclude = [...getLibTSConfigExclude(folders, json.exclude), './convex/_generated/**/*'];
 
     return json;
   });
 
   updateJson<TSConfig>(tree, join(options.projectRoot, 'tsconfig.spec.json'), (json) => {
-    json.include = getLibTSConfigInclude(folders, json.include, ['spec.ts', 'test.ts']);
+    json.include = getLibTSConfigInclude(folders, json.include, ['spec.ts', 'test.ts', 'spec.tsx', 'test.tsx']);
 
     return json;
   });

@@ -32,7 +32,7 @@ export function normalizeOptions(tree: Tree, options: ConvexGeneratorSchema): No
   const project = names(options.directory ?? defaultLibDirectory).fileName;
   const appsDir = layout.appsDir === '.' ? 'apps' : layout.appsDir;
   const libsDir = layout.libsDir === '.' ? 'libs' : layout.libsDir;
-  const projectDirectory = `${project}/${name}`;
+  const projectDirectory = project ? `${project}/${name}` : name;
   const projectRoot = `${libsDir}/${projectDirectory}`;
   const importPath = getImportPath(tree, name);
   const npmScope = getNpmScope(tree) ?? name;
