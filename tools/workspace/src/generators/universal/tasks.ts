@@ -55,20 +55,17 @@ function cleanupLib(tree: Tree, libDirectory: string) {
  * Updates the TSConfig paths for the universal library.
  *
  * The paths are updated to include the paths for the design, features,
- * hooks, providers, stores, and utils directories.
+ * core directories.
  *
  * @param tree The file system tree.
  * @param options The normalized options for the generator.
  */
 function updateBaseTSConfigPaths(tree: Tree, options: NormalizedSchema) {
   const { designUI: ui, designLib } = options.folderNames;
-  const { design, features, hooks, providers, stores, utils } = options.paths;
+  const { design, features, core } = options.paths;
 
+  addTsConfigPath(tree, `${core.path}/*`, [`${core.root}/*`]);
   addTsConfigPath(tree, `${features.path}/*`, [`${features.root}/*`]);
-  addTsConfigPath(tree, `${hooks.path}/*`, [`${hooks.root}/*`]);
-  addTsConfigPath(tree, `${providers.path}/*`, [`${providers.root}/*`]);
-  addTsConfigPath(tree, `${stores.path}/*`, [`${stores.root}/*`]);
-  addTsConfigPath(tree, `${utils.path}/*`, [`${utils.root}/*`]);
   addTsConfigPath(tree, `${design.path}/${ui}/*`, [`${design.root}/${ui}/*`]);
   addTsConfigPath(tree, `${design.path}/${designLib}/*`, [
     `${design.root}/${designLib}/*`,
@@ -161,10 +158,10 @@ function updateProjectConfig(
  * - The main TSConfig is updated to use the `ESNext` module and
  *   `bundler` module resolution.
  * - The `tsconfig.lib.json` file is updated to include all `.ts` files in
- *   the `design`, `features`, `hooks`, `providers`, `stores`, and `utils`
+ *   the `design`, `features`, `core`, `providers`, `stores`, and `utils`
  *   directories, and to exclude all `.spec.ts` and `.test.ts` files.
  * - The `tsconfig.spec.json` file is updated to include all `.test.ts` and
- *   `.spec.ts` files in the `design`, `features`, `hooks`, `providers`,
+ *   `.spec.ts` files in the `design`, `features`, `core`, `providers`,
  *   `stores`, and `utils` directories, and to use the `ESNext` module.
  *
  * @param tree The abstract syntax tree of the workspace.

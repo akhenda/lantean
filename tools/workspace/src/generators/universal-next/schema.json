@@ -13,15 +13,6 @@
       },
       "x-prompt": "What name would you like to use?"
     },
-    "displayName": {
-      "type": "string",
-      "description": "The mobile app display name",
-      "$default": {
-        "$source": "argv",
-        "index": 1
-      },
-      "x-prompt": "What display name would you like to use?"
-    },
     "uiName": {
       "type": "string",
       "description": "The name for the Universal UI Lib",

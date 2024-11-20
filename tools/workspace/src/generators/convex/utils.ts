@@ -6,7 +6,7 @@ import { NormalizedSchema, ConvexGeneratorSchema } from './schema';
 import { getImportPath, getNpmScope } from '../../utils';
 
 /**
- * Normalize options for the DB generator.
+ * Normalize options for the Convex generator.
  *
  * @param tree The virtual file system tree.
  * @param options The options passed to the generator.
@@ -28,7 +28,8 @@ import { getImportPath, getNpmScope } from '../../utils';
  */
 export function normalizeOptions(tree: Tree, options: ConvexGeneratorSchema): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
-  const name = names(options.name ?? defaultLibName).fileName;
+  const nameOptions = names(options.name ?? defaultLibName);
+  const name = nameOptions.fileName;
   const project = names(options.directory ?? defaultLibDirectory).fileName;
   const appsDir = layout.appsDir === '.' ? 'apps' : layout.appsDir;
   const libsDir = layout.libsDir === '.' ? 'libs' : layout.libsDir;
@@ -45,7 +46,7 @@ export function normalizeOptions(tree: Tree, options: ConvexGeneratorSchema): No
     appsDir,
     importPath,
     libsDir,
-    name: options.name,
+    name: nameOptions.name,
     parsedTags: [...defaultLibTags, ...tags],
     projectDirectory,
     projectName: name,

@@ -1,5 +1,5 @@
 export interface EnvGeneratorSchema {
-  name: string;
+  name?: string;
 }
 
 /**

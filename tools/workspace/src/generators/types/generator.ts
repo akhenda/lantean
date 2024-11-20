@@ -16,8 +16,8 @@ import { normalizeOptions } from './utils';
  *
  * @returns A function that will install the required packages once called.
  */
-export async function typesGenerator(tree: Tree, schema: TypesGeneratorSchema) {
-  const options = normalizeOptions(tree, schema);
+export async function typesGenerator(tree: Tree, schema?: TypesGeneratorSchema) {
+  const options = normalizeOptions(tree, schema ?? {});
 
   await generateTypesLib(tree, options);
   await formatFiles(tree);

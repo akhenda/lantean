@@ -15,7 +15,6 @@ import { NormalizedSchema as UniversalLibNormalizedOptions } from '../universal/
  *
  * The normalized options include the following:
  * - `name`: The name of the app.
- * - `displayName`: The display name of the app.
  * - `projectName`: The name of the project.
  * - `projectRoot`: The path to the project root.
  * - `projectDirectory`: The path to the project directory.
@@ -26,7 +25,7 @@ import { NormalizedSchema as UniversalLibNormalizedOptions } from '../universal/
  */
 export function normalizeOptions(
   tree: Tree,
-  { displayName, ...options }: UniversalNextGeneratorSchema,
+  options: UniversalNextGeneratorSchema,
   extra: Partial<UniversalLibNormalizedOptions> = {},
 ): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
@@ -46,7 +45,6 @@ export function normalizeOptions(
     importPath,
     libsDir,
     name,
-    displayName: displayName ?? options.name,
     npmScope,
     npmScopeTitle,
     projectDirectory,

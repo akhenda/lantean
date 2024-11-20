@@ -22,12 +22,10 @@ import { NormalizedSchema, EnvGeneratorSchema } from './schema';
  * - `libsDir`: The path to the libs directory.
  * - `importPath`: The import path for the ESLint config library.
  */
-export function normalizeOptions(
-  tree: Tree,
-  options: EnvGeneratorSchema = { name: defaultLibName },
-): NormalizedSchema {
+export function normalizeOptions(tree: Tree, options: EnvGeneratorSchema): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
-  const name = names(options.name).fileName;
+  const nameOptions = names(options.name ?? defaultLibName);
+  const name = nameOptions.fileName;
   const project = names(defaultLibDirectory).fileName;
   const appsDir = layout.appsDir === '.' ? 'apps' : layout.appsDir;
   const libsDir = layout.libsDir === '.' ? 'libs' : layout.libsDir;
@@ -40,7 +38,7 @@ export function normalizeOptions(
     appsDir,
     importPath,
     libsDir,
-    name: options.name,
+    name: nameOptions.name,
     parsedTags: defaultLibTags,
     projectDirectory,
     projectName: name,

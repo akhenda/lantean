@@ -27,12 +27,9 @@ export const libTags = [...commonDSTags, 'ds-lib'] as const;
  * Folder names
  */
 export const folderNames = {
+  core: 'core',
   design: 'design',
   features: 'features',
-  hooks: 'hooks',
-  providers: 'providers',
-  stores: 'stores',
-  utils: 'utils',
 } as const;
 
 /**

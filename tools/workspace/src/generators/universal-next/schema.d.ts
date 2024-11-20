@@ -5,7 +5,6 @@ import { names } from '@nx/devkit';
  */
 export interface UniversalNextGeneratorSchema {
   name: string;
-  displayName: string;
   uiName: string;
   libName: string;
 }
@@ -15,7 +14,6 @@ export interface UniversalNextGeneratorSchema {
  */
 export interface NormalizedSchema extends UniversalNextGeneratorSchema {
   name: string;
-  displayName: string;
   npmScope: string;
   npmScopeTitle: string;
   projectName: string;

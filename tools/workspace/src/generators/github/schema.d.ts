@@ -5,22 +5,22 @@ export interface GithubGeneratorSchema {
   /**
    * Base branch.
    */
-  branch: string;
+  branch?: string;
 
   /**
    * Configure CI workflow to use Nx Cloud.
    */
-  useNxCloud: boolean;
+  useNxCloud?: boolean;
 
   /**
    * Overwrites existing CI workflow.
    */
-  force: boolean;
+  force?: boolean;
 
   /**
    * Package manager.
    */
-  packageManager: 'bun' | 'npm' | 'pnpm';
+  packageManager?: 'bun' | 'npm' | 'pnpm';
 }
 
 /**

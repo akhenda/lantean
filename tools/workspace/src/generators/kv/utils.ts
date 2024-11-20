@@ -28,7 +28,8 @@ import { getImportPath, getNpmScope } from '../../utils';
  */
 export function normalizeOptions(tree: Tree, options: KvGeneratorSchema): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
-  const name = names(options.name ?? defaultLibName).fileName;
+  const nameOptions = names(options.name ?? defaultLibName);
+  const name = nameOptions.fileName;
   const project = names(defaultLibDirectory).fileName;
   const appsDir = layout.appsDir === '.' ? 'apps' : layout.appsDir;
   const libsDir = layout.libsDir === '.' ? 'libs' : layout.libsDir;
@@ -44,7 +45,7 @@ export function normalizeOptions(tree: Tree, options: KvGeneratorSchema): Normal
     appsDir,
     importPath,
     libsDir,
-    name: options.name,
+    name: nameOptions.name,
     parsedTags: defaultLibTags,
     projectDirectory,
     projectName: name,

@@ -35,7 +35,8 @@ export function normalizeOptions(
   extra: Pick<TypesLibNormalizedSchema, 'projectName' | 'importPath'>,
 ): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
-  const name = names(options.name ?? defaultLibName).fileName;
+  const nameOptions = names(options.name ?? defaultLibName);
+  const name = nameOptions.fileName;
   const project = names(defaultLibDirectory).fileName;
   const appsDir = layout.appsDir === '.' ? 'apps' : layout.appsDir;
   const libsDir = layout.libsDir === '.' ? 'libs' : layout.libsDir;
@@ -51,7 +52,7 @@ export function normalizeOptions(
     appsDir,
     importPath,
     libsDir,
-    name: options.name,
+    name: nameOptions.name,
     parsedTags: defaultLibTags,
     projectDirectory,
     projectName: name,

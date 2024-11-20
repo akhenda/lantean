@@ -1,6 +1,6 @@
 export interface TypesGeneratorSchema {
-  name: string;
-  skipFormat: boolean;
+  name?: string;
+  skipFormat?: boolean;
 }
 
 /**

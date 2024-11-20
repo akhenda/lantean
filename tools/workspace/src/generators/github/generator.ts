@@ -18,10 +18,10 @@ import {
  */
 export async function githubGenerator(
   tree: Tree,
-  schema: GithubGeneratorSchema
+  schema?: GithubGeneratorSchema
 ) {
   const ciFile = ciMergeWorkflowPath;
-  const options = normalizeOptions(tree, schema);
+  const options = normalizeOptions(tree, schema ?? {});
 
   if (!options.force && tree.exists(ciFile)) {
     console.log(`GitHub workflow already existing at path: ${ciFile}`);

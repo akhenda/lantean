@@ -119,6 +119,11 @@
       "factory": "./src/generators/universal-next/generator",
       "schema": "./src/generators/universal-next/schema.json",
       "description": "Next.js with Universal Design System (UDS) Generator"
+    },
+    "saas-convex": {
+      "factory": "./src/generators/saas-convex/generator",
+      "schema": "./src/generators/saas-convex/schema.json",
+      "description": "SaaS Workspace with Convex Template Generator"
     }
   }
 }

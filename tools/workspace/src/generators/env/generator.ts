@@ -11,8 +11,8 @@ import { generateEnvLib } from './tasks';
  *
  * @returns A function that installs the dependencies.
  */
-export async function envGenerator(tree: Tree, options: EnvGeneratorSchema) {
-  await generateEnvLib(tree, options);
+export async function envGenerator(tree: Tree, options?: EnvGeneratorSchema) {
+  await generateEnvLib(tree, options ?? {});
   await formatFiles(tree);
 
   return () => {

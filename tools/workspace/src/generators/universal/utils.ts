@@ -28,19 +28,14 @@ import { folderNames, libName, uiTags, libTags } from './constants';
  * - `designRoot`: The path to the design folder.
  * - `featuresPath`: The path to the features folder.
  * - `featuresRoot`: The path to the features folder.
- * - `hooksPath`: The path to the hooks folder.
- * - `hooksRoot`: The path to the hooks folder.
- * - `providersPath`: The path to the providers folder.
- * - `providersRoot`: The path to the providers folder.
- * - `storesPath`: The path to the stores folder.
- * - `storesRoot`: The path to the stores folder.
- * - `utilsPath`: The path to the utils folder.
- * - `utilsRoot`: The path to the utils folder.
+ * - `corePath`: The path to the core folder.
+ * - `coreRoot`: The path to the core folder.
  */
 export function normalizeOptions(
   tree: Tree,
   options: UniversalGeneratorSchema,
 ): NormalizedSchema {
+  console.log('options: ', options);
   const layout = getWorkspaceLayout(tree);
   const appsDir = layout.appsDir === '.' ? 'apps' : layout.appsDir;
   const libsDir = layout.libsDir === '.' ? 'libs' : layout.libsDir;
@@ -58,14 +53,8 @@ export function normalizeOptions(
   const designRoot = `${projectRoot}/design`;
   const featuresPath = `${importPath}/features`;
   const featuresRoot = `${projectRoot}/features`;
-  const hooksPath = `${importPath}/hooks`;
-  const hooksRoot = `${projectRoot}/hooks`;
-  const providersPath = `${importPath}/providers`;
-  const providersRoot = `${projectRoot}/providers`;
-  const storesPath = `${importPath}/stores`;
-  const storesRoot = `${projectRoot}/stores`;
-  const utilsPath = `${importPath}/utils`;
-  const utilsRoot = `${projectRoot}/utils`;
+  const corePath = `${importPath}/core`;
+  const coreRoot = `${projectRoot}/core`;
 
   return {
     ...options,
@@ -83,10 +72,7 @@ export function normalizeOptions(
     paths: {
       design: { path: designPath, root: designRoot },
       features: { path: featuresPath, root: featuresRoot },
-      hooks: { path: hooksPath, root: hooksRoot },
-      providers: { path: providersPath, root: providersRoot },
-      stores: { path: storesPath, root: storesRoot },
-      utils: { path: utilsPath, root: utilsRoot },
+      core: { path: corePath, root: coreRoot },
     },
     tags: { ui: uiTags, lib: libTags },
   };
