@@ -76,7 +76,7 @@ export const eslintLibDepVersions = {
   'eslint-plugin-prettier': '^5.2.1',
   'eslint-plugin-promise': '^7.1.0',
   'eslint-plugin-react': '^7.35.0',
-  'eslint-plugin-react-hooks': '^4.6.2',
+  'eslint-plugin-react-hooks': '^5.0.0',
   'eslint-plugin-security': '^3.0.1',
   'eslint-plugin-simple-import-sort': '^12.1.1',
   'eslint-plugin-sonarjs': '^2.0.2',
