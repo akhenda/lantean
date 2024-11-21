@@ -139,6 +139,7 @@ function updateEslintConfig(tree: Tree, options: NormalizedSchema) {
       `\t"${options.projectRoot}/src/tests/fixtures",`,
       `\t"${options.projectRoot}/src/**/*/fixtures",`,
       '\t"**/*/fixtures",',
+      '// -- More files to ignore go here --',
       '],',
       '},',
       '];',

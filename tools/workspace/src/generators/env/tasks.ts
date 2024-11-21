@@ -11,13 +11,13 @@ import {
   updateProjectConfiguration,
 } from '@nx/devkit';
 import { libraryGenerator } from '@nx/js';
-import { JSONSchemaForESLintConfigurationFiles as ESLintConfig } from '@schemastore/package';
 import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
 
 import {
   getLibTSConfigExclude,
   getLibTSConfigInclude,
   getNpmScope,
+  updateESLintFlatConfigIgnoredDependencies,
   updateTSConfigCompilerOptions,
 } from '../../utils';
 
@@ -162,24 +162,9 @@ export function addLibFiles(tree: Tree, options: NormalizedSchema) {
 }
 
 function updateESLintConfig(tree: Tree, options: NormalizedSchema) {
-  updateJson<ESLintConfig>(
-    tree,
-    join(options.projectRoot, '.eslintrc.json'),
-    (json) => {
-      if (json.overrides && json.overrides.length) {
-        json.overrides.forEach((override) => {
-          if (override.files && override.files.includes('*.json')) {
-            override.rules['@nx/dependency-checks'] = [
-              'error',
-              { ignoredDependencies: ['@t3-oss/env-core', 'zod'] },
-            ];
-          }
-        });
-      }
+  const filePath = join(options.projectRoot, 'eslint.config.js');
 
-      return json;
-    }
-  );
+  updateESLintFlatConfigIgnoredDependencies(tree, filePath, ['@t3-oss/env-core', 'zod']);
 }
 
 function updatePackageJson(tree: Tree, options: NormalizedSchema) {

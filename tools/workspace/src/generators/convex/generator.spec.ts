@@ -34,7 +34,7 @@ describe('convex generator', () => {
       await convexGenerator(tree, options);
 
       expect(tree.read('convex.json', 'utf-8')).toMatchSnapshot();
-      expect(tree.read(`${options.name}/.eslintrc.json`, 'utf-8')).toMatchSnapshot();
+      expect(tree.read(`${options.name}/eslint.config.js`, 'utf-8')).toMatchSnapshot();
       expect(tree.read(`${options.name}/tsconfig.json`, 'utf-8')).toMatchSnapshot();
       expect(tree.read(`${options.name}/tsconfig.lib.json`, 'utf-8')).toMatchSnapshot();
       expect(tree.read(`${options.name}/tsconfig.spec.json`, 'utf-8')).toMatchSnapshot();

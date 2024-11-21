@@ -375,3 +375,95 @@ export function hasNxPackage(tree: Tree, nxPackage: string): boolean {
     (packageJson.devDependencies && packageJson.devDependencies[nxPackage])
   );
 }
+
+/**
+ * Updates the ESLint flat configuration file to include the specified list
+ * of ignored dependencies.
+ *
+ * This function reads the contents of the specified file, updates the
+ * `ignoredDependencies` array with the provided dependencies, and writes
+ * the updated content back to the file only if changes are made.
+ *
+ * @param tree The file system tree representing the project structure.
+ * @param filePath The path to the ESLint configuration file to update.
+ * @param deps An array of dependencies to be added to the `ignoredDependencies` list.
+ */
+export function updateESLintFlatConfigIgnoredDependencies(tree: Tree, filePath: string, deps: string[]) {
+  let newContents = '';
+  const fileSource = tree.read(filePath);
+  const contents = fileSource?.toString() ?? '';
+
+  if (contents.includes('ignoredDependencies: [')) {
+    newContents = contents.replace(
+      /ignoredDependencies: \[/gi,
+      ['ignoredDependencies: [', deps.map((dep) => `'${dep}'`).join(',\n')].join('\n\t'),
+    );
+  } else if (contents.includes('ignoredFiles: [')) {
+    newContents = contents.replace(
+      /ignoredFiles: \[/gi,
+      ['ignoredDependencies: [\n\t', deps.map((dep) => `'${dep}'`).join(',\n\t'), '\n\t],', 'ignoredFiles: ['].join(
+        '\n\t',
+      ),
+    );
+  }
+
+  // only write the file if something has changed
+  if (newContents !== contents) tree.write(filePath, newContents);
+}
+
+/**
+ * Updates the ESLint flat configuration file with the specified list
+ * of rules.
+ *
+ * This function reads the contents of the specified file, updates the
+ * `rules` object with the provided rules, and writes
+ * the updated content back to the file only if changes are made.
+ *
+ * @param tree The file system tree representing the project structure.
+ * @param filePath The path to the ESLint configuration file to update.
+ * @param rules An array of ESLint rules to be added to the `rules` object.
+ */
+export function updateESLintFlatConfigGlobalRules(tree: Tree, filePath: string, rules: string[]) {
+  const fileSource = tree.read(filePath);
+  const contents = fileSource?.toString() ?? '';
+  const newContents = contents.replace(
+    /\];/gi,
+    [
+      '{',
+      "files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],",
+      '// Override or add rules here',
+      'rules: {',
+      ...rules.map((rule) => `\t${rule},`),
+      '},',
+      '},',
+      '];',
+    ].join('\n\t'),
+  );
+
+  // only write the file if something has changed
+  if (newContents !== contents) tree.write(filePath, newContents);
+}
+
+/**
+ * Updates the ESLint flat configuration file with the specified list
+ * of files to ignore.
+ *
+ * This function reads the contents of the specified file, updates the
+ * list of ignored files with the provided files, and writes
+ * the updated content back to the file only if changes are made.
+ *
+ * @param tree The file system tree representing the project structure.
+ * @param filePath The path to the ESLint configuration file to update.
+ * @param ignores An array of paths to be added to the list of ignored files.
+ */
+export function updateESLintFlatConfigIgnoreRules(tree: Tree, filePath: string, ignores: string[]) {
+  const fileSource = tree.read(filePath);
+  const contents = fileSource?.toString() ?? '';
+  const newContents = contents.replace(
+    /\/\/ -- More files to ignore go here --/gi,
+    [ignores.map((ignore) => `\t'${ignore}',`).join('\n\t'), '// -- More files to ignore go here --'].join('\n\t'),
+  );
+
+  // only write the file if something has changed
+  if (newContents !== contents) tree.write(filePath, newContents);
+}

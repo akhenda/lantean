@@ -222,7 +222,7 @@ function addDependencies(tree: Tree) {
 
 /**
  * Updates the ESLint configuration to include the correct pattern for
- * the `tsconfig.*?.json` file in the `apps/books` directory.
+ * the `tsconfig.*?.json` file in the `${options.projectDirectory}` directory.
  *
  * The `tsconfig.*?.json` file is used to configure the TypeScript compiler
  * for the `books` app.
@@ -231,13 +231,12 @@ function addDependencies(tree: Tree) {
  * @param options The normalized options for the generator.
  */
 function updateEslintConfig(tree: Tree, options: NormalizedSchema) {
-  const contents = tree.read(join(options.projectRoot, '.eslintrc.json')).toString();
+  const { projectRoot } = options;
+  const filePath = join(projectRoot, 'eslint.config.js');
+  const contents = tree.read(filePath).toString();
+  const newContents = contents.replace(`${projectRoot}/tsconfig.*?.json`, `${projectRoot}/tsconfig?.*?.json`);
 
-  const newContents = contents.replace('apps/books/tsconfig.*?.json', 'apps/books/tsconfig?.*?.json');
-
-  if (newContents !== contents) {
-    tree.write(join(options.projectRoot, '.eslintrc.json'), newContents);
-  }
+  if (newContents !== contents) tree.write(filePath, newContents);
 }
 
 /**

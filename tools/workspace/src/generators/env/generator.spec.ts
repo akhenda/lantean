@@ -17,7 +17,7 @@ describe('env generator', () => {
     tree = createTreeWithEmptyWorkspace();
 
     tree.write(`libs/configs/${options.name}/package.json`, '{}');
-    tree.write(`libs/configs/${options.name}/.eslintrc.json`, '{}');
+    tree.write(`libs/configs/${options.name}/eslint.config.js`, 'export {}');
     tree.write(`libs/configs/${options.name}/tsconfig.json`, '{}');
     tree.write(`libs/configs/${options.name}/tsconfig.lib.json`, '{}');
     tree.write(`libs/configs/${options.name}/tsconfig.spec.json`, '{}');

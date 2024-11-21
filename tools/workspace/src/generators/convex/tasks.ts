@@ -15,7 +15,6 @@ import { libraryGenerator } from '@nx/js';
 import { initGenerator as viteInitGenerator, vitestGenerator } from '@nx/vite';
 import { tsquery } from '@phenomnomnominal/tsquery';
 import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
-import { JSONSchemaForESLintConfigurationFiles as ESLintConfig } from '@schemastore/package';
 import { ArrayLiteralExpression } from 'typescript';
 
 import { deps, devDeps } from './constants';
@@ -26,6 +25,9 @@ import {
   getLibTSConfigInclude,
   hasNxPackage,
   readNxVersion,
+  updateESLintFlatConfigGlobalRules,
+  updateESLintFlatConfigIgnoredDependencies,
+  updateESLintFlatConfigIgnoreRules,
   updateTSConfigCompilerOptions,
 } from '../../utils';
 import { Linter, lintProjectGenerator } from '@nx/eslint';
@@ -132,23 +134,11 @@ function updateViteConfig(tree: Tree, options: NormalizedSchema) {
 }
 
 function updateESLintConfig(tree: Tree, options: NormalizedSchema) {
-  updateJson<ESLintConfig>(tree, join(options.projectRoot, '.eslintrc.json'), (json) => {
-    if (json.overrides && json.overrides.length) {
-      json.overrides.forEach((override) => {
-        if (override.files && override.files.includes('*.json')) {
-          override.rules['@nx/dependency-checks'] = [
-            'error',
-            { ignoredDependencies: [...Object.keys(deps), ...Object.keys(devDeps)] },
-          ];
-        }
-      });
-    }
+  const filePath = join(options.projectRoot, 'eslint.config.js');
 
-    json.ignorePatterns = [...json.ignorePatterns, 'convex/_generated/**/*', 'vite.config.ts', 'tsconfig.json'];
-    json.overrides[0].rules = { ...json.overrides[0].rules, 'no-process-env': 'off' };
-
-    return json;
-  });
+  updateESLintFlatConfigIgnoredDependencies(tree, filePath, [...Object.keys(deps), ...Object.keys(devDeps)]);
+  updateESLintFlatConfigIgnoreRules(tree, filePath, ['convex/_generated/**/*', 'vite.config.ts', 'tsconfig.json']);
+  updateESLintFlatConfigGlobalRules(tree, filePath, ['"no-process-env": "off"']);
 }
 
 function updateProjectJson(tree: Tree, options: NormalizedSchema) {

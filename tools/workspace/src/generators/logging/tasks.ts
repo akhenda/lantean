@@ -1,14 +1,13 @@
 import { join } from 'path';
 
-import { addDependenciesToPackageJson, generateFiles, readProjectConfiguration, Tree, updateJson } from '@nx/devkit';
+import { addDependenciesToPackageJson, generateFiles, Tree, updateJson } from '@nx/devkit';
 import { libraryGenerator } from '@nx/js';
 import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
-import { JSONSchemaForESLintConfigurationFiles as ESLintConfig } from '@schemastore/package';
 
 import { deps } from './constants';
 import { NormalizedSchema } from './schema';
 
-import { updateTSConfigCompilerOptions } from '../../utils';
+import { updateESLintFlatConfigIgnoredDependencies, updateTSConfigCompilerOptions } from '../../utils';
 
 /**
  * Deletes unnecessary files from the specified library directory.
@@ -98,20 +97,13 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
  * @param options The normalized options for the generator.
  */
 function updateESLintConfig(tree: Tree, options: NormalizedSchema) {
-  updateJson<ESLintConfig>(tree, join(options.projectRoot, '.eslintrc.json'), (json) => {
-    if (json.overrides && json.overrides.length) {
-      json.overrides.forEach((override) => {
-        if (override.files && override.files.includes('*.json')) {
-          override.rules['@nx/dependency-checks'] = [
-            'error',
-            { ignoredDependencies: [...Object.keys(deps), options.typesLibImportPath, 'lodash'] },
-          ];
-        }
-      });
-    }
+  const filePath = join(options.projectRoot, 'eslint.config.js');
 
-    return json;
-  });
+  updateESLintFlatConfigIgnoredDependencies(tree, filePath, [
+    ...Object.keys(deps),
+    options.typesLibImportPath,
+    'lodash',
+  ]);
 }
 
 export async function generateLoggingLib(tree: Tree, options: NormalizedSchema) {

@@ -10,12 +10,11 @@ import {
 } from '@nx/devkit';
 import { libraryGenerator } from '@nx/js';
 import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
-import { JSONSchemaForESLintConfigurationFiles as ESLintConfig } from '@schemastore/package';
 
 import { deps, devDeps } from './constants';
 import { NormalizedSchema } from './schema';
 
-import { updateTSConfigCompilerOptions } from '../../utils';
+import { updateESLintFlatConfigIgnoredDependencies, updateTSConfigCompilerOptions } from '../../utils';
 
 function cleanupLib(tree: Tree, libDirectory: string) {
   tree.delete(`${libDirectory}/src/index.ts`);
@@ -52,27 +51,14 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
 }
 
 function updateESLintConfig(tree: Tree, options: NormalizedSchema) {
-  updateJson<ESLintConfig>(tree, join(options.projectRoot, '.eslintrc.json'), (json) => {
-    if (json.overrides && json.overrides.length) {
-      json.overrides.forEach((override) => {
-        if (override.files && override.files.includes('*.json')) {
-          override.rules['@nx/dependency-checks'] = [
-            'error',
-            {
-              ignoredDependencies: [
-                ...Object.keys(deps),
-                ...Object.keys(devDeps),
-                options.loggingLibImportPath,
-                options.typesLibImportPath,
-              ],
-            },
-          ];
-        }
-      });
-    }
+  const filePath = join(options.projectRoot, 'eslint.config.js');
 
-    return json;
-  });
+  updateESLintFlatConfigIgnoredDependencies(tree, filePath, [
+    ...Object.keys(deps),
+    ...Object.keys(devDeps),
+    options.loggingLibImportPath,
+    options.typesLibImportPath,
+  ]);
 }
 
 function updateProjectJson(tree: Tree, options: NormalizedSchema) {
