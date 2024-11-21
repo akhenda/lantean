@@ -1,15 +1,12 @@
 import { formatFiles, installPackagesTask, Tree } from '@nx/devkit';
 
-import { formatWorkspaceTask } from '../../devkit';
-
 import { SheriffGeneratorSchema } from './schema';
 import { generateConfigLib, hasFlatConfig } from './tasks';
 import { updateBaseTSConfig } from './utils';
 
-export async function sheriffGenerator(
-  tree: Tree,
-  options?: SheriffGeneratorSchema,
-) {
+import { formatWorkspaceTask } from '../../devkit';
+
+export async function sheriffGenerator(tree: Tree, options?: SheriffGeneratorSchema) {
   if (!hasFlatConfig(tree)) return;
 
   await generateConfigLib(tree, options);
