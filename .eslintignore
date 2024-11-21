@@ -1,4 +1,0 @@
-node_modules
-
-tools/workspace/src/generators/linting/files/src/tests/fixtures
-**/*/fixtures
