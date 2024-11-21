@@ -100,19 +100,48 @@ function updateTSConfig(tree: Tree, options: NormalizedSchema) {
  * @param options The normalized options for the generator.
  */
 function updateEslintConfig(tree: Tree, options: NormalizedSchema) {
-  const filePath = join(options.projectRoot, 'eslint.config.js');
+  const filePath = 'eslint.config.js';
   const fileSource = tree.read(filePath);
   const contents = fileSource?.toString() ?? '';
 
   const newContents = contents.replace(
-    /module.exports = \[/gi,
+    /\];/gi,
     [
-      'module.exports = [',
       '{',
-      "files: ['*.mjs'],",
-      "parserOptions: { sourceType: 'module', ecmaVersion: 2022 },",
-      'rules: {},',
+      "\tfiles: ['*.mjs'],",
+      "\tlanguageOptions: { sourceType: 'module', ecmaVersion: 2022 },",
+      '\trules: {},',
       '},',
+      '{',
+      'ignores: [',
+      `\t// ${getImportPath(tree, options.projectDirectory)}`,
+      '\t".eslintrc.js",',
+      '\t".eslintrc.cjs",',
+      '\t"eslint.config.js",',
+      '\t"eslint.config.cjs",',
+      '\t"eslint.config.mjs",',
+      '\t"eslint.config.mts",',
+      '\t".prettier.cjs",',
+      '\t"coverage",',
+      '\t"/coverage",',
+      '\t".npmrc",',
+      '\t".github",',
+      '\t"package.json",',
+      '\t"tsconfig.json",',
+      '\t"jest.config.js",',
+      '\t"jest.config.ts",',
+      '\t"jest.config.cjs",',
+      '\t"jest.config.mjs",',
+      '\t"jest.config.mts",',
+      '\t// The eslint config test fixtures contain files that deliberatly fail linting',
+      "\t// in order to tests that the config reports those errors. We don't want the",
+      '\t// normal eslint run to complain about those files though so ignore them here.',
+      `\t"${options.projectRoot}/src/tests/fixtures",`,
+      `\t"${options.projectRoot}/src/**/*/fixtures",`,
+      '\t"**/*/fixtures",',
+      '],',
+      '},',
+      '];',
     ].join('\n\t'),
   );
 
@@ -361,59 +390,6 @@ function addSemanticReleaseTarget(tree: Tree, options: NormalizedSchema) {
 }
 
 /**
- * Updates the ESLint ignore file to ignore the given project directory, so
- * that ESLint does not complain about the generated ESLint configuration
- * file.
- *
- * @param tree The file system tree.
- * @param options The schema options passed to the generator.
- */
-function updateESLintIgnoreFile(tree: Tree, options: NormalizedSchema) {
-  const filePath = join(options.projectRoot, 'eslint.config.js');
-  const fileSource = tree.read(filePath);
-  const contents = fileSource?.toString() ?? '';
-
-  const newContents = contents.replace(
-    /\];/gi,
-    [
-      '{',
-      '"ignores: [",',
-      `"# ${getImportPath(tree, options.projectDirectory)}",`,
-      '".eslintrc.js",',
-      '".eslintrc.cjs",',
-      '"eslint.config.js",',
-      '"eslint.config.cjs",',
-      '"eslint.config.mjs",',
-      '"eslint.config.mts",',
-      '".prettier.cjs",',
-      '"coverage",',
-      '"/coverage",',
-      '".npmrc",',
-      '".github",',
-      '"package.json",',
-      '"tsconfig.json",',
-      '"jest.config.js",',
-      '"jest.config.ts",',
-      '"jest.config.cjs",',
-      '"jest.config.mjs",',
-      '"jest.config.mts",',
-      '// The eslint config test fixtures contain files that deliberatly fail linting',
-      "// in order to tests that the config reports those errors. We don't want the",
-      '// normal eslint run to complain about those files though so ignore them here.',
-      `"${options.projectRoot}/src/tests/fixtures",`,
-      `"${options.projectRoot}/src/**/*/fixtures",`,
-      '"**/*/fixtures",',
-      '],',
-      '},',
-    ].join('\n\t'),
-  );
-
-  // only write the file if something has changed
-  if (newContents !== contents) tree.write(filePath, newContents);
-  console.log('newContents: ', newContents);
-}
-
-/**
  * Updates the `.prettierignore` file if it exists.
  *
  * @param tree The virtual file system tree.
@@ -499,7 +475,6 @@ export async function generateConfigLib(tree: Tree, options: SheriffGeneratorSch
 
   addLibFiles(tree, normalizedOptions);
   addSemanticReleaseTarget(tree, normalizedOptions);
-  updateESLintIgnoreFile(tree, normalizedOptions);
   updatePrettierIgnoreFile(tree, normalizedOptions);
   updateGitIgnoreFile(tree, normalizedOptions);
   updateTSConfig(tree, normalizedOptions);
