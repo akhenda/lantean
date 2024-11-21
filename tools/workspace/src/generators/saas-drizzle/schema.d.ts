@@ -1,7 +1,7 @@
 import { CommitlintConfigFileName } from '../commitlint/schema';
 import { LintStagedConfigFileName } from '../init/schema';
 
-export interface SaasConvexGeneratorSchema {
+export interface SaasDrizzleGeneratorSchema {
   lintStagedConfigFileName: LintStagedConfigFileName;
   commitLintConfigFileName: CommitlintConfigFileName;
   envLibName?: string;
@@ -13,7 +13,7 @@ export interface SaasConvexGeneratorSchema {
   emailLibName?: string;
   jobsLibName?: string;
   kvLibName?: string;
-  convexLibName?: string;
+  drizzleLibName?: string;
   universalLibUIName?: string;
   universalLibLibName?: string;
   expoAppName: string;
@@ -26,7 +26,7 @@ export interface SaasConvexGeneratorSchema {
 /**
  * The normalized options passed to the generator.
  */
-export interface NormalizedSchema extends SaasConvexGeneratorSchema {
+export interface NormalizedSchema extends SaasDrizzleGeneratorSchema {
   /**
    * The path to the libs directory.
    */

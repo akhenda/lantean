@@ -61,8 +61,8 @@ export function normalizeOptions(
     npmScope,
     npmScopeTitle,
     offsetFromRoot: offsetFromRootPath,
-    loggingLibName: extra.projectName,
-    loggingLibImportPath: extra.importPath,
+    loggingLibName: options.loggingLibName ?? extra.projectName,
+    loggingLibImportPath: options.typesLibName ?? extra.importPath,
     typesLibName: extra.typesLibName,
     typesLibImportPath: extra.typesLibImportPath,
   };

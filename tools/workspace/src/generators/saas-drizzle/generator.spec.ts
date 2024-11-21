@@ -1,12 +1,12 @@
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { Tree, readProjectConfiguration } from '@nx/devkit';
 
-import { saasConvexGenerator } from './generator';
-import { SaasConvexGeneratorSchema } from './schema';
+import { saasDrizzleGenerator } from './generator';
+import { SaasDrizzleGeneratorSchema } from './schema';
 
-describe('saas-convex generator', () => {
+describe('saas-drizzle generator', () => {
   let tree: Tree;
-  const options: SaasConvexGeneratorSchema = {
+  const options: SaasDrizzleGeneratorSchema = {
     lintStagedConfigFileName: '.lintstagedrc.js',
     commitLintConfigFileName: '.commitlintrc.js',
     expoAppName: 'test',
@@ -18,7 +18,7 @@ describe('saas-convex generator', () => {
   });
 
   it('should run successfully', async () => {
-    await saasConvexGenerator(tree, options);
+    await saasDrizzleGenerator(tree, options);
     const config = readProjectConfiguration(tree, 'test');
     expect(config).toBeDefined();
   });

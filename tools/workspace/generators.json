@@ -124,6 +124,11 @@
       "factory": "./src/generators/saas-convex/generator",
       "schema": "./src/generators/saas-convex/schema.json",
       "description": "SaaS Workspace with Convex Template Generator"
+    },
+    "saas-drizzle": {
+      "factory": "./src/generators/saas-drizzle/generator",
+      "schema": "./src/generators/saas-drizzle/schema.json",
+      "description": "SaaS Workspace with Drizzle Template Generator"
     }
   }
 }

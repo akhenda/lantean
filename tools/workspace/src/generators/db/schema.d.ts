@@ -1,8 +1,8 @@
 export interface DbGeneratorSchema {
   name: string;
-  loggingLibName: string;
-  typesLibName: string;
-  skipFormat: boolean;
+  loggingLibName?: string;
+  typesLibName?: string;
+  skipFormat?: boolean;
 }
 
 /**

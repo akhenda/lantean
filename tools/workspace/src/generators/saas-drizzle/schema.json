@@ -1,0 +1,288 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "SaasDrizzle",
+  "title": "Generate a SaaS Workspace",
+  "description": "Generates a SaaS workspace that uses Drizzle as an ORM",
+  "type": "object",
+  "properties": {
+    "lintStagedConfigFileName": {
+      "type": "string",
+      "description": "",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "default": ".lintstagedrc.js",
+      "x-prompt": {
+        "message": "What name would you like to use for the lint-staged config file?",
+        "type": "list",
+        "items": [
+          {
+            "value": ".lintstagedrc",
+            "label": ".lintstagedrc"
+          },
+          {
+            "value": ".lintstagedrc.json",
+            "label": ".lintstagedrc.json"
+          },
+          {
+            "value": ".lintstagedrc.yaml",
+            "label": ".lintstagedrc.yaml"
+          },
+          {
+            "value": ".lintstagedrc.yml",
+            "label": ".lintstagedrc.yml"
+          },
+          {
+            "value": ".lintstagedrc.js",
+            "label": ".lintstagedrc.js"
+          },
+          {
+            "value": ".lintstagedrc.cjs",
+            "label": ".lintstagedrc.cjs"
+          },
+          {
+            "value": ".lintstagedrc.mjs",
+            "label": ".lintstagedrc.mjs"
+          },
+          {
+            "value": ".lintstagedrc.ts",
+            "label": ".lintstagedrc.ts"
+          },
+          {
+            "value": ".lintstagedrc.cts",
+            "label": ".lintstagedrc.cts"
+          },
+          {
+            "value": "lint-staged.config.js",
+            "label": "lint-staged.config.js"
+          },
+          {
+            "value": "lint-staged.config.cjs",
+            "label": "lint-staged.config.cjs"
+          },
+          {
+            "value": "lint-staged.config.mjs",
+            "label": "lint-staged.config.mjs"
+          },
+          {
+            "value": "lint-staged.config.ts",
+            "label": "lint-staged.config.ts"
+          },
+          {
+            "value": "lint-staged.config.cts",
+            "label": "lint-staged.config.cts"
+          }
+        ]
+      }
+    },
+    "commitLintConfigFileName": {
+      "type": "string",
+      "description": "",
+      "$default": {
+        "$source": "argv",
+        "index": 1
+      },
+      "default": ".commitlintrc.js",
+      "x-prompt": {
+        "message": "What name would you like to use for the config file?",
+        "type": "list",
+        "items": [
+          {
+            "value": ".commitlintrc",
+            "label": ".commitlintrc"
+          },
+          {
+            "value": ".commitlintrc.json",
+            "label": ".commitlintrc.json"
+          },
+          {
+            "value": ".commitlintrc.yaml",
+            "label": ".commitlintrc.yaml"
+          },
+          {
+            "value": ".commitlintrc.yml",
+            "label": ".commitlintrc.yml"
+          },
+          {
+            "value": ".commitlintrc.js",
+            "label": ".commitlintrc.js"
+          },
+          {
+            "value": ".commitlintrc.cjs",
+            "label": ".commitlintrc.cjs"
+          },
+          {
+            "value": ".commitlintrc.mjs",
+            "label": ".commitlintrc.mjs"
+          },
+          {
+            "value": ".commitlintrc.ts",
+            "label": ".commitlintrc.ts"
+          },
+          {
+            "value": ".commitlintrc.cts",
+            "label": ".commitlintrc.cts"
+          },
+          {
+            "value": "commitlint.config.js",
+            "label": "commitlint.config.js"
+          },
+          {
+            "value": "commitlint.config.cjs",
+            "label": "commitlint.config.cjs"
+          },
+          {
+            "value": "commitlint.config.mjs",
+            "label": "commitlint.config.mjs"
+          },
+          {
+            "value": "commitlint.config.ts",
+            "label": "commitlint.config.ts"
+          },
+          {
+            "value": "commitlint.config.cts",
+            "label": "commitlint.config.cts"
+          }
+        ]
+      }
+    },
+    "envLibName": {
+      "type": "string",
+      "description": "",
+      "default": "env",
+      "$default": {
+        "$source": "argv",
+        "index": 2
+      },
+      "x-prompt": "What name would you like to use for the env lib?"
+    },
+    "typesLibName": {
+      "type": "string",
+      "description": "The types library to use",
+      "$default": {
+        "$source": "projectName",
+        "index": 3
+      },
+      "x-prompt": "What name would you like to use for the types lib?"
+    },
+    "loggingLibName": {
+      "type": "string",
+      "description": "The logging library to use",
+      "$default": {
+        "$source": "projectName",
+        "index": 4
+      },
+      "x-prompt": "What name would you like to use for the logging lib?"
+    },
+    "monitoringLibName": {
+      "type": "string",
+      "description": "The monitoring library to use",
+      "$default": {
+        "$source": "projectName",
+        "index": 5
+      },
+      "x-prompt": "What name would you like to use for the monitoring lib?"
+    },
+    "analyticsLibName": {
+      "type": "string",
+      "description": "The analytics library to use",
+      "$default": {
+        "$source": "projectName",
+        "index": 6
+      },
+      "x-prompt": "What name would you like to use for the analytics lib?"
+    },
+    "dateLibName": {
+      "type": "string",
+      "description": "The date library to use",
+      "$default": {
+        "$source": "projectName",
+        "index": 7
+      },
+      "x-prompt": "What name would you like to use for the date lib?"
+    },
+    "emailLibName": {
+      "type": "string",
+      "description": "The email library to use",
+      "$default": {
+        "$source": "projectName",
+        "index": 8
+      },
+      "x-prompt": "What name would you like to use for the email lib?"
+    },
+    "jobsLibName": {
+      "type": "string",
+      "description": "The jobs library to use",
+      "$default": {
+        "$source": "projectName",
+        "index": 9
+      },
+      "x-prompt": "What name would you like to use for the jobs lib?"
+    },
+    "kvLibName": {
+      "type": "string",
+      "description": "The kv library to use",
+      "$default": {
+        "$source": "projectName",
+        "index": 10
+      },
+      "x-prompt": "What name would you like to use for the kv lib?"
+    },
+    "convexLibName": {
+      "type": "string",
+      "description": "The convex library to use",
+      "$default": {
+        "$source": "projectName",
+        "index": 11
+      },
+      "x-prompt": "What name would you like to use for the convex lib?"
+    },
+    "universalLibUIName": {
+      "type": "string",
+      "description": "",
+      "$default": {
+        "$source": "argv",
+        "index": 12
+      },
+      "x-prompt": "What name would you like to use for the ui lib?"
+    },
+    "universalLibLibName": {
+      "type": "string",
+      "description": "",
+      "$default": {
+        "$source": "argv",
+        "index": 13
+      },
+      "x-prompt": "What name would you like to use for the lib folder?"
+    },
+    "expoAppName": {
+      "type": "string",
+      "description": "The expo app name",
+      "$default": {
+        "$source": "argv",
+        "index": 14
+      },
+      "x-prompt": "What name would you like to use for your Expo app?"
+    },
+    "expoAppDisplayName": {
+      "type": "string",
+      "description": "The mobile app display name",
+      "$default": {
+        "$source": "argv",
+        "index": 15
+      },
+      "x-prompt": "What display name would you like to use for the Expo app?"
+    },
+    "nextJSAppName": {
+      "type": "string",
+      "description": "The Next.js app name",
+      "$default": {
+        "$source": "argv",
+        "index": 16
+      },
+      "x-prompt": "What name would you like to use for your Next.js app?"
+    }
+  },
+  "required": ["lintStagedConfigFileName", "commitLintConfigFileName", "expoAppName", "nextJSAppName"]
+}
