@@ -100,22 +100,24 @@ function updateTSConfig(tree: Tree, options: NormalizedSchema) {
  * @param options The normalized options for the generator.
  */
 function updateEslintConfig(tree: Tree, options: NormalizedSchema) {
-  updateJson<JSONSchemaForESLintConfigurationFiles>(
-    tree,
-    join(options.projectRoot, '.eslintrc.json'),
-    (eslintConfig) => {
-      eslintConfig.overrides = [
-        {
-          files: ['*.mjs'],
-          parserOptions: { sourceType: 'module', ecmaVersion: 2022 },
-          rules: {},
-        },
-        ...(eslintConfig.overrides ?? []),
-      ];
+  const filePath = join(options.projectRoot, 'eslint.config.js');
+  const fileSource = tree.read(filePath);
+  const contents = fileSource?.toString() ?? '';
 
-      return eslintConfig;
-    },
+  const newContents = contents.replace(
+    /module.exports = \[/gi,
+    [
+      'module.exports = [',
+      '{',
+      "files: ['*.mjs'],",
+      "parserOptions: { sourceType: 'module', ecmaVersion: 2022 },",
+      'rules: {},',
+      '},',
+    ].join('\n\t'),
   );
+
+  // only write the file if something has changed
+  if (newContents !== contents) tree.write(filePath, newContents);
 }
 
 /**
@@ -367,45 +369,48 @@ function addSemanticReleaseTarget(tree: Tree, options: NormalizedSchema) {
  * @param options The schema options passed to the generator.
  */
 function updateESLintIgnoreFile(tree: Tree, options: NormalizedSchema) {
-  const ignoreFilePath = '.eslintignore';
+  const filePath = join(options.projectRoot, 'eslint.config.js');
+  const fileSource = tree.read(filePath);
+  const contents = fileSource?.toString() ?? '';
 
-  if (!tree.exists(ignoreFilePath)) return;
+  const newContents = contents.replace(
+    /\];/gi,
+    [
+      '{',
+      '"ignores: [",',
+      `"# ${getImportPath(tree, options.projectDirectory)}",`,
+      '".eslintrc.js",',
+      '".eslintrc.cjs",',
+      '"eslint.config.js",',
+      '"eslint.config.cjs",',
+      '"eslint.config.mjs",',
+      '"eslint.config.mts",',
+      '".prettier.cjs",',
+      '"coverage",',
+      '"/coverage",',
+      '".npmrc",',
+      '".github",',
+      '"package.json",',
+      '"tsconfig.json",',
+      '"jest.config.js",',
+      '"jest.config.ts",',
+      '"jest.config.cjs",',
+      '"jest.config.mjs",',
+      '"jest.config.mts",',
+      '// The eslint config test fixtures contain files that deliberatly fail linting',
+      "// in order to tests that the config reports those errors. We don't want the",
+      '// normal eslint run to complain about those files though so ignore them here.',
+      `"${options.projectRoot}/src/tests/fixtures",`,
+      `"${options.projectRoot}/src/**/*/fixtures",`,
+      '"**/*/fixtures",',
+      '],',
+      '},',
+    ].join('\n\t'),
+  );
 
-  const ignores = tree.read(ignoreFilePath, 'utf8').split('\n');
-
-  if (!ignores.includes(`# ${getImportPath(tree, options.projectDirectory)}`)) {
-    const files = [
-      `# ${getImportPath(tree, options.projectDirectory)}`,
-      '.eslintrc.js',
-      '.eslintrc.cjs',
-      'eslint.config.cjs',
-      'eslint.config.mjs',
-      'eslint.config.mts',
-      '.prettier.cjs',
-      'coverage',
-      '/coverage',
-      '.npmrc',
-      '.github',
-      'package.json',
-      'tsconfig.json',
-      'jest.config.js',
-      'jest.config.ts',
-      'jest.config.cjs',
-      'jest.config.mjs',
-      'jest.config.mts',
-      '',
-      '# The eslint config test fixtures contain files that deliberatly fail linting',
-      "# in order to tests that the config reports those errors. We don't want the",
-      '# normal eslint run to complain about those files though so ignore them here.',
-      `${options.projectRoot}/src/tests/fixtures`,
-      `${options.projectRoot}/src/**/*/fixtures`,
-      '**/*/fixtures',
-    ];
-
-    ignores.push(...files, '');
-  }
-
-  if (ignores.length) tree.write('./.eslintignore', ignores.join('\n'));
+  // only write the file if something has changed
+  if (newContents !== contents) tree.write(filePath, newContents);
+  console.log('newContents: ', newContents);
 }
 
 /**
