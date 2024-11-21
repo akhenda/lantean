@@ -31,7 +31,16 @@ export async function saasDrizzleGenerator(tree: Tree, schema: SaasDrizzleGenera
 
   await initGenerator(tree, { configFileName: options.lintStagedConfigFileName });
   await commitlintGenerator(tree, { configFileName: options.commitLintConfigFileName });
-  await eslintGenerator(tree);
+  await eslintGenerator(tree, {
+    lib: true,
+    eslintRecommended: true,
+    typescriptRecommended: true,
+    unusedImports: true,
+    deprecation: true,
+    importOrder: true,
+    prettier: true,
+    sonarJs: true,
+  });
   await tsconfigGenerator(tree);
   await contributorsGenerator(tree);
   await githubGenerator(tree);
