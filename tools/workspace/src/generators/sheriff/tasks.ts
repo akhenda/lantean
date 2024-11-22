@@ -13,10 +13,15 @@ import {
   writeJson,
 } from '@nx/devkit';
 import { libraryGenerator } from '@nx/js';
-import { JSONSchemaForESLintConfigurationFiles } from '@schemastore/package';
 
 import { addDevDependencyToPackageJson } from '../../devkit';
-import { getImportPath, getNpmScope } from '../../utils';
+import {
+  getImportPath,
+  getNpmScope,
+  updateESLintFlatConfigIgnoreRules,
+  updateESLintFlatConfigPrettierRules,
+  updateESLintFlatConfigToExtendConfig,
+} from '../../utils';
 
 import {
   eslintConfigFile,
@@ -26,7 +31,9 @@ import {
   vscodeExtensions,
 } from './constants';
 import { NormalizedSchema, SheriffGeneratorSchema } from './schema';
-import { normalizeOptions } from './utils';
+import { getESLintIgnores, normalizeOptions } from './utils';
+import { setPrettierConfig } from '../linting/prettier';
+import { tsquery } from '@phenomnomnominal/tsquery';
 
 /**
  * This function is a safety net. It warns the user if the repository has not been
@@ -99,55 +106,12 @@ function updateTSConfig(tree: Tree, options: NormalizedSchema) {
  * @param tree The abstract syntax tree of the workspace.
  * @param options The normalized options for the generator.
  */
-function updateEslintConfig(tree: Tree, options: NormalizedSchema) {
+function updateBaseEslintConfig(tree: Tree, options: NormalizedSchema) {
   const filePath = 'eslint.config.js';
-  const fileSource = tree.read(filePath);
-  const contents = fileSource?.toString() ?? '';
 
-  const newContents = contents.replace(
-    /\];/gi,
-    [
-      '{',
-      "\tfiles: ['*.mjs'],",
-      "\tlanguageOptions: { sourceType: 'module', ecmaVersion: 2022 },",
-      '\trules: {},',
-      '},',
-      '{',
-      'ignores: [',
-      `\t// ${getImportPath(tree, options.projectDirectory)}`,
-      '\t".eslintrc.js",',
-      '\t".eslintrc.cjs",',
-      '\t"eslint.config.js",',
-      '\t"eslint.config.cjs",',
-      '\t"eslint.config.mjs",',
-      '\t"eslint.config.mts",',
-      '\t".prettier.cjs",',
-      '\t"coverage",',
-      '\t"/coverage",',
-      '\t".npmrc",',
-      '\t".github",',
-      '\t"package.json",',
-      '\t"tsconfig.json",',
-      '\t"jest.config.js",',
-      '\t"jest.config.ts",',
-      '\t"jest.config.cjs",',
-      '\t"jest.config.mjs",',
-      '\t"jest.config.mts",',
-      '\t// The eslint config test fixtures contain files that deliberatly fail linting',
-      "\t// in order to tests that the config reports those errors. We don't want the",
-      '\t// normal eslint run to complain about those files though so ignore them here.',
-      `\t"${options.projectRoot}/src/tests/fixtures",`,
-      `\t"${options.projectRoot}/src/**/*/fixtures",`,
-      '\t"**/*/fixtures",',
-      '// -- More files to ignore go here --',
-      '],',
-      '},',
-      '];',
-    ].join('\n\t'),
-  );
-
-  // only write the file if something has changed
-  if (newContents !== contents) tree.write(filePath, newContents);
+  updateESLintFlatConfigToExtendConfig(tree, filePath, options.importPath, 'nx', false);
+  updateESLintFlatConfigPrettierRules(tree, filePath, []);
+  updateESLintFlatConfigIgnoreRules(tree, filePath, getESLintIgnores(tree, options));
 }
 
 /**
@@ -221,6 +185,8 @@ function updatePackageJsons(tree: Tree, options: NormalizedSchema) {
 
     delete packageJson.dependencies;
 
+    packageJson.main = './index.cjs';
+    packageJson.typings = './index.d.ts';
     packageJson.author = 'J.A.';
     packageJson.description = "J.A's ESLint rules and configs.";
     packageJson.keywords = ['eslint', 'eslintconfig', 'eslint-config'];
@@ -374,6 +340,7 @@ function addSemanticReleaseTarget(tree: Tree, options: NormalizedSchema) {
 
   updateProjectConfiguration(tree, options.projectName, {
     ...projectConfiguration,
+    sourceRoot: options.projectRoot,
     targets: {
       ...projectConfiguration.targets,
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -479,9 +446,10 @@ export async function generateConfigLib(tree: Tree, options: SheriffGeneratorSch
   updatePrettierIgnoreFile(tree, normalizedOptions);
   updateGitIgnoreFile(tree, normalizedOptions);
   updateTSConfig(tree, normalizedOptions);
-  updateEslintConfig(tree, normalizedOptions);
+  updateBaseEslintConfig(tree, normalizedOptions);
   updateVSCodeSettings(tree);
   addDependencies(tree);
+  setPrettierConfig(tree);
   addDevDependencyToPackageJson(tree, normalizedOptions.importPath, 'workspace:*');
   updatePackageJsons(tree, normalizedOptions);
 }

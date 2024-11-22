@@ -7,6 +7,7 @@ import {
   TargetConfiguration,
   Tree,
 } from '@nx/devkit';
+import { tsquery } from '@phenomnomnominal/tsquery';
 import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
 import * as shell from 'shelljs';
 import type { ExecOptions } from 'shelljs';
@@ -446,6 +447,40 @@ export function updateESLintFlatConfigGlobalRules(tree: Tree, filePath: string, 
 
 /**
  * Updates the ESLint flat configuration file with the specified list
+ * of Prettier rules.
+ *
+ * This function reads the contents of the specified file, updates the
+ * `rules` object with the provided rules, and writes
+ * the updated content back to the file only if changes are made.
+ *
+ * @param tree The file system tree representing the project structure.
+ * @param filePath The path to the ESLint configuration file to update.
+ * @param rules An array of ESLint Prettier rules to be added to the `rules` object.
+ */
+export function updateESLintFlatConfigPrettierRules(tree: Tree, filePath: string, rules: string[]) {
+  const fileSource = tree.read(filePath);
+  const contents = fileSource?.toString() ?? '';
+  const newContents = contents.replace(
+    /\];/gi,
+    [
+      '{',
+      "files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx', '**/*.json', '**/*.html'],",
+      "...compat.extends('plugin:prettier/recommended'),",
+      '// Override or add prettier rules here',
+      'rules: {',
+      ...rules.map((rule) => `\t${rule},`),
+      '},',
+      '},',
+      '];',
+    ].join('\n\t'),
+  );
+
+  // only write the file if something has changed
+  if (newContents !== contents) tree.write(filePath, newContents);
+}
+
+/**
+ * Updates the ESLint flat configuration file with the specified list
  * of files to ignore.
  *
  * This function reads the contents of the specified file, updates the
@@ -456,14 +491,73 @@ export function updateESLintFlatConfigGlobalRules(tree: Tree, filePath: string, 
  * @param filePath The path to the ESLint configuration file to update.
  * @param ignores An array of paths to be added to the list of ignored files.
  */
-export function updateESLintFlatConfigIgnoreRules(tree: Tree, filePath: string, ignores: string[]) {
+export function updateESLintFlatConfigIgnoreRules(tree: Tree, filePath: string, ignores: string[], atTheEnd = false) {
+  const marker = '// -- More files to ignore go here --';
   const fileSource = tree.read(filePath);
   const contents = fileSource?.toString() ?? '';
-  const newContents = contents.replace(
-    /\/\/ -- More files to ignore go here --/gi,
-    [ignores.map((ignore) => `\t'${ignore}',`).join('\n\t'), '// -- More files to ignore go here --'].join('\n\t'),
-  );
+  const newContents = atTheEnd
+    ? contents.replace(
+        '];',
+        ['{', 'ignores: [', ignores.map((ignore) => `\t'${ignore}',`).join('\n\t'), marker, '],', '},', '];'].join(
+          '\n\t',
+        ),
+      )
+    : contents.replace(marker, [ignores.map((ignore) => `\t'${ignore}',`).join('\n\t'), marker].join('\n\t'));
 
   // only write the file if something has changed
   if (newContents !== contents) tree.write(filePath, newContents);
+}
+
+/**
+ * Updates the ESLint flat configuration file to extend the specified
+ * configuration.
+ *
+ * This function reads the contents of the specified file, adds the import
+ * statement for the specified configuration if it does not already exist,
+ * and adds the specified configuration to the list of configurations to
+ * extend at the specified location.
+ *
+ * @param tree The file system tree representing the project structure.
+ * @param filePath The path to the ESLint configuration file to update.
+ * @param importPath The path to the module that exports the configuration.
+ * @param configName The name of the configuration to extend.
+ * @param atTheEnd Whether to add the configuration at the end of the list.
+ * Defaults to `true`. If `false`, adds the configuration at the beginning
+ * of the list.
+ */
+export function updateESLintFlatConfigToExtendConfig(
+  tree: Tree,
+  filePath: string,
+  importPath: string,
+  configName: string,
+  atTheEnd = true,
+) {
+  let newConfig;
+
+  const config = tree.read(filePath).toString();
+  const importedConfigName = `${configName}Config`;
+
+  // Create the `const { withExpo } = require('@expo/next-adapter');` statement
+  const newReqStmt = `const { ${configName}: ${importedConfigName} } = require('${importPath}');`;
+
+  // Find existing import/require statements
+  const reqStmts = tsquery(config, 'VariableStatement:has(CallExpression Identifier[name="require"])');
+
+  // Check if `withExpo` is already imported; if not, insert the new import
+  // after the last existing import
+  if (!reqStmts.some((stmt) => stmt.getText().includes(importPath))) {
+    const lastImport = reqStmts[reqStmts.length - 1];
+    const end = lastImport.getEnd();
+
+    newConfig = config.slice(0, end) + `\n${newReqStmt}` + config.slice(end);
+  } else {
+    newConfig = config; // No need to add the import if it exists
+  }
+
+  newConfig = atTheEnd
+    ? newConfig.replace('];', [`...${importedConfigName},`, '];'].join('\n\t'))
+    : newConfig.replace('module.exports = [', ['module.exports = [', `...${importedConfigName},`].join('\n\t'));
+
+  // only write the file if something has changed
+  if (newConfig !== config) tree.write(filePath, newConfig);
 }

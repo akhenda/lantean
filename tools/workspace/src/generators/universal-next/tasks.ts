@@ -5,11 +5,12 @@ import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from
 import { applicationGenerator } from '@nx/next';
 import { tsquery } from '@phenomnomnominal/tsquery';
 import { unique } from 'radash';
+import { CallExpression, VariableDeclaration } from 'typescript';
 
 import { dependencies, devDependencies } from './constants';
 import { NormalizedSchema } from './schema';
 
-import { CallExpression, VariableDeclaration } from 'typescript';
+import { updateESLintFlatConfigToExtendConfig } from '../../utils';
 
 /**
  * Deletes unnecessary files from the Next.js application.
@@ -237,6 +238,8 @@ function updateEslintConfig(tree: Tree, options: NormalizedSchema) {
   const newContents = contents.replace(`${projectRoot}/tsconfig.*?.json`, `${projectRoot}/tsconfig?.*?.json`);
 
   if (newContents !== contents) tree.write(filePath, newContents);
+
+  updateESLintFlatConfigToExtendConfig(tree, filePath, options.sheriffImportPath, 'next');
 }
 
 /**
@@ -308,7 +311,6 @@ export async function generateNextUniversalApp(tree: Tree, options: NormalizedSc
   await applicationGenerator(tree, {
     name: options.projectName,
     directory: options.projectRoot,
-    projectNameAndRootFormat: 'as-provided',
     style: 'tailwind',
     tags: unique(options.tags).join(','),
     unitTestRunner: 'jest',

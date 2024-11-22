@@ -1,4 +1,0 @@
-/**
- * Use this for casual js/typescript projects.
- */
-export * from './basic.mjs';

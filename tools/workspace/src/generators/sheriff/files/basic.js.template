@@ -1,0 +1,17 @@
+const sheriff = require('eslint-config-sheriff');
+const { defineFlatConfig } = require('eslint-define-config');
+
+const sheriffOptions = {
+  react: false,
+  next: false,
+  astro: false,
+  lodash: true,
+  playwright: false,
+  jest: false,
+  vitest: false,
+};
+
+/**
+ * Use this for casual typescript projects.
+ */
+module.exports = defineFlatConfig([...sheriff(sheriffOptions)]);

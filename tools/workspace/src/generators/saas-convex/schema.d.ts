@@ -4,6 +4,7 @@ import { LintStagedConfigFileName } from '../init/schema';
 export interface SaasConvexGeneratorSchema {
   lintStagedConfigFileName: LintStagedConfigFileName;
   commitLintConfigFileName: CommitlintConfigFileName;
+  sheriffImportPath?: string;
   envLibName?: string;
   typesLibName?: string;
   loggingLibName?: string;

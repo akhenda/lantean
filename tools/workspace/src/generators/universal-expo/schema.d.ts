@@ -34,4 +34,5 @@ export interface NormalizedSchema extends UniversalExpoGeneratorSchema {
   libName: string;
   universalLibName: string;
   universalLibImportPath: string;
+  sheriffImportPath: string;
 }

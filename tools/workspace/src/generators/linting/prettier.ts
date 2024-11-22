@@ -11,7 +11,7 @@ export const prettierDefaultConfig: Exclude<SchemaForPrettierrc, string> = {
   trailingComma: 'all',
   semi: true,
   tabWidth: 2,
-  printWidth: 120,
+  printWidth: 100,
   arrowParens: 'always',
   overrides: [
     {

@@ -1,5 +1,5 @@
-import sheriff from 'eslint-config-sheriff';
-import { defineFlatConfig } from 'eslint-define-config';
+const sheriff = require('eslint-config-sheriff');
+const { defineFlatConfig } = require('eslint-define-config');
 
 const sheriffOptions = {
   react: false,
@@ -14,4 +14,4 @@ const sheriffOptions = {
 /**
  * Use this for Node.js projects.
  */
-export default defineFlatConfig([...sheriff(sheriffOptions)]);
+module.exports = defineFlatConfig([...sheriff(sheriffOptions)]);

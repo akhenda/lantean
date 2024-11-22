@@ -60,12 +60,12 @@ This package uses Eslint's "Flat Config" format, not the legacy "eslintrc" forma
 
 This library provides the following configurations:
 
-- [basic](./basic.mjs): Use this for casual js/typescript projects.
-- [expo](./expo.mjs): Use this for React Native or Expo projects.
-- [next](./next.mjs): Use this for Next.js projects.
-- [node](./node.mjs): Use this for Node.js projects.
-- [nx](./nx.mjs): Use this in the default NX Workspace Config.
-- [react](./react.mjs): Use this for React.js projects.
+- [basic](./basic.js): Use this for casual js/typescript projects.
+- [expo](./expo.js): Use this for React Native or Expo projects.
+- [next](./next.js): Use this for Next.js projects.
+- [node](./node.js): Use this for Node.js projects.
+- [nx](./nx.js): Use this in the default NX Workspace Config.
+- [react](./react.js): Use this for React.js projects.
 
 ### Supported Typescript version
 

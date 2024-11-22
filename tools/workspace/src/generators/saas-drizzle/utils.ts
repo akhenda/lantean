@@ -4,6 +4,7 @@ import { NormalizedSchema, SaasDrizzleGeneratorSchema } from './schema';
 
 import { normalizeOptions as normalizeInitOptions } from '../init/utils';
 import { normalizeOptions as normalizeCommitlintOptions } from '../commitlint/utils';
+import { normalizeOptions as normalizeSheriffOptions } from '../sheriff/utils';
 import { normalizeOptions as normalizeEnvOptions } from '../env/utils';
 import { normalizeOptions as normalizeTypesOptions } from '../types/utils';
 import { normalizeOptions as normalizeLoggingOptions } from '../logging/utils';
@@ -58,6 +59,7 @@ export function normalizeOptions(tree: Tree, { skipFormat, ...options }: SaasDri
   const { fileName: commitLintConfigFileName } = normalizeCommitlintOptions(tree, {
     configFileName: options.commitLintConfigFileName,
   });
+  const { importPath: sheriffImportPath } = normalizeSheriffOptions(tree);
   const { projectName: envLibName } = normalizeEnvOptions(tree, {
     name: options.envLibName,
   });
@@ -124,6 +126,7 @@ export function normalizeOptions(tree: Tree, { skipFormat, ...options }: SaasDri
     libsDir,
     lintStagedConfigFileName,
     commitLintConfigFileName,
+    sheriffImportPath,
     envLibName,
     typesLibName,
     loggingLibName,

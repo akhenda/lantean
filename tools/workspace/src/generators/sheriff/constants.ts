@@ -58,3 +58,24 @@ export const vscodeExtensions = [
   'lokalise.i18n-ally',
   'wesbos.theme-cobalt2',
 ] as const;
+
+export const eslintIgnores = [
+  '".eslintrc.js",',
+  '".eslintrc.cjs",',
+  '"eslint.config.js",',
+  '"eslint.config.cjs",',
+  '"eslint.config.mjs",',
+  '"eslint.config.mts",',
+  '".prettier.cjs",',
+  '"coverage",',
+  '"/coverage",',
+  '".npmrc",',
+  '".github",',
+  '"package.json",',
+  '"tsconfig.json",',
+  '"jest.config.js",',
+  '"jest.config.ts",',
+  '"jest.config.cjs",',
+  '"jest.config.mjs",',
+  '"jest.config.mts",',
+];

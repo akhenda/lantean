@@ -9,6 +9,8 @@ import { unique } from 'radash';
 import { dependencies, devDependencies } from './constants';
 import { NormalizedSchema } from './schema';
 
+import { updateESLintFlatConfigToExtendConfig } from '../../utils';
+
 /**
  * Deletes unnecessary files from the Expo library.
  *
@@ -214,6 +216,23 @@ function addDependencies(tree: Tree) {
 }
 
 /**
+ * Updates the ESLint configuration file for the Expo project.
+ *
+ * This function modifies the `eslint.config.js` file located in the
+ * project's root directory to extend the configuration with the specified
+ * import path and configuration name.
+ *
+ * @param tree The file system tree of the workspace.
+ * @param options The normalized options containing the project details.
+ */
+function updateEslintConfig(tree: Tree, options: NormalizedSchema) {
+  const { projectRoot } = options;
+  const filePath = join(projectRoot, 'eslint.config.js');
+
+  updateESLintFlatConfigToExtendConfig(tree, filePath, options.sheriffImportPath, 'expo');
+}
+
+/**
  * Generates a new Expo universal app.
  *
  * The generator first calls the `universal` generator to generate the
@@ -235,7 +254,6 @@ export async function generateExpoUniversalApp(tree: Tree, options: NormalizedSc
     name: options.projectName,
     displayName: options.displayName,
     directory: options.projectRoot,
-    projectNameAndRootFormat: 'as-provided',
     tags: unique(options.tags).join(','),
     unitTestRunner: 'jest',
     linter: 'eslint',
@@ -252,6 +270,7 @@ export async function generateExpoUniversalApp(tree: Tree, options: NormalizedSc
   updateTSConfigs(tree, options);
   updateMetroConfig(tree, options);
   updatePackageJsons(tree, options);
+  updateEslintConfig(tree, options);
   addDependencies(tree);
 
   return options;

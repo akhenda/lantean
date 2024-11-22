@@ -3,7 +3,9 @@ import { getWorkspaceLayout, names, Tree } from '@nx/devkit';
 import { libTags, defaultUIName, defaultLibName } from './constants';
 import { NormalizedSchema, UniversalExpoGeneratorSchema } from './schema';
 
+import { normalizeOptions as normalizeSheriffOptions } from '../sheriff/utils';
 import { normalizeOptions as normalizeUniversalOptions } from '../universal/utils';
+
 import { getImportPath, getNpmScope } from '../../utils';
 
 /**
@@ -36,6 +38,7 @@ export function normalizeOptions(tree: Tree, options: UniversalExpoGeneratorSche
   const npmScope = getNpmScope(tree) ?? name;
   const npmScopeTitle = names(npmScope).className;
 
+  const { importPath: sheriffImportPath } = normalizeSheriffOptions(tree);
   const {
     projectName: universalLibName,
     importPath: universalLibImportPath,
@@ -67,5 +70,6 @@ export function normalizeOptions(tree: Tree, options: UniversalExpoGeneratorSche
     libName: universalLibLibName,
     universalLibName,
     universalLibImportPath,
+    sheriffImportPath,
   };
 }

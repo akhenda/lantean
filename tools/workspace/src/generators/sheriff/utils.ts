@@ -3,7 +3,7 @@ import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from
 
 import { getImportPath, updateTSConfigCompilerOptions } from '../../utils';
 
-import { eslintLibDirectory, eslintLibName, eslintLibTags } from './constants';
+import { eslintIgnores, eslintLibDirectory, eslintLibName, eslintLibTags } from './constants';
 import { NormalizedSchema, SheriffGeneratorSchema } from './schema';
 
 /**
@@ -23,10 +23,7 @@ import { NormalizedSchema, SheriffGeneratorSchema } from './schema';
  * - `libsDir`: The path to the libs directory.
  * - `importPath`: The import path for the ESLint config library.
  */
-export function normalizeOptions(
-  tree: Tree,
-  options: SheriffGeneratorSchema = {},
-): NormalizedSchema {
+export function normalizeOptions(tree: Tree, options: SheriffGeneratorSchema = {}): NormalizedSchema {
   const layout = getWorkspaceLayout(tree);
   const name = names(eslintLibName).fileName;
   const project = names(eslintLibDirectory).fileName;
@@ -61,4 +58,17 @@ export function updateBaseTSConfig(tree: Tree) {
   updateJson<TSConfig>(tree, 'tsconfig.base.json', (json) => {
     return updateTSConfigCompilerOptions(json, { strictNullChecks: true });
   });
+}
+
+export function getESLintIgnores(tree: Tree, options: NormalizedSchema) {
+  return [
+    `// ${getImportPath(tree, options.projectDirectory)}`,
+    ...eslintIgnores,
+    '// The eslint config test fixtures contain files that deliberatly fail linting',
+    "// in order to tests that the config reports those errors. We don't want the",
+    '// normal eslint run to complain about those files though so ignore them here.',
+    `"${options.projectRoot}/src/tests/fixtures",`,
+    `"${options.projectRoot}/src/**/*/fixtures",`,
+    '"**/*/fixtures",',
+  ];
 }

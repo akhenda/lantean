@@ -1,10 +1,12 @@
 import { getWorkspaceLayout, names, Tree } from '@nx/devkit';
 
-import { getImportPath, getNpmScope } from '../../utils';
-
 import { libTags, defaultUIName, defaultLibName } from './constants';
 import { NormalizedSchema, UniversalNextGeneratorSchema } from './schema';
+
+import { normalizeOptions as normalizeSheriffOptions } from '../sheriff/utils';
 import { normalizeOptions as normalizeUniversalOptions } from '../universal/utils';
+
+import { getImportPath, getNpmScope } from '../../utils';
 
 /**
  * Normalize options for the Universal generator.
@@ -38,6 +40,7 @@ export function normalizeOptions(
   const npmScope = getNpmScope(tree) ?? name;
   const npmScopeTitle = names(npmScope).className;
 
+  const { importPath: sheriffImportPath } = normalizeSheriffOptions(tree);
   const {
     projectName: universalLibName,
     importPath: universalLibImportPath,
@@ -68,5 +71,6 @@ export function normalizeOptions(
     libName,
     universalLibName,
     universalLibImportPath,
+    sheriffImportPath,
   };
 }
