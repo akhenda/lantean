@@ -11,7 +11,7 @@ import {
   updateProjectConfiguration,
   writeJson,
 } from '@nx/devkit';
-import { libraryGenerator } from '@nx/js';
+import { addTsConfigPath, getRootTsConfigPathInTree, libraryGenerator } from '@nx/js';
 import { initGenerator as viteInitGenerator, vitestGenerator } from '@nx/vite';
 import { tsquery } from '@phenomnomnominal/tsquery';
 import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
@@ -137,7 +137,12 @@ function updateESLintConfig(tree: Tree, options: NormalizedSchema) {
   const filePath = join(options.projectRoot, 'eslint.config.js');
 
   updateESLintFlatConfigIgnoredDependencies(tree, filePath, [...Object.keys(deps), ...Object.keys(devDeps)]);
-  updateESLintFlatConfigIgnoreRules(tree, filePath, ['convex/_generated/**/*', 'vite.config.ts', 'tsconfig.json']);
+  updateESLintFlatConfigIgnoreRules(
+    tree,
+    filePath,
+    ['convex/_generated/**/*', 'vite.config.ts', 'tsconfig.json'],
+    true,
+  );
   updateESLintFlatConfigGlobalRules(tree, filePath, ['"no-process-env": "off"']);
 }
 
@@ -174,6 +179,16 @@ export function initialiseConvex() {
   const result = execSync('npx convex codegen', { stdio: 'inherit' });
 
   return result;
+}
+
+function updateBaseTSConfigPaths(tree: Tree, options: NormalizedSchema) {
+  updateJson<TSConfig>(tree, getRootTsConfigPathInTree(tree), (json) => {
+    if (json.compilerOptions?.paths) delete json.compilerOptions.paths[options.importPath];
+
+    return json;
+  });
+
+  addTsConfigPath(tree, `${options.importPath}/*`, [`${options.projectRoot}/*`]);
 }
 
 export async function generateConvexLib(tree: Tree, options: NormalizedSchema) {
@@ -214,5 +229,6 @@ export async function generateConvexLib(tree: Tree, options: NormalizedSchema) {
   updateProjectJson(tree, options);
   updateConvexJson(tree, options);
   updateViteConfig(tree, options);
+  updateBaseTSConfigPaths(tree, options);
   addDependencies(tree);
 }

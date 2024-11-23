@@ -1,13 +1,18 @@
 import { join } from 'path';
 
 import { addDependenciesToPackageJson, generateFiles, Tree, updateJson } from '@nx/devkit';
-import { libraryGenerator } from '@nx/js';
+import { addTsConfigPath, getRootTsConfigPathInTree, libraryGenerator } from '@nx/js';
 import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
 
 import { deps } from './constants';
 import { NormalizedSchema } from './schema';
 
-import { getLibTSConfigExclude, getLibTSConfigInclude, updateESLintFlatConfigIgnoredDependencies, updateTSConfigCompilerOptions } from '../../utils';
+import {
+  getLibTSConfigExclude,
+  getLibTSConfigInclude,
+  updateESLintFlatConfigIgnoredDependencies,
+  updateTSConfigCompilerOptions,
+} from '../../utils';
 
 function cleanupLib(tree: Tree, libDirectory: string) {
   tree.delete(`${libDirectory}/src/index.ts`);
@@ -63,6 +68,16 @@ function updateESLintConfig(tree: Tree, options: NormalizedSchema) {
   updateESLintFlatConfigIgnoredDependencies(tree, filePath, [...Object.keys(deps)]);
 }
 
+function updateBaseTSConfigPaths(tree: Tree, options: NormalizedSchema) {
+  updateJson<TSConfig>(tree, getRootTsConfigPathInTree(tree), (json) => {
+    if (json.compilerOptions?.paths) delete json.compilerOptions.paths[options.importPath];
+
+    return json;
+  });
+
+  addTsConfigPath(tree, `${options.importPath}/*`, [`${options.projectRoot}/*`]);
+}
+
 export async function generateEmailLib(tree: Tree, options: NormalizedSchema) {
   await libraryGenerator(tree, {
     compiler: 'tsc',
@@ -79,5 +94,6 @@ export async function generateEmailLib(tree: Tree, options: NormalizedSchema) {
   addLibFiles(tree, options);
   updateTSConfigs(tree, options);
   updateESLintConfig(tree, options);
+  updateBaseTSConfigPaths(tree, options);
   addDependencies(tree);
 }

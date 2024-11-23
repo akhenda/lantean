@@ -13,15 +13,10 @@ import {
 } from '@nx/devkit';
 import { SchemaForPrettierrc } from '@schemastore/prettierrc';
 import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
-import { addTsConfigPath, libraryGenerator } from '@nx/js';
+import { addTsConfigPath, getRootTsConfigPathInTree, libraryGenerator } from '@nx/js';
 import { unique } from 'radash';
 
-import {
-  dependencies,
-  devDependencies,
-  folderNames,
-  vscodeExtensions,
-} from './constants';
+import { dependencies, devDependencies, folderNames, vscodeExtensions } from './constants';
 import { NormalizedSchema } from './schema';
 import {
   buildCommand,
@@ -64,12 +59,18 @@ function updateBaseTSConfigPaths(tree: Tree, options: NormalizedSchema) {
   const { designUI: ui, designLib } = options.folderNames;
   const { design, features, core } = options.paths;
 
+  updateJson<TSConfig>(tree, getRootTsConfigPathInTree(tree), (json) => {
+    if (json.compilerOptions?.paths) delete json.compilerOptions.paths[options.importPath];
+
+    return json;
+  });
+
+  addTsConfigPath(tree, `${options.importPath}/*`, [`${options.projectRoot}/*`]);
   addTsConfigPath(tree, `${core.path}/*`, [`${core.root}/*`]);
   addTsConfigPath(tree, `${features.path}/*`, [`${features.root}/*`]);
+  addTsConfigPath(tree, `${design.path}/*`, [`${design.root}/*`]);
   addTsConfigPath(tree, `${design.path}/${ui}/*`, [`${design.root}/${ui}/*`]);
-  addTsConfigPath(tree, `${design.path}/${designLib}/*`, [
-    `${design.root}/${designLib}/*`,
-  ]);
+  addTsConfigPath(tree, `${design.path}/${designLib}/*`, [`${design.root}/${designLib}/*`]);
 }
 
 /**
@@ -88,12 +89,7 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
     template: '',
   };
 
-  generateFiles(
-    tree,
-    join(__dirname, 'files'),
-    options.projectRoot,
-    templateOptions,
-  );
+  generateFiles(tree, join(__dirname, 'files'), options.projectRoot, templateOptions);
 }
 
 /**
@@ -130,10 +126,7 @@ function addComponentsJson(tree: Tree, options: NormalizedSchema) {
  * @param tree The abstract syntax tree of the workspace.
  * @param options The normalized options for the generator.
  */
-function updateProjectConfig(
-  tree: Tree,
-  { npmScope, projectName, projectRoot }: NormalizedSchema,
-) {
+function updateProjectConfig(tree: Tree, { npmScope, projectName, projectRoot }: NormalizedSchema) {
   updateProjectConfiguration(tree, projectName, {
     ...readProjectConfiguration(tree, projectName),
     sourceRoot: projectRoot,
@@ -170,47 +163,26 @@ function updateProjectConfig(
 function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
   const folders = Object.values(folderNames);
 
-  updateJson<TSConfig>(
-    tree,
-    join(options.projectRoot, 'tsconfig.json'),
-    (json) => {
-      return updateTSConfigCompilerOptions(json, {
-        noPropertyAccessFromIndexSignature: false,
-        esModuleInterop: true,
-        jsx: 'react-native',
-      });
-    },
-  );
+  updateJson<TSConfig>(tree, join(options.projectRoot, 'tsconfig.json'), (json) => {
+    return updateTSConfigCompilerOptions(json, {
+      noPropertyAccessFromIndexSignature: false,
+      esModuleInterop: true,
+      jsx: 'react-native',
+    });
+  });
 
-  updateJson<TSConfig>(
-    tree,
-    join(options.projectRoot, 'tsconfig.lib.json'),
-    (json) => {
-      json.include = [
-        'nativewind-env.d.ts',
-        ...getLibTSConfigInclude(folders, json.include),
-      ];
-      json.exclude = getLibTSConfigExclude(folders, json.exclude);
+  updateJson<TSConfig>(tree, join(options.projectRoot, 'tsconfig.lib.json'), (json) => {
+    json.include = ['nativewind-env.d.ts', ...getLibTSConfigInclude(folders, json.include)];
+    json.exclude = getLibTSConfigExclude(folders, json.exclude);
 
-      return json;
-    },
-  );
+    return json;
+  });
 
-  updateJson<TSConfig>(
-    tree,
-    join(options.projectRoot, 'tsconfig.spec.json'),
-    (json) => {
-      json.include = getLibTSConfigInclude(folders, json.include, [
-        'd.ts',
-        'spec.ts',
-        'spec.tsx',
-        'test.ts',
-        'test.tsx',
-      ]);
+  updateJson<TSConfig>(tree, join(options.projectRoot, 'tsconfig.spec.json'), (json) => {
+    json.include = getLibTSConfigInclude(folders, json.include, ['d.ts', 'spec.ts', 'spec.tsx', 'test.ts', 'test.tsx']);
 
-      return json;
-    },
-  );
+    return json;
+  });
 }
 
 /**
@@ -231,10 +203,7 @@ function updateVSCodeSettings(tree: Tree) {
     updateJson(tree, extensionsFilePath, (extensionsJson) => {
       return {
         ...extensionsJson,
-        recommendations: unique([
-          ...extensionsJson.recommendations,
-          ...vscodeExtensions,
-        ]),
+        recommendations: unique([...extensionsJson.recommendations, ...vscodeExtensions]),
       };
     });
   } else {
@@ -246,9 +215,7 @@ function updateVSCodeSettings(tree: Tree) {
       ...settingsJson,
 
       'files.associations': { '*.css': 'tailwindcss' },
-      'tailwindCSS.experimental.classRegex': [
-        ['tva\\((([^()]*|\\([^()]*\\))*)\\)', '["\'`]([^"\'`]*).*?["\'`]'],
-      ],
+      'tailwindCSS.experimental.classRegex': [['tva\\((([^()]*|\\([^()]*\\))*)\\)', '["\'`]([^"\'`]*).*?["\'`]']],
     };
   });
 }
@@ -279,10 +246,7 @@ export function updatePrettierConfig(tree: Tree) {
     writeJson(tree, prettierConfigFile, {});
   }
 
-  let prettierConfig = readJson<Exclude<SchemaForPrettierrc, string>>(
-    tree,
-    prettierConfigFile,
-  );
+  let prettierConfig = readJson<Exclude<SchemaForPrettierrc, string>>(tree, prettierConfigFile);
 
   prettierConfig = {
     ...prettierConfig,
@@ -307,8 +271,7 @@ function updatePackageJsons(tree: Tree) {
     /* eslint-disable @typescript-eslint/naming-convention */
     packageJson.scripts = {
       ...(packageJson.scripts ?? {}),
-      'universal:component:add':
-        'TS_NODE_PROJECT=tsconfig.base.json bun nx run universal:add-component',
+      'universal:component:add': 'TS_NODE_PROJECT=tsconfig.base.json bun nx run universal:add-component',
     };
     /* eslint-enable @typescript-eslint/naming-convention */
 
@@ -358,11 +321,7 @@ export function installAFewUniversalComponents(universalLibName: string) {
   ];
 
   try {
-    execCommand(
-      buildCommand([...commands.join(' && ').split(' ')]),
-      { asString: false, asJSON: false },
-      isDryRun,
-    );
+    execCommand(buildCommand([...commands.join(' && ').split(' ')]), { asString: false, asJSON: false }, isDryRun);
   } catch (error) {
     console.log('There was a problem installing universal components.');
   }
@@ -374,10 +333,7 @@ export function installAFewUniversalComponents(universalLibName: string) {
  * @param tree The abstract syntax tree of the workspace.
  * @param options The normalized options for the generator.
  */
-export async function generateUniversalLib(
-  tree: Tree,
-  options: NormalizedSchema,
-) {
+export async function generateUniversalLib(tree: Tree, options: NormalizedSchema) {
   await libraryGenerator(tree, {
     name: options.projectName,
     directory: options.projectRoot,

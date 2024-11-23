@@ -67,8 +67,8 @@ export function getESLintIgnores(tree: Tree, options: NormalizedSchema) {
     '// The eslint config test fixtures contain files that deliberatly fail linting',
     "// in order to tests that the config reports those errors. We don't want the",
     '// normal eslint run to complain about those files though so ignore them here.',
-    `"${options.projectRoot}/src/tests/fixtures",`,
-    `"${options.projectRoot}/src/**/*/fixtures",`,
-    '"**/*/fixtures",',
+    `${options.projectRoot}/src/tests/fixtures`,
+    `${options.projectRoot}/src/**/*/fixtures`,
+    '**/*/fixtures',
   ];
 }

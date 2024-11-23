@@ -33,7 +33,6 @@ import {
 import { NormalizedSchema, SheriffGeneratorSchema } from './schema';
 import { getESLintIgnores, normalizeOptions } from './utils';
 import { setPrettierConfig } from '../linting/prettier';
-import { tsquery } from '@phenomnomnominal/tsquery';
 
 /**
  * This function is a safety net. It warns the user if the repository has not been
@@ -111,7 +110,7 @@ function updateBaseEslintConfig(tree: Tree, options: NormalizedSchema) {
 
   updateESLintFlatConfigToExtendConfig(tree, filePath, options.importPath, 'nx', false);
   updateESLintFlatConfigPrettierRules(tree, filePath, []);
-  updateESLintFlatConfigIgnoreRules(tree, filePath, getESLintIgnores(tree, options));
+  updateESLintFlatConfigIgnoreRules(tree, filePath, getESLintIgnores(tree, options), true);
 }
 
 /**

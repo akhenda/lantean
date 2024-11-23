@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+
 /**
  * Filename of VSCode CSS settings.
  */
@@ -34,9 +34,12 @@ export const prettierConfigFile = '.prettierrc';
  */
 export const eslintLibDepVersions = {
   '@theunderscorer/nx-semantic-release': '^2.12.0',
+  '@typescript-eslint/eslint-plugin': '^8.15.0',
+  '@typescript-eslint/parser': '^8.15.0',
   eslint: '^8.57.0',
-  'eslint-config-sheriff': '^14.2.0',
+  'eslint-config-sheriff': '^25.1.0',
   'eslint-define-config': '^2.1.0',
+  'eslint-plugin-prettier': '^5.2.1',
   prettier: '^3.3.3',
 } as const;
 
@@ -60,22 +63,22 @@ export const vscodeExtensions = [
 ] as const;
 
 export const eslintIgnores = [
-  '".eslintrc.js",',
-  '".eslintrc.cjs",',
-  '"eslint.config.js",',
-  '"eslint.config.cjs",',
-  '"eslint.config.mjs",',
-  '"eslint.config.mts",',
-  '".prettier.cjs",',
-  '"coverage",',
-  '"/coverage",',
-  '".npmrc",',
-  '".github",',
-  '"package.json",',
-  '"tsconfig.json",',
-  '"jest.config.js",',
-  '"jest.config.ts",',
-  '"jest.config.cjs",',
-  '"jest.config.mjs",',
-  '"jest.config.mts",',
+  '.eslintrc.js',
+  '.eslintrc.cjs',
+  'eslint.config.js',
+  'eslint.config.cjs',
+  'eslint.config.mjs',
+  'eslint.config.mts',
+  '.prettier.cjs',
+  'coverage',
+  '/coverage',
+  '.npmrc',
+  '.github',
+  'package.json',
+  'tsconfig.json',
+  'jest.config.js',
+  'jest.config.ts',
+  'jest.config.cjs',
+  'jest.config.mjs',
+  'jest.config.mts',
 ];

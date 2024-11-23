@@ -463,14 +463,17 @@ export function updateESLintFlatConfigPrettierRules(tree: Tree, filePath: string
   const newContents = contents.replace(
     /\];/gi,
     [
-      '{',
+      '...compat',
+      '.config({',
+      "extends: ['plugin:prettier/recommended'],",
+      '})',
+      '.map((config) => ({',
+      '...config,',
       "files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx', '**/*.json', '**/*.html'],",
-      "...compat.extends('plugin:prettier/recommended'),",
-      '// Override or add prettier rules here',
       'rules: {',
       ...rules.map((rule) => `\t${rule},`),
       '},',
-      '},',
+      '})),',
       '];',
     ].join('\n\t'),
   );
@@ -498,9 +501,15 @@ export function updateESLintFlatConfigIgnoreRules(tree: Tree, filePath: string, 
   const newContents = atTheEnd
     ? contents.replace(
         '];',
-        ['{', 'ignores: [', ignores.map((ignore) => `\t'${ignore}',`).join('\n\t'), marker, '],', '},', '];'].join(
-          '\n\t',
-        ),
+        [
+          '{',
+          'ignores: [',
+          ignores.map((ignore) => (ignore.includes('//') ? `\t${ignore}` : `\t'${ignore}',`)).join('\n\t'),
+          marker,
+          '],',
+          '},',
+          '];',
+        ].join('\n\t'),
       )
     : contents.replace(marker, [ignores.map((ignore) => `\t'${ignore}',`).join('\n\t'), marker].join('\n\t'));
 
