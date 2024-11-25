@@ -1,8 +1,9 @@
+const basic = require('./basic');
+
 /**
  * Default NX Workspace Config
  */
-module.exports = {
-  extends: '<%= importPath %>/basic.js',
-  overrides: [],
-  rules: {}
-};
+module.exports = [
+  ...basic,
+  { rules: {} },
+];

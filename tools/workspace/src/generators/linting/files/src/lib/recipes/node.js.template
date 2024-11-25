@@ -1,20 +1,10 @@
+const typescript = require('../configs/typescript');
+const typescriptTypeChecking = require('../configs/typescript-type-checking');
+const prettier = require('../configs/prettier');
+const jestConfig = require('../configs/jest');
+const node = require('../configs/node');
+
 /**
  * Use this for Node.js projects.
  */
-module.exports = {
-  extends: [
-    '<%= importPath %>/src/lib/configs/typescript.js',
-    '<%= importPath %>/src/lib/configs/typescript-type-checking.js',
-    '<%= importPath %>/src/lib/configs/node.js',
-    '<%= importPath %>/src/lib/configs/jest.js',
-    '<%= importPath %>/src/lib/configs/prettier.js',
-  ],
-  env: { node: true },
-  overrides: [
-    {
-      files: '*.json',
-      parser: 'jsonc-eslint-parser',
-      rules: {},
-    },
-  ],
-};
+module.exports = [...typescript, ...typescriptTypeChecking, ...node, ...prettier, ...jestConfig];
