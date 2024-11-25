@@ -37,7 +37,6 @@ export async function saasDrizzleGenerator(tree: Tree, schema: SaasDrizzleGenera
     sonarJs: true,
     unusedImports: true,
     typescriptRecommended: true,
-    deprecation: true,
     importOrder: true,
     prettier: true,
   });

@@ -120,18 +120,18 @@ module.exports = [
         },
       ],
       // Enforces that types will not to be used
-      '@typescript-eslint/ban-types': [
-        'error',
-        {
-          types: {
-            String: { message: 'Use string instead', fixWith: 'string' },
-            Boolean: { message: 'Use boolean instead', fixWith: 'boolean' },
-            Number: { message: 'Use number instead', fixWith: 'number' },
-            Object: { message: 'Use object instead', fixWith: 'object' },
-            Array: { message: 'Provide a more specific type' },
-          },
-        },
-      ],
+      // '@typescript-eslint/ban-types': [
+      //   'error',
+      //   {
+      //     types: {
+      //       String: { message: 'Use string instead', fixWith: 'string' },
+      //       Boolean: { message: 'Use boolean instead', fixWith: 'boolean' },
+      //       Number: { message: 'Use number instead', fixWith: 'number' },
+      //       Object: { message: 'Use object instead', fixWith: 'object' },
+      //       Array: { message: 'Provide a more specific type' },
+      //     },
+      //   },
+      // ],
       // Enforce camelCase naming convention and PascalCase class and interface names
       '@typescript-eslint/naming-convention': [
         'error',
@@ -355,24 +355,24 @@ module.exports = [
       // turn on errors for missing imports
       'import/no-unresolved': 'error',
 
-      '@typescript-eslint/ban-types': [
-        'error',
-        {
-          types: {
-            Number: { message: 'Use `number` instead.', fixWith: 'number' },
-            Boolean: {
-              message: 'Use `boolean` instead.',
-              fixWith: 'boolean',
-            },
-            Symbol: { message: 'Use `symbol` instead.', fixWith: 'symbol' },
-            Object: { message: 'Use `object` instead.', fixWith: 'object' },
-            String: { message: 'Use `string` instead.', fixWith: 'string' },
-            '{}': { message: 'Use `object` instead.', fixWith: 'object' },
-            Array: { message: 'Provide a more specific type' },
-          },
-          extendDefaults: false,
-        },
-      ],
+      // '@typescript-eslint/ban-types': [
+      //   'error',
+      //   {
+      //     types: {
+      //       Number: { message: 'Use `number` instead.', fixWith: 'number' },
+      //       Boolean: {
+      //         message: 'Use `boolean` instead.',
+      //         fixWith: 'boolean',
+      //       },
+      //       Symbol: { message: 'Use `symbol` instead.', fixWith: 'symbol' },
+      //       Object: { message: 'Use `object` instead.', fixWith: 'object' },
+      //       String: { message: 'Use `string` instead.', fixWith: 'string' },
+      //       '{}': { message: 'Use `object` instead.', fixWith: 'object' },
+      //       Array: { message: 'Provide a more specific type' },
+      //     },
+      //     extendDefaults: false,
+      //   },
+      // ],
 
       // '@typescript-eslint/naming-convention': [
       //   'error',

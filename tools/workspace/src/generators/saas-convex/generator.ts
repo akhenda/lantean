@@ -37,7 +37,6 @@ export async function saasConvexGenerator(tree: Tree, schema: SaasConvexGenerato
     sonarJs: true,
     unusedImports: true,
     typescriptRecommended: true,
-    deprecation: true,
     importOrder: true,
     prettier: true,
   });

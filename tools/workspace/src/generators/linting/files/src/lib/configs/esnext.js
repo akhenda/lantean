@@ -389,15 +389,15 @@ module.exports = [
    * eslint-plugin-deprecate
    */
   {
-    plugins: { deprecate: deprecate },
+    plugins: { deprecate },
     rules: {
-      'deprecate/function': ['error', { name: 'legacyFunc', use: 'newFunc from this package' }],
-      'deprecate/member-expression': ['error', { name: 'React.createClass', use: 'native es6 classes' }],
-      'deprecate/import': [
-        'error',
-        { name: 'path/to/legacyModule', use: 'newModule' },
-        { nameRegExp: '\\.sss', use: 'css imports' },
-      ],
+      // 'deprecate/function': ['error', { name: 'legacyFunc', use: 'newFunc from this package' }],
+      // 'deprecate/member-expression': ['error', { name: 'React.createClass', use: 'native es6 classes' }],
+      // 'deprecate/import': [
+      //   'error',
+      //   { name: 'path/to/legacyModule', use: 'newModule' },
+      //   { nameRegExp: '\\.sss', use: 'css imports' },
+      // ],
     },
   },
 

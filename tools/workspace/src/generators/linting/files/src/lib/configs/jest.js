@@ -2,6 +2,7 @@ const shopifyPlugin = require('@shopify/eslint-plugin');
 const globals = require('globals');
 const jestPlugin = require('eslint-plugin-jest');
 const jestFormattingPlugin = require('eslint-plugin-jest-formatting');
+const testingLibraryPlugin = require('eslint-plugin-testing-library');
 
 module.exports = [
   /**
@@ -148,12 +149,8 @@ module.exports = [
       '**/?(*.)+(spec|test).[jt]s?(x)',
     ],
 
-    ...pluginTestingLibrary.configs['flat/dom'],
-
-    plugins: {
-      'testing-library': pluginTestingLibrary,
-    },
-
+    ...testingLibraryPlugin.configs['flat/dom'],
+    plugins: { 'testing-library': testingLibraryPlugin },
     rules: {},
   },
 ];

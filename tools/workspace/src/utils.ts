@@ -551,8 +551,7 @@ export function eslintFlatConfigExtendAConfig(
   let newConfig: string;
 
   const config = tree.read(filePath).toString();
-  const importedConfigName = `${configName}Config`;
-  const newReqStmt = `const { ${configName}: ${importedConfigName} } = require('${importPath}');`;
+  const newReqStmt = `const lanteanConfig = require('${importPath}');`;
 
   // Find existing import/require statements
   const reqStmts = tsquery(config, 'VariableStatement:has(CallExpression Identifier[name="require"])');
@@ -568,9 +567,13 @@ export function eslintFlatConfigExtendAConfig(
     newConfig = config; // No need to add the import if it exists
   }
 
+  const wantedConfig = configName.includes['-']
+    ? `lanteanConfig.configs[${configName}]`
+    : `lanteanConfig.configs.${configName}`;
+
   newConfig = atTheEnd
-    ? newConfig.replace('];', [`...${importedConfigName},`, '];'].join('\n\t'))
-    : newConfig.replace('module.exports = [', ['module.exports = [', `...${importedConfigName},`].join('\n\t'));
+    ? newConfig.replace('];', [`...${wantedConfig},`, '];'].join('\n\t'))
+    : newConfig.replace('module.exports = [', ['module.exports = [', `...${wantedConfig},`].join('\n\t'));
 
   // only write the file if something has changed
   if (newConfig !== config) tree.write(filePath, newConfig);

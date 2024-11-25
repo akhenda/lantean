@@ -1,3 +1,5 @@
+const yml = require('eslint-plugin-yml');
+
 // const prettierPlugin = require('eslint-plugin-prettier');
 // const prettierConfig = require('eslint-config-prettier');
 
@@ -58,7 +60,7 @@ module.exports = [
   /**
    * eslint-plugin-yml
    */
-  ...eslintPluginYml.configs['flat/prettier'],
+  ...yml.configs['flat/prettier'],
 
   {
     rules: {},
