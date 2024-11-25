@@ -1,30 +1,18 @@
 import { addDependenciesToPackageJson, Tree } from '@nx/devkit';
-import { JSONSchemaForESLintConfigurationFiles } from '@schemastore/eslintrc';
 
+import { addEsLintPlugin, isEsLintPluginPresent, updateEsLintProjectConfig } from './eslint-config';
+import { eslintConfigFile, eslintLibDepVersions, eslintPluginPrettier, prettierPlugin } from './constants';
 import {
-  addEsLintPlugin,
-  addEsLintRules,
-  isEsLintPluginPresent,
-  readEsLintConfig,
-  updateEsLintProjectConfig,
-  writeEsLintConfig,
-} from './eslint-config';
-import {
-  deprecationRule,
-  esLintRule,
-  importOrderRule,
-  sonarJSRule,
-  typescriptRule,
-  unusedImportsRule,
-} from './rules';
-import {
-  eslintLibDepVersions,
-  eslintPluginPrettier,
-  prettierPlugin,
-} from './constants';
+  getESLintFlatConfig,
+  getImportOrderFlatConfig,
+  getSonarJSFlatConfig,
+  getTypescriptFlatConfig,
+  getUnusedImportsFlatConfig,
+} from './flats';
 import { setPrettierConfig } from './prettier';
 
 import { addDevDependencyToPackageJson, joinNormalize } from '../../devkit';
+import { eslintFlatConfigAddPluginImport, eslintFlatConfigAddPrettierRules } from '../../utils';
 
 /**
  * @internal
@@ -34,24 +22,13 @@ import { addDevDependencyToPackageJson, joinNormalize } from '../../devkit';
  *
  * @param tree The file system tree.
  */
-export function addEsLintRecommendedRules(tree: Tree): void {
-  addEsLintRules(tree, esLintRule);
+export function addEsLintRecommendedRules(tree: Tree) {
+  const name = 'eslint';
+  const lib = '@eslint/js';
+  const globalsLib = 'globals';
+  const globalsRef = eslintFlatConfigAddPluginImport(tree, eslintConfigFile, globalsLib, globalsLib, true);
 
-  const eslintConfig = readEsLintConfig(tree);
-  const env = {
-    ...(eslintConfig.env, {}),
-  } as Exclude<JSONSchemaForESLintConfigurationFiles['env'], undefined>;
-
-  env.node = true;
-  env.browser = true;
-  env.es2022 = true;
-
-  writeEsLintConfig(tree, {
-    root: eslintConfig.root,
-    env,
-    ignorePatterns: eslintConfig.ignorePatterns,
-    ...eslintConfig,
-  });
+  addEsLintPlugin(tree, name, lib, getESLintFlatConfig(globalsRef));
 }
 
 /**
@@ -63,13 +40,11 @@ export function addEsLintRecommendedRules(tree: Tree): void {
  * @param tree The file system tree.
  */
 export function addSonarJsRecommendedRules(tree: Tree): void {
-  addDevDependencyToPackageJson(
-    tree,
-    'eslint-plugin-sonarjs',
-    eslintLibDepVersions['eslint-plugin-sonarjs']
-  );
-  addEsLintPlugin(tree, 'sonarjs');
-  addEsLintRules(tree, sonarJSRule);
+  const name = 'sonarjs';
+  const lib = 'eslint-plugin-sonarjs';
+
+  addDevDependencyToPackageJson(tree, lib, eslintLibDepVersions[lib]);
+  addEsLintPlugin(tree, name, lib, getSonarJSFlatConfig());
 }
 
 /**
@@ -81,13 +56,11 @@ export function addSonarJsRecommendedRules(tree: Tree): void {
  * @param tree The file system tree.
  */
 export function addUnusedImportsRules(tree: Tree): void {
-  addDevDependencyToPackageJson(
-    tree,
-    'eslint-plugin-unused-imports',
-    eslintLibDepVersions['eslint-plugin-unused-imports']
-  );
-  addEsLintPlugin(tree, 'unused-imports');
-  addEsLintRules(tree, unusedImportsRule);
+  const name = 'unused-imports';
+  const lib = 'eslint-plugin-unused-imports';
+
+  addDevDependencyToPackageJson(tree, lib, eslintLibDepVersions[lib]);
+  addEsLintPlugin(tree, name, lib, getUnusedImportsFlatConfig(name));
 }
 
 /**
@@ -100,36 +73,16 @@ export function addUnusedImportsRules(tree: Tree): void {
  * @param tree The file system tree.
  */
 export function addTypescriptRecommendedRules(tree: Tree): void {
-  addDevDependencyToPackageJson(tree, '@typescript-eslint/parser', '7.18.0');
-  addDevDependencyToPackageJson(
+  const name = '@typescript-eslint';
+  const lib = '@typescript-eslint/eslint-plugin';
+  const parserRef = eslintFlatConfigAddPluginImport(
     tree,
-    '@typescript-eslint/eslint-plugin',
-    '7.18.0'
+    eslintConfigFile,
+    'typescript-eslint-parser',
+    '@typescript-eslint/parser',
   );
-  addEsLintPlugin(tree, '@typescript-eslint');
-  addEsLintRules(tree, typescriptRule);
-  addParserOptionsToProjects(tree);
-}
 
-/**
- * @internal
- * Adds `eslint-plugin-deprecation` rules to the root ESLint configuration.
- *
- * Requires `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin`
- * and `eslint-plugin-deprecation` to be installed.
- *
- * @param tree The file system tree.
- */
-export function addDeprecationRules(tree: Tree): void {
-  addDevDependencyToPackageJson(tree, '@typescript-eslint/parser', '7.18.0');
-  addDevDependencyToPackageJson(
-    tree,
-    '@typescript-eslint/eslint-plugin',
-    '7.18.0'
-  );
-  addDevDependencyToPackageJson(tree, 'eslint-plugin-deprecation');
-  addEsLintPlugin(tree, 'deprecation');
-  addEsLintRules(tree, deprecationRule);
+  addEsLintPlugin(tree, name, lib, getTypescriptFlatConfig(name, parserRef));
   addParserOptionsToProjects(tree);
 }
 
@@ -143,10 +96,19 @@ export function addDeprecationRules(tree: Tree): void {
  * @param tree The file system tree.
  */
 export function addImportOrderRules(tree: Tree): void {
-  addDevDependencyToPackageJson(tree, 'eslint-plugin-import');
+  const name = 'import';
+  const lib = 'eslint-plugin-import';
+
+  const parserRef = eslintFlatConfigAddPluginImport(
+    tree,
+    eslintConfigFile,
+    'import-resolver',
+    'eslint-import-resolver-typescript',
+  );
+
+  addDevDependencyToPackageJson(tree, lib);
   addDevDependencyToPackageJson(tree, 'eslint-import-resolver-typescript');
-  addEsLintPlugin(tree, 'import');
-  addEsLintRules(tree, importOrderRule);
+  addEsLintPlugin(tree, name, lib, getImportOrderFlatConfig(name));
 }
 
 /**
@@ -158,9 +120,11 @@ export function addImportOrderRules(tree: Tree): void {
  */
 export function addParserOptionsToProjects(tree: Tree) {
   updateEsLintProjectConfig(tree, (project) => ({
-    files: ['*.ts', '*.tsx'],
-    parserOptions: {
-      project: [joinNormalize(project.root, 'tsconfig*.json')],
+    files: ['**/*.ts', '**/*.tsx'],
+    languageOptions: {
+      parserOptions: {
+        project: [joinNormalize(project.root, 'tsconfig*.json')],
+      },
     },
   }));
 }
@@ -178,12 +142,7 @@ export function addPrettierRules(tree: Tree) {
 
   if (isEsLintPluginPresent(tree, prettierPlugin)) return;
 
-  addEsLintPlugin(tree, prettierPlugin, '@nx');
-  addEsLintRules(tree, {
-    files: ['*.ts', '*.tsx', '*.js', '*.jsx', '*.json', '*.html'],
-    extends: ['plugin:prettier/recommended'],
-    rules: {},
-  });
+  eslintFlatConfigAddPrettierRules(tree, eslintConfigFile, []);
 
   addDependenciesToPackageJson(tree, { prettier: eslintLibDepVersions.prettier }, {});
   addDevDependencyToPackageJson(tree, eslintPluginPrettier);

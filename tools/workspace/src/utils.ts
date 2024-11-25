@@ -2,6 +2,7 @@ import {
   detectPackageManager,
   ExecutorContext,
   getPackageManagerCommand,
+  names,
   ProjectConfiguration,
   readJson,
   TargetConfiguration,
@@ -9,6 +10,7 @@ import {
 } from '@nx/devkit';
 import { tsquery } from '@phenomnomnominal/tsquery';
 import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from '@schemastore/tsconfig';
+import type { FlatESLintConfig } from 'eslint-define-config';
 import * as shell from 'shelljs';
 import type { ExecOptions } from 'shelljs';
 
@@ -389,7 +391,7 @@ export function hasNxPackage(tree: Tree, nxPackage: string): boolean {
  * @param filePath The path to the ESLint configuration file to update.
  * @param deps An array of dependencies to be added to the `ignoredDependencies` list.
  */
-export function updateESLintFlatConfigIgnoredDependencies(tree: Tree, filePath: string, deps: string[]) {
+export function eslintFlatConfigUpdateIgnoredDependencies(tree: Tree, filePath: string, deps: string[]) {
   let newContents = '';
   const fileSource = tree.read(filePath);
   const contents = fileSource?.toString() ?? '';
@@ -424,14 +426,19 @@ export function updateESLintFlatConfigIgnoredDependencies(tree: Tree, filePath: 
  * @param filePath The path to the ESLint configuration file to update.
  * @param rules An array of ESLint rules to be added to the `rules` object.
  */
-export function updateESLintFlatConfigGlobalRules(tree: Tree, filePath: string, rules: string[]) {
+export function eslintFlatConfigAddGlobalRules(
+  tree: Tree,
+  filePath: string,
+  rules: string[],
+  files = ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+) {
   const fileSource = tree.read(filePath);
   const contents = fileSource?.toString() ?? '';
   const newContents = contents.replace(
     /\];/gi,
     [
       '{',
-      "files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],",
+      `files: ${JSON.stringify(files)},`,
       '// Override or add rules here',
       'rules: {',
       ...rules.map((rule) => `\t${rule},`),
@@ -457,7 +464,7 @@ export function updateESLintFlatConfigGlobalRules(tree: Tree, filePath: string, 
  * @param filePath The path to the ESLint configuration file to update.
  * @param rules An array of ESLint Prettier rules to be added to the `rules` object.
  */
-export function updateESLintFlatConfigPrettierRules(tree: Tree, filePath: string, rules: string[]) {
+export function eslintFlatConfigAddPrettierRules(tree: Tree, filePath: string, rules: string[]) {
   const fileSource = tree.read(filePath);
   const contents = fileSource?.toString() ?? '';
   const newContents = contents.replace(
@@ -494,7 +501,7 @@ export function updateESLintFlatConfigPrettierRules(tree: Tree, filePath: string
  * @param filePath The path to the ESLint configuration file to update.
  * @param ignores An array of paths to be added to the list of ignored files.
  */
-export function updateESLintFlatConfigIgnoreRules(tree: Tree, filePath: string, ignores: string[], atTheEnd = false) {
+export function eslintFlatConfigUpdateIgnoreRules(tree: Tree, filePath: string, ignores: string[], atTheEnd = false) {
   const marker = '// -- More files to ignore go here --';
   const fileSource = tree.read(filePath);
   const contents = fileSource?.toString() ?? '';
@@ -534,25 +541,23 @@ export function updateESLintFlatConfigIgnoreRules(tree: Tree, filePath: string, 
  * Defaults to `true`. If `false`, adds the configuration at the beginning
  * of the list.
  */
-export function updateESLintFlatConfigToExtendConfig(
+export function eslintFlatConfigExtendAConfig(
   tree: Tree,
   filePath: string,
   importPath: string,
   configName: string,
   atTheEnd = true,
 ) {
-  let newConfig;
+  let newConfig: string;
 
   const config = tree.read(filePath).toString();
   const importedConfigName = `${configName}Config`;
-
-  // Create the `const { withExpo } = require('@expo/next-adapter');` statement
   const newReqStmt = `const { ${configName}: ${importedConfigName} } = require('${importPath}');`;
 
   // Find existing import/require statements
   const reqStmts = tsquery(config, 'VariableStatement:has(CallExpression Identifier[name="require"])');
 
-  // Check if `withExpo` is already imported; if not, insert the new import
+  // Check if the config is already imported; if not, insert the new import
   // after the last existing import
   if (!reqStmts.some((stmt) => stmt.getText().includes(importPath))) {
     const lastImport = reqStmts[reqStmts.length - 1];
@@ -569,4 +574,103 @@ export function updateESLintFlatConfigToExtendConfig(
 
   // only write the file if something has changed
   if (newConfig !== config) tree.write(filePath, newConfig);
+}
+
+/**
+ * Adds a plugin import statement to the ESLint configuration file if it is not already present.
+ *
+ * This function reads the contents of the specified ESLint configuration file, checks
+ * whether the plugin is already imported, and adds an import statement for the plugin
+ * using its npm package name if it is not present. The import statement is inserted
+ * after the last existing import statement in the file.
+ *
+ * @param tree The file system tree representing the project structure.
+ * @param filePath The path to the ESLint configuration file to update.
+ * @param pluginName The name of the plugin to be imported.
+ * @param npmName The npm package name of the plugin.
+ * @returns The name of the plugin variable as it is imported.
+ */
+export function eslintFlatConfigAddPluginImport(
+  tree: Tree,
+  filePath: string,
+  pluginName: string,
+  npmName: string,
+  doNotModifyPluginName = false,
+) {
+  let newConfig: string;
+
+  const config = tree.read(filePath).toString();
+  const plugin = doNotModifyPluginName ? pluginName : `${names(pluginName).propertyName}Plugin`;
+  const newReqStmt = `const ${plugin} = require('${npmName}');`;
+
+  // Find existing import/require statements
+  const reqStmts = tsquery(config, 'VariableStatement:has(CallExpression Identifier[name="require"])');
+
+  // Check if plugin is already imported; if not, insert the new import
+  // after the last existing import
+  if (!reqStmts.some((stmt) => stmt.getText().includes(npmName))) {
+    const lastImport = reqStmts[reqStmts.length - 1];
+    const end = lastImport.getEnd();
+
+    newConfig = config.slice(0, end) + `\n${newReqStmt}` + config.slice(end);
+  } else {
+    newConfig = config; // No need to add the import if it exists
+  }
+
+  // only write the file if something has changed
+  if (newConfig !== config) tree.write(filePath, newConfig);
+
+  return plugin;
+}
+
+/**
+ * Adds a plugin to the ESLint configuration file if it is not already present.
+ *
+ * This function reads the contents of the specified ESLint configuration file,
+ * checks whether the plugin is already imported, and adds an import statement
+ * for the plugin using its npm package name if it is not present. It then adds
+ * the specified plugin configuration to the list of configurations in the
+ * file.
+ *
+ * @param tree The file system tree representing the project structure.
+ * @param filePath The path to the ESLint configuration file to update.
+ * @param pluginName The name of the plugin to be imported.
+ * @param npmName The npm package name of the plugin.
+ * @param pluginConfig The configuration string to be added for the plugin.
+ * @param atTheEnd Whether to add the configuration at the end of the list.
+ * Defaults to `true`. If `false`, adds the configuration at the beginning
+ * of the list.
+ */
+export function eslintFlatConfigAddPlugin(
+  tree: Tree,
+  filePath: string,
+  pluginName: string,
+  npmName: string,
+  pluginConfig: string,
+  atTheEnd = true,
+) {
+  pluginName = pluginName.replace('@', '');
+
+  const config = tree.read(filePath).toString();
+  const plugin = eslintFlatConfigAddPluginImport(tree, filePath, pluginName, npmName);
+
+  let newConfig = config;
+
+  pluginConfig?.replace('PLUGIN_IMPORT_REF', plugin);
+
+  newConfig = atTheEnd
+    ? newConfig.replace('];', ['{', pluginConfig, '];'].join('\n\t'))
+    : newConfig.replace('module.exports = [', ['module.exports = [', '{', pluginConfig].join('\n\t'));
+
+  // only write the file if something has changed
+  if (newConfig !== config) tree.write(filePath, newConfig);
+}
+
+export function eslintFlatConfigUpdateParserOptions(tree: Tree, filePath: string, options: FlatESLintConfig) {
+  const fileSource = tree.read(filePath);
+  const contents = fileSource?.toString() ?? '';
+  const newContents = contents.replace(/\];/gi, [JSON.stringify(options), '];'].join('\n\t'));
+
+  // only write the file if something has changed
+  if (newContents !== contents) tree.write(filePath, newContents);
 }

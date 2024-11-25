@@ -10,7 +10,7 @@ import { CallExpression, VariableDeclaration } from 'typescript';
 import { dependencies, devDependencies } from './constants';
 import { NormalizedSchema } from './schema';
 
-import { updateESLintFlatConfigToExtendConfig } from '../../utils';
+import { eslintFlatConfigExtendAConfig } from '../../utils';
 
 /**
  * Deletes unnecessary files from the Next.js application.
@@ -239,7 +239,7 @@ function updateEslintConfig(tree: Tree, options: NormalizedSchema) {
 
   if (newContents !== contents) tree.write(filePath, newContents);
 
-  updateESLintFlatConfigToExtendConfig(tree, filePath, options.sheriffImportPath, 'next');
+  eslintFlatConfigExtendAConfig(tree, filePath, options.sheriffImportPath, 'next');
 }
 
 /**

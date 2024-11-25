@@ -25,9 +25,9 @@ import {
   getLibTSConfigInclude,
   hasNxPackage,
   readNxVersion,
-  updateESLintFlatConfigGlobalRules,
-  updateESLintFlatConfigIgnoredDependencies,
-  updateESLintFlatConfigIgnoreRules,
+  eslintFlatConfigAddGlobalRules,
+  eslintFlatConfigUpdateIgnoredDependencies,
+  eslintFlatConfigUpdateIgnoreRules,
   updateTSConfigCompilerOptions,
 } from '../../utils';
 import { Linter, lintProjectGenerator } from '@nx/eslint';
@@ -136,14 +136,14 @@ function updateViteConfig(tree: Tree, options: NormalizedSchema) {
 function updateESLintConfig(tree: Tree, options: NormalizedSchema) {
   const filePath = join(options.projectRoot, 'eslint.config.js');
 
-  updateESLintFlatConfigIgnoredDependencies(tree, filePath, [...Object.keys(deps), ...Object.keys(devDeps)]);
-  updateESLintFlatConfigIgnoreRules(
+  eslintFlatConfigUpdateIgnoredDependencies(tree, filePath, [...Object.keys(deps), ...Object.keys(devDeps)]);
+  eslintFlatConfigUpdateIgnoreRules(
     tree,
     filePath,
     ['convex/_generated/**/*', 'vite.config.ts', 'tsconfig.json'],
     true,
   );
-  updateESLintFlatConfigGlobalRules(tree, filePath, ['"no-process-env": "off"']);
+  eslintFlatConfigAddGlobalRules(tree, filePath, ['"no-process-env": "off"']);
 }
 
 function updateProjectJson(tree: Tree, options: NormalizedSchema) {

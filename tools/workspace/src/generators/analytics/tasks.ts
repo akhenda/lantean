@@ -10,7 +10,7 @@ import { NormalizedSchema } from './schema';
 import {
   getLibTSConfigExclude,
   getLibTSConfigInclude,
-  updateESLintFlatConfigIgnoredDependencies,
+  eslintFlatConfigUpdateIgnoredDependencies,
   updateTSConfigCompilerOptions,
 } from '../../utils';
 
@@ -65,7 +65,7 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
 function updateESLintConfig(tree: Tree, options: NormalizedSchema) {
   const filePath = join(options.projectRoot, 'eslint.config.js');
 
-  updateESLintFlatConfigIgnoredDependencies(tree, filePath, [...Object.keys(deps), options.loggingLibImportPath]);
+  eslintFlatConfigUpdateIgnoredDependencies(tree, filePath, [...Object.keys(deps), options.loggingLibImportPath]);
 }
 
 function updateBaseTSConfigPaths(tree: Tree, options: NormalizedSchema) {

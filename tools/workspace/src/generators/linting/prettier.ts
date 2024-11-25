@@ -13,14 +13,7 @@ export const prettierDefaultConfig: Exclude<SchemaForPrettierrc, string> = {
   tabWidth: 2,
   printWidth: 100,
   arrowParens: 'always',
-  overrides: [
-    {
-      files: '*.html',
-      options: {
-        parser: 'html',
-      },
-    },
-  ],
+  overrides: [{ files: '*.html', options: { parser: 'html' } }],
 };
 
 /**
@@ -33,10 +26,7 @@ export const prettierDefaultConfig: Exclude<SchemaForPrettierrc, string> = {
 export function setPrettierConfig(tree: Tree): void {
   if (!tree.exists(prettierConfigFile)) writeJson(tree, prettierConfigFile, {});
 
-  let prettierConfig = readJson<Exclude<SchemaForPrettierrc, string>>(
-    tree,
-    prettierConfigFile
-  );
+  let prettierConfig = readJson<Exclude<SchemaForPrettierrc, string>>(tree, prettierConfigFile);
 
   prettierConfig = { ...prettierDefaultConfig, ...prettierConfig };
   writeJson(tree, prettierConfigFile, prettierConfig);

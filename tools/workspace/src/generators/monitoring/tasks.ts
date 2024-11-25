@@ -11,7 +11,7 @@ import { normalizeOptions } from './utils';
 import typesGenerator from '../types/generator';
 import { normalizeOptions as normalizeTypesOptions } from '../types/utils';
 
-import { updateESLintFlatConfigIgnoredDependencies, updateTSConfigCompilerOptions } from '../../utils';
+import { eslintFlatConfigUpdateIgnoredDependencies, updateTSConfigCompilerOptions } from '../../utils';
 
 function cleanupLib(tree: Tree, libDirectory: string) {
   tree.delete(`${libDirectory}/src/index.ts`);
@@ -48,7 +48,7 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
 function updateESLintConfig(tree: Tree, options: NormalizedSchema) {
   const filePath = join(options.projectRoot, 'eslint.config.js');
 
-  updateESLintFlatConfigIgnoredDependencies(tree, filePath, [...Object.keys(deps), options.typesLibImportPath]);
+  eslintFlatConfigUpdateIgnoredDependencies(tree, filePath, [...Object.keys(deps), options.typesLibImportPath]);
 }
 
 export async function generateMonitoringLib(tree: Tree, schema: MonitoringGeneratorSchema) {

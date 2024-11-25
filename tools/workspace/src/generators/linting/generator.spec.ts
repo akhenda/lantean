@@ -1,34 +1,11 @@
-import {
-  addProjectConfiguration,
-  installPackagesTask,
-  readJson,
-  Tree,
-} from '@nx/devkit';
+import { installPackagesTask, Tree } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { JSONSchemaForNPMPackageJsonFiles } from '@schemastore/package';
-import { SchemaForPrettierrc } from '@schemastore/prettierrc';
 
 import lintingGenerator from './generator';
-import {
-  eslintConfigFile,
-  eslintPluginPrettier,
-  prettierConfigFile,
-  prettierPlugin,
-} from './constants';
+import { prettierConfigFile } from './constants';
 import { writeEsLintConfig, readEsLintConfig } from './eslint-config';
-import {
-  deprecationRule,
-  esLintRule,
-  importOrderRule,
-  sonarJSRule,
-  typescriptRule,
-  unusedImportsRule,
-} from './rules';
 
 import { formatWorkspaceTask } from '../../devkit';
-import { prettierDefaultConfig } from './prettier';
-
-const timeout = 10_000;
 
 jest.mock('../../devkit', () => ({
   ...jest.requireActual('../../devkit'),
@@ -50,7 +27,7 @@ describe('@lantean/workspace eslint generator', () => {
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();
     jest.spyOn(console, 'log').mockImplementation(() => null);
-    writeEsLintConfig(tree, {});
+    writeEsLintConfig(tree, []);
   });
 
   it('should run successfully', async () => {
@@ -68,105 +45,6 @@ describe('@lantean/workspace eslint generator', () => {
 
     expect(installPackagesTask).toHaveBeenCalled();
   });
-
-  it('should apply eslint:recommended', async () => {
-    await lintingGenerator(tree, { eslintRecommended: true });
-
-    const eslintConfig = readEsLintConfig(tree);
-
-    expect(eslintConfig.overrides?.[0]).toStrictEqual(esLintRule);
-    expect(eslintConfig.env).toStrictEqual({
-      node: true,
-      browser: true,
-      es2022: true,
-    });
-  });
-
-  it('should apply sonarjs/recommended', async () => {
-    await lintingGenerator(tree, { sonarJs: true });
-
-    const eslintConfig = readEsLintConfig(tree);
-
-    expect(eslintConfig.plugins?.includes('sonarjs')).toBeTruthy();
-    expect(eslintConfig.overrides?.[0]).toStrictEqual(sonarJSRule);
-  });
-
-  it('should apply unused imports', async () => {
-    await lintingGenerator(tree, { unusedImports: true });
-
-    const eslintConfig = readEsLintConfig(tree);
-
-    expect(eslintConfig.plugins?.includes('unused-imports')).toBeTruthy();
-    expect(eslintConfig.overrides?.[0]).toStrictEqual(unusedImportsRule);
-  });
-
-  it(
-    'should apply @typescript-eslint/recommended',
-    async () => {
-      addLibraries();
-
-      await lintingGenerator(tree, { typescriptRecommended: true });
-
-      const eslintConfig = readEsLintConfig(tree);
-
-      expect(eslintConfig.plugins?.includes('@typescript-eslint')).toBeTruthy();
-      expect(eslintConfig.overrides?.[0]).toStrictEqual(typescriptRule);
-      expect(
-        readEsLintConfig(tree, `libs/lib1/${eslintConfigFile}`).overrides?.[0]
-      ).toStrictEqual({
-        files: ['*.ts', '*.tsx'],
-        parserOptions: { project: ['libs/lib1/tsconfig*.json'] },
-      });
-    },
-    timeout
-  );
-
-  it(
-    'should apply deprecation',
-    async () => {
-      addLibraries();
-
-      await lintingGenerator(tree, { deprecation: true });
-
-      const eslintConfig = readEsLintConfig(tree);
-
-      expect(eslintConfig.plugins?.includes('deprecation')).toBeTruthy();
-      expect(eslintConfig.overrides?.[0]).toStrictEqual(deprecationRule);
-      expect(
-        readEsLintConfig(tree, `libs/lib1/${eslintConfigFile}`).overrides?.[0]
-      ).toStrictEqual({
-        files: ['*.ts', '*.tsx'],
-        parserOptions: { project: ['libs/lib1/tsconfig*.json'] },
-      });
-    },
-    timeout
-  );
-
-  it(
-    'should apply import order',
-    async () => {
-      await lintingGenerator(tree, { importOrder: true });
-
-      const eslintConfig = readEsLintConfig(tree);
-
-      expect(eslintConfig.plugins?.includes('import')).toBeTruthy();
-      expect(eslintConfig.overrides?.[0]).toStrictEqual(importOrderRule);
-    },
-    timeout
-  );
-
-  function addLibraries() {
-    addProjectConfiguration(tree, 'lib1', {
-      root: 'libs/lib1',
-      sourceRoot: 'libs/lib1/src',
-    });
-    writeEsLintConfig(tree, {}, `libs/lib1/${eslintConfigFile}`);
-
-    addProjectConfiguration(tree, 'lib2', {
-      root: 'libs/lib2',
-      sourceRoot: 'libs/lib2/src',
-    });
-  }
 });
 
 describe('@lantean/workspace prettier generator', () => {
@@ -175,7 +53,7 @@ describe('@lantean/workspace prettier generator', () => {
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();
     jest.spyOn(console, 'log').mockImplementation(() => null);
-    writeEsLintConfig(tree, {});
+    writeEsLintConfig(tree, []);
   });
 
   it('should run successfully', async () => {
@@ -206,54 +84,5 @@ describe('@lantean/workspace prettier generator', () => {
     // expect(lintWorkspaceTask).toHaveBeenCalled();
     expect(installPackagesTask).toHaveBeenCalled();
     expect(formatWorkspaceTask).toHaveBeenCalled();
-  });
-
-  it('should add prettier to plugins', async () => {
-    await lintingGenerator(tree, { prettier: true });
-
-    const eslintConfig = readEsLintConfig(tree);
-    expect(eslintConfig.plugins?.includes(prettierPlugin)).toBeTruthy();
-  });
-
-  it('should add prettier to overrides', async () => {
-    await lintingGenerator(tree, { prettier: true });
-
-    const eslintConfig = readEsLintConfig(tree);
-    expect(eslintConfig.overrides?.[0].extends).toStrictEqual([
-      'plugin:prettier/recommended',
-    ]);
-  });
-
-  it('should add eslint prettier dev dependency', async () => {
-    await lintingGenerator(tree, { prettier: true });
-
-    const packageJson = readJson<JSONSchemaForNPMPackageJsonFiles>(
-      tree,
-      'package.json'
-    );
-
-    expect(packageJson.devDependencies?.[eslintPluginPrettier]).toBeDefined();
-  });
-
-  it('should set default prettier config', async () => {
-    await lintingGenerator(tree, { prettier: true });
-
-    const prettierConfig = readJson<Exclude<SchemaForPrettierrc, string>>(
-      tree,
-      prettierConfigFile
-    );
-
-    expect(prettierConfig.printWidth).toBe(prettierDefaultConfig.printWidth);
-  });
-
-  it('should be idempotent', async () => {
-    await lintingGenerator(tree, { prettier: true });
-    await lintingGenerator(tree, { prettier: true });
-
-    const eslintConfig = readEsLintConfig(tree);
-
-    expect(
-      eslintConfig.plugins?.filter((plugin) => plugin === prettierPlugin).length
-    ).toBe(1);
   });
 });

@@ -7,7 +7,7 @@ import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TSConfig } from
 import { deps } from './constants';
 import { NormalizedSchema } from './schema';
 
-import { updateESLintFlatConfigIgnoredDependencies, updateTSConfigCompilerOptions } from '../../utils';
+import { eslintFlatConfigUpdateIgnoredDependencies, updateTSConfigCompilerOptions } from '../../utils';
 
 /**
  * Deletes unnecessary files from the specified library directory.
@@ -99,7 +99,7 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
 function updateESLintConfig(tree: Tree, options: NormalizedSchema) {
   const filePath = join(options.projectRoot, 'eslint.config.js');
 
-  updateESLintFlatConfigIgnoredDependencies(tree, filePath, [
+  eslintFlatConfigUpdateIgnoredDependencies(tree, filePath, [
     ...Object.keys(deps),
     options.typesLibImportPath,
     'lodash',

@@ -9,7 +9,7 @@ import { unique } from 'radash';
 import { dependencies, devDependencies } from './constants';
 import { NormalizedSchema } from './schema';
 
-import { updateESLintFlatConfigToExtendConfig } from '../../utils';
+import { eslintFlatConfigExtendAConfig } from '../../utils';
 
 /**
  * Deletes unnecessary files from the Expo library.
@@ -229,7 +229,7 @@ function updateEslintConfig(tree: Tree, options: NormalizedSchema) {
   const { projectRoot } = options;
   const filePath = join(projectRoot, 'eslint.config.js');
 
-  updateESLintFlatConfigToExtendConfig(tree, filePath, options.sheriffImportPath, 'expo');
+  eslintFlatConfigExtendAConfig(tree, filePath, options.sheriffImportPath, 'expo');
 }
 
 /**

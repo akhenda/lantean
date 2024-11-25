@@ -17,7 +17,7 @@ import {
   getLibTSConfigExclude,
   getLibTSConfigInclude,
   getNpmScope,
-  updateESLintFlatConfigIgnoredDependencies,
+  eslintFlatConfigUpdateIgnoredDependencies,
   updateTSConfigCompilerOptions,
 } from '../../utils';
 
@@ -164,7 +164,7 @@ export function addLibFiles(tree: Tree, options: NormalizedSchema) {
 function updateESLintConfig(tree: Tree, options: NormalizedSchema) {
   const filePath = join(options.projectRoot, 'eslint.config.js');
 
-  updateESLintFlatConfigIgnoredDependencies(tree, filePath, ['@t3-oss/env-core', 'zod']);
+  eslintFlatConfigUpdateIgnoredDependencies(tree, filePath, ['@t3-oss/env-core', 'zod']);
 }
 
 function updatePackageJson(tree: Tree, options: NormalizedSchema) {

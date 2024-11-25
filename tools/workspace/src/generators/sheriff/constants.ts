@@ -22,7 +22,7 @@ export const eslintLibTags = ['config', 'configs', 'eslint'];
 /**
  * Filename of ESLint configuration.
  */
-export const eslintConfigFile = 'eslint.config.mjs';
+export const eslintConfigFile = 'eslint.config.js';
 
 /**
  * Filename of Prettier config.

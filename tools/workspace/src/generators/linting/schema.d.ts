@@ -25,11 +25,6 @@ export interface LintingGeneratorSchema {
   typescriptRecommended?: boolean;
 
   /**
-   * Applies deprecation.
-   */
-  deprecation?: boolean;
-
-  /**
    * Applies import.
    */
   importOrder?: boolean;

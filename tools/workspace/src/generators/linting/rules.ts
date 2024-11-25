@@ -35,10 +35,7 @@ export const typescriptRule: EsLintConfigurationOverrideRule = {
   files: ['*.ts', '*.tsx'],
   extends: ['plugin:@typescript-eslint/recommended'],
   rules: {
-    '@typescript-eslint/explicit-member-accessibility': [
-      'warn',
-      { accessibility: 'no-public' },
-    ],
+    '@typescript-eslint/explicit-member-accessibility': ['warn', { accessibility: 'no-public' }],
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/ban-types': 'off',
@@ -65,16 +62,8 @@ export const importOrderRule: EsLintConfigurationOverrideRule = {
     'import/order': [
       'error',
       {
-        pathGroups: [
-          { pattern: '@nx-*/**', group: 'internal', position: 'before' },
-        ],
-        groups: [
-          'builtin',
-          'external',
-          'internal',
-          'parent',
-          ['sibling', 'index'],
-        ],
+        pathGroups: [{ pattern: '@nx-*/**', group: 'internal', position: 'before' }],
+        groups: ['builtin', 'external', 'internal', 'parent', ['sibling', 'index']],
         pathGroupsExcludedImportTypes: [],
         'newlines-between': 'always',
         alphabetize: { order: 'asc', caseInsensitive: true },

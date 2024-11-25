@@ -8,7 +8,7 @@ import { deps } from './constants';
 import { DateGeneratorSchema, NormalizedSchema } from './schema';
 import { normalizeOptions } from './utils';
 
-import { updateESLintFlatConfigIgnoredDependencies, updateTSConfigCompilerOptions } from '../../utils';
+import { eslintFlatConfigUpdateIgnoredDependencies, updateTSConfigCompilerOptions } from '../../utils';
 
 function cleanupLib(tree: Tree, libDirectory: string) {
   tree.delete(`${libDirectory}/src/index.ts`);
@@ -45,7 +45,7 @@ function updateTSConfigs(tree: Tree, options: NormalizedSchema) {
 function updateESLintConfig(tree: Tree, options: NormalizedSchema) {
   const filePath = join(options.projectRoot, 'eslint.config.js');
 
-  updateESLintFlatConfigIgnoredDependencies(tree, filePath, [...Object.keys(deps)]);
+  eslintFlatConfigUpdateIgnoredDependencies(tree, filePath, [...Object.keys(deps)]);
 }
 
 export async function generateDateLib(tree: Tree, schema: DateGeneratorSchema) {

@@ -13,7 +13,7 @@ module.exports = [
   /**
    * Unmodified ESNext config from Shopify
    */
-  importTypescriptConfig.configs.typescript,
+  importTypescriptConfig.flatConfigs.typescript,
   {
     files: ['**/*.ts', '**/*.tsx'],
 

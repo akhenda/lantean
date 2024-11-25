@@ -22,7 +22,7 @@ export const eslintLibTags = ['config', 'configs', 'eslint'];
 /**
  * Filename of ESLint configuration.
  */
-export const eslintConfigFile = '.eslintrc.json';
+export const eslintConfigFile = 'eslint.config.js';
 
 /**
  * Filename of Prettier config.
@@ -61,6 +61,7 @@ export const eslintLibDepVersions = {
   'eslint-plugin-boundaries': '^5.0.1',
   'eslint-plugin-cypress': '^4.1.0',
   'eslint-plugin-deprecate': '^0.8.5',
+  'eslint-plugin-deprecation': '^3.0.0',
   'eslint-plugin-eslint-comments': '^3.2.0',
   'eslint-plugin-filenames': '^1.3.2',
   'eslint-plugin-functional': '^7.1.0',

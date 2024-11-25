@@ -18,9 +18,9 @@ import { addDevDependencyToPackageJson } from '../../devkit';
 import {
   getImportPath,
   getNpmScope,
-  updateESLintFlatConfigIgnoreRules,
-  updateESLintFlatConfigPrettierRules,
-  updateESLintFlatConfigToExtendConfig,
+  eslintFlatConfigUpdateIgnoreRules,
+  eslintFlatConfigAddPrettierRules,
+  eslintFlatConfigExtendAConfig,
 } from '../../utils';
 
 import {
@@ -108,9 +108,9 @@ function updateTSConfig(tree: Tree, options: NormalizedSchema) {
 function updateBaseEslintConfig(tree: Tree, options: NormalizedSchema) {
   const filePath = 'eslint.config.js';
 
-  updateESLintFlatConfigToExtendConfig(tree, filePath, options.importPath, 'nx', false);
-  updateESLintFlatConfigPrettierRules(tree, filePath, []);
-  updateESLintFlatConfigIgnoreRules(tree, filePath, getESLintIgnores(tree, options), true);
+  eslintFlatConfigExtendAConfig(tree, filePath, options.importPath, 'nx', false);
+  eslintFlatConfigAddPrettierRules(tree, filePath, []);
+  eslintFlatConfigUpdateIgnoreRules(tree, filePath, getESLintIgnores(tree, options), true);
 }
 
 /**
