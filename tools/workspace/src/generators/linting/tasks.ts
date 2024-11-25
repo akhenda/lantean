@@ -1,7 +1,10 @@
 import { addDependenciesToPackageJson, Tree } from '@nx/devkit';
 
-import { addEsLintPlugin, isEsLintPluginPresent, updateEsLintProjectConfig } from './eslint-config';
+import { addDevDependencyToPackageJson, joinNormalize } from '../../devkit';
+import { eslintFlatConfigAddPluginImport, eslintFlatConfigAddPrettierRules } from '../../utils';
+
 import { eslintConfigFile, eslintLibDepVersions, eslintPluginPrettier, prettierPlugin } from './constants';
+import { addEsLintPlugin, isEsLintPluginPresent, updateEsLintProjectConfig } from './eslint-config';
 import {
   getESLintFlatConfig,
   getImportOrderFlatConfig,
@@ -11,8 +14,6 @@ import {
 } from './flats';
 import { setPrettierConfig } from './prettier';
 
-import { addDevDependencyToPackageJson, joinNormalize } from '../../devkit';
-import { eslintFlatConfigAddPluginImport, eslintFlatConfigAddPrettierRules } from '../../utils';
 
 /**
  * @internal
@@ -44,7 +45,7 @@ export function addSonarJsRecommendedRules(tree: Tree): void {
   const lib = 'eslint-plugin-sonarjs';
 
   addDevDependencyToPackageJson(tree, lib, eslintLibDepVersions[lib]);
-  addEsLintPlugin(tree, name, lib, getSonarJSFlatConfig());
+  addEsLintPlugin(tree, name, lib, getSonarJSFlatConfig(name));
 }
 
 /**
@@ -75,12 +76,11 @@ export function addUnusedImportsRules(tree: Tree): void {
 export function addTypescriptRecommendedRules(tree: Tree): void {
   const name = '@typescript-eslint';
   const lib = '@typescript-eslint/eslint-plugin';
-  const parserRef = eslintFlatConfigAddPluginImport(
-    tree,
-    eslintConfigFile,
-    'typescript-eslint-parser',
-    '@typescript-eslint/parser',
-  );
+  const parserLib = '@typescript-eslint/parser';
+  const parserRef = eslintFlatConfigAddPluginImport(tree, eslintConfigFile, 'typescript-eslint-parser', parserLib);
+
+  addDevDependencyToPackageJson(tree, parserLib, eslintLibDepVersions[parserLib]);
+  addDevDependencyToPackageJson(tree, lib, eslintLibDepVersions[lib]);
 
   addEsLintPlugin(tree, name, lib, getTypescriptFlatConfig(name, parserRef));
   addParserOptionsToProjects(tree);
@@ -98,13 +98,6 @@ export function addTypescriptRecommendedRules(tree: Tree): void {
 export function addImportOrderRules(tree: Tree): void {
   const name = 'import';
   const lib = 'eslint-plugin-import';
-
-  const parserRef = eslintFlatConfigAddPluginImport(
-    tree,
-    eslintConfigFile,
-    'import-resolver',
-    'eslint-import-resolver-typescript',
-  );
 
   addDevDependencyToPackageJson(tree, lib);
   addDevDependencyToPackageJson(tree, 'eslint-import-resolver-typescript');

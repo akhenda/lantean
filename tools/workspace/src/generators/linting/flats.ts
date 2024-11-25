@@ -3,41 +3,42 @@
  */
 export function getESLintFlatConfig(globalsRef = 'globals') {
   return [
-    '{',
+    '',
     '/**',
     '* Eslint recommended config',
     '*/',
-    `PLUGIN_IMPORT_REF.configs.recommended,`,
+    `js.configs.recommended,`,
     '{',
     'languageOptions: {',
-    `${globalsRef}: {`,
-    `...${globalsRef}.es2021,`,
-    `...${globalsRef}.browser,`,
-    `...${globalsRef}.node,`,
+    `${globalsRef}: { ...${globalsRef}.es2021, ...${globalsRef}.browser, ...${globalsRef}.node },`,
     '},',
     '},',
-    '}',
   ].join('\n\t');
 }
 
 /**
  * ESLint SonarJS Flat Config.
  */
-export function getSonarJSFlatConfig() {
+export function getSonarJSFlatConfig(name = 'sonarjs') {
   return [
-    '{',
+    '',
     '/**',
     '* eslint-plugin-sonarjs',
     '*/',
-    `PLUGIN_IMPORT_REF.configs.recommended,`,
     '{',
+    '...PLUGIN_IMPORT_REF.configs.recommended,',
+    `plugins: { ${name}: PLUGIN_IMPORT_REF },`,
     'rules: {},',
-    '}',
+    '},',
   ].join('\n\t');
 }
 
 export function getUnusedImportsFlatConfig(name = 'unused-imports') {
   return [
+    '',
+    '/**',
+    '* eslint-plugin-unused-imports',
+    '*/',
     '{',
     `plugins: { '${name}': PLUGIN_IMPORT_REF },`,
     'rules: {',
@@ -59,7 +60,11 @@ export function getUnusedImportsFlatConfig(name = 'unused-imports') {
 
 export function getTypescriptFlatConfig(name = '@typescript-eslint', parser = 'typescriptEslintParser') {
   return [
-    `PLUGIN_IMPORT_REF.configs.recommended`,
+    '',
+    '/**',
+    '* @typescript-eslint/eslint-plugin',
+    '*/',
+    `// PLUGIN_IMPORT_REF.configs.recommended,`,
     '{',
     " files: ['**/*.ts', '**/*.tsx'],",
     'plugins: {',
@@ -85,11 +90,16 @@ export function getTypescriptFlatConfig(name = '@typescript-eslint', parser = 't
 
 export function getImportOrderFlatConfig(name = 'import') {
   return [
+    '',
+    '/**',
+    '* eslint-plugin-import',
+    '*/',
     `PLUGIN_IMPORT_REF.flatConfigs.recommended,`,
     `PLUGIN_IMPORT_REF.flatConfigs.typescript,`,
     '{',
     "files: ['**/*.ts', '**/*.tsx'],",
-    `plugins: { '${name}': PLUGIN_IMPORT_REF },`,
+    '// import plugin is already defined above and also in nx/eslint-plugin',
+    `// plugins: { '${name}': PLUGIN_IMPORT_REF },`,
     'rules: {',
     "'import/order': [",
     "'error',",
@@ -109,6 +119,6 @@ export function getImportOrderFlatConfig(name = 'import') {
     'typescript: {},',
     '},',
     '},',
-    '}',
+    '},',
   ].join('\n\t');
 }

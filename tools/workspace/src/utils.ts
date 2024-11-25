@@ -599,8 +599,8 @@ export function eslintFlatConfigAddPluginImport(
 ) {
   let newConfig: string;
 
-  const config = tree.read(filePath).toString();
-  const plugin = doNotModifyPluginName ? pluginName : `${names(pluginName).propertyName}Plugin`;
+  const config = tree.read(filePath)?.toString() ?? '';
+  const plugin = doNotModifyPluginName ? pluginName : `${names(pluginName.replace('@', '')).propertyName}Plugin`;
   const newReqStmt = `const ${plugin} = require('${npmName}');`;
 
   // Find existing import/require statements
@@ -649,18 +649,16 @@ export function eslintFlatConfigAddPlugin(
   pluginConfig: string,
   atTheEnd = true,
 ) {
-  pluginName = pluginName.replace('@', '');
-
-  const config = tree.read(filePath).toString();
   const plugin = eslintFlatConfigAddPluginImport(tree, filePath, pluginName, npmName);
+  const config = tree.read(filePath)?.toString() ?? '';
 
   let newConfig = config;
 
-  pluginConfig?.replace('PLUGIN_IMPORT_REF', plugin);
+  pluginConfig = pluginConfig.replaceAll('PLUGIN_IMPORT_REF', plugin);
 
   newConfig = atTheEnd
-    ? newConfig.replace('];', ['{', pluginConfig, '];'].join('\n\t'))
-    : newConfig.replace('module.exports = [', ['module.exports = [', '{', pluginConfig].join('\n\t'));
+    ? newConfig.replace('];', [pluginConfig, '];'].join('\n\t'))
+    : newConfig.replace('module.exports = [', ['module.exports = [', pluginConfig].join('\n\t'));
 
   // only write the file if something has changed
   if (newConfig !== config) tree.write(filePath, newConfig);

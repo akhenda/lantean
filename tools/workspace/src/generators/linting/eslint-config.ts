@@ -1,10 +1,11 @@
 import { join } from 'path';
+
 import { getProjects, ProjectConfiguration, Tree } from '@nx/devkit';
 import type { FlatESLintConfig } from 'eslint-define-config';
 
-import { eslintConfigFile } from './constants';
-
 import { eslintFlatConfigAddPlugin, eslintFlatConfigUpdateParserOptions } from '../../utils';
+
+import { eslintConfigFile } from './constants';
 
 /**
  * Writes ESLint configuration to a file in the given `Tree`.
@@ -30,7 +31,7 @@ export function writeEsLintConfig(tree: Tree, eslintConfig: FlatESLintConfig[], 
 export function readEsLintConfig(tree: Tree, path = eslintConfigFile) {
   if (!tree.exists(path)) writeEsLintConfig(tree, [{ ignores: ['**/*'] }], path);
 
-  return tree.read(path).toString();
+  return tree.read(path)?.toString();
 }
 
 /**
@@ -43,7 +44,11 @@ export function readEsLintConfig(tree: Tree, path = eslintConfigFile) {
 export function isEsLintPluginPresent(tree: Tree, plugin: string): boolean {
   const eslintConfig = readEsLintConfig(tree);
 
-  return eslintConfig.includes(plugin) ?? false;
+  if (eslintConfig.includes(plugin)) {
+    if (eslintConfig.includes(`${plugin}:`) || eslintConfig.includes(`'${plugin}':`)) return true;
+  }
+
+  return false;
 }
 
 /**

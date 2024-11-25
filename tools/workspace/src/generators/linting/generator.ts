@@ -19,12 +19,12 @@ import { formatWorkspaceTask } from '../../devkit';
  */
 export default async function eslintGenerator(tree: Tree, options?: LintingGeneratorSchema) {
   if (options?.lib) await generateConfigLib(tree, options);
+  if (options?.prettier) addPrettierRules(tree);
   if (options?.eslintRecommended) addEsLintRecommendedRules(tree);
   if (options?.sonarJs) addSonarJsRecommendedRules(tree);
   if (options?.unusedImports) addUnusedImportsRules(tree);
   if (options?.typescriptRecommended) addTypescriptRecommendedRules(tree);
   if (options?.importOrder) addImportOrderRules(tree);
-  if (options?.prettier) addPrettierRules(tree);
   if (options?.sonarJs) updateBaseTSConfig(tree);
 
   return () => {

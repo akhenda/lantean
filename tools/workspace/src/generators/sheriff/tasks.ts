@@ -1,5 +1,4 @@
 import { join } from 'path';
-import { unique } from 'radash';
 
 import {
   addDependenciesToPackageJson,
@@ -13,6 +12,7 @@ import {
   writeJson,
 } from '@nx/devkit';
 import { libraryGenerator } from '@nx/js';
+import { unique } from 'radash';
 
 import { addDevDependencyToPackageJson } from '../../devkit';
 import {
@@ -22,6 +22,7 @@ import {
   eslintFlatConfigAddPrettierRules,
   eslintFlatConfigExtendAConfig,
 } from '../../utils';
+import { setPrettierConfig } from '../linting/prettier';
 
 import {
   eslintConfigFile,
@@ -32,7 +33,6 @@ import {
 } from './constants';
 import { NormalizedSchema, SheriffGeneratorSchema } from './schema';
 import { getESLintIgnores, normalizeOptions } from './utils';
-import { setPrettierConfig } from '../linting/prettier';
 
 /**
  * This function is a safety net. It warns the user if the repository has not been
@@ -143,7 +143,6 @@ function updatePackageJsons(tree: Tree, options: NormalizedSchema) {
       `${options.libsDir}/${eslintLibDirectory}/*`,
     ];
 
-    /* eslint-disable @typescript-eslint/naming-convention */
     packageJson.scripts = {
       ...(packageJson.scripts ?? {}),
       affected: 'nx affected',
@@ -160,7 +159,6 @@ function updatePackageJsons(tree: Tree, options: NormalizedSchema) {
       'nx:update': 'nx migrate latest',
       test: 'bun nx run-many --target=test --all',
     };
-    /* eslint-enable @typescript-eslint/naming-convention */
 
     /* eslint-disable */
     /* eslint-disable sort-keys-fix/sort-keys-fix */
@@ -252,7 +250,7 @@ function updateVSCodeSettings(tree: Tree) {
 
   updateJson(tree, join('.vscode', 'settings.json'), (settingsJson) => {
     /* eslint-disable */
-    /* eslint-disable @typescript-eslint/naming-convention, sort-keys-fix/sort-keys-fix */
+    /* eslint-disable sort-keys-fix/sort-keys-fix */
     return {
       ...settingsJson,
 
@@ -342,7 +340,7 @@ function addSemanticReleaseTarget(tree: Tree, options: NormalizedSchema) {
     sourceRoot: options.projectRoot,
     targets: {
       ...projectConfiguration.targets,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
+
       'semantic-release': {
         executor: '@theunderscorer/nx-semantic-release:semantic-release',
         options: {
