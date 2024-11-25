@@ -7,7 +7,7 @@ import { normalizeOptions } from './utils';
 import loggingGenerator from '../logging/generator';
 import initGenerator from '../init/generator';
 import commitlintGenerator from '../commitlint/generator';
-import sheriffGenerator from '../sheriff/generator';
+import lintingGenerator from '../linting/generator';
 import tsconfigGenerator from '../tsconfig/generator';
 import contributorsGenerator from '../contributors/generator';
 import githubGenerator from '../github/generator';
@@ -31,7 +31,16 @@ export async function saasDrizzleGenerator(tree: Tree, schema: SaasDrizzleGenera
 
   await initGenerator(tree, { configFileName: options.lintStagedConfigFileName });
   await commitlintGenerator(tree, { configFileName: options.commitLintConfigFileName });
-  await sheriffGenerator(tree);
+  await lintingGenerator(tree, {
+    lib: true,
+    eslintRecommended: true,
+    sonarJs: true,
+    unusedImports: true,
+    typescriptRecommended: true,
+    deprecation: true,
+    importOrder: true,
+    prettier: true,
+  });
   await tsconfigGenerator(tree);
   await contributorsGenerator(tree);
   await githubGenerator(tree);
