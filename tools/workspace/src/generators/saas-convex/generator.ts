@@ -24,6 +24,7 @@ import convexGenerator from '../convex/generator';
 import universalGenerator from '../universal/generator';
 import universalExpoGenerator from '../universal-expo/generator';
 import universalNextGenerator from '../universal-next/generator';
+import { addParserOptionsToProjects } from '../linting/tasks';
 
 export async function saasConvexGenerator(tree: Tree, schema: SaasConvexGeneratorSchema) {
   const skipFormat = false;
@@ -33,12 +34,12 @@ export async function saasConvexGenerator(tree: Tree, schema: SaasConvexGenerato
   await commitlintGenerator(tree, { configFileName: options.commitLintConfigFileName });
   await lintingGenerator(tree, {
     lib: true,
-    eslintRecommended: true,
-    sonarJs: true,
-    unusedImports: true,
-    typescriptRecommended: true,
-    importOrder: true,
-    prettier: true,
+    eslintRecommended: false,
+    sonarJs: false,
+    unusedImports: false,
+    typescriptRecommended: false,
+    importOrder: false,
+    prettier: false,
   });
   await tsconfigGenerator(tree);
   await contributorsGenerator(tree);
@@ -84,6 +85,9 @@ export async function saasConvexGenerator(tree: Tree, schema: SaasConvexGenerato
   });
 
   await generateSaaSConvexLib(tree, options);
+
+  addParserOptionsToProjects(tree);
+
   await formatFiles(tree);
 
   return () => {

@@ -55,7 +55,7 @@ export const eslintLibDepVersions = {
   '@theunderscorer/nx-semantic-release': '^2.12.0',
   '@typescript-eslint/eslint-plugin': '8.15.0',
   '@typescript-eslint/parser': '8.15.0',
-  eslint: '9.14.0',
+  eslint: '8.57.0',
   'eslint-config-prettier': '^9.1.0',
   'eslint-plugin-array-func': '^5.0.2',
   'eslint-plugin-boundaries': '^5.0.1',

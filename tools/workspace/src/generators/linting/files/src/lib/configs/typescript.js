@@ -33,7 +33,7 @@ module.exports = [
       // This rule extends the base eslint/keyword-spacing rule.
       // This version adds support for generic type parameters on function calls.
       'keyword-spacing': 'off',
-      '@typescript-eslint/keyword-spacing': ['error', { before: true, after: true, overrides: {} }],
+      // '@typescript-eslint/keyword-spacing': ['error', { before: true, after: true, overrides: {} }],
       // Enforce one space after the colon and zero spaces before the colon of a type annotation.
       '@typescript-eslint/type-annotation-spacing': ['error'],
       // Require explicit return types on functions and class methods
@@ -276,7 +276,7 @@ module.exports = [
       // This rule is aimed at ensuring there are spaces around infix operators.
       // disabling the base rule as it can report incorrect errors
       'space-infix-ops': 'off',
-      '@typescript-eslint/space-infix-ops': 'error',
+      // '@typescript-eslint/space-infix-ops': 'error',
 
       // TypeScript provides a better mechanism (explicit `this` type)
       // for ensuring proper `this` usage in functions not assigned to
