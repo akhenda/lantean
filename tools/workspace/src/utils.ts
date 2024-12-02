@@ -670,8 +670,9 @@ export function eslintFlatConfigAddPlugin(
 export function eslintFlatConfigUpdateParserOptions(tree: Tree, filePath: string, options: FlatESLintConfig) {
   const fileSource = tree.read(filePath);
   const contents = fileSource?.toString() ?? '';
+  const hasParserOptions = contents.includes('parserOptions: {');
   const newContents = contents.replace(/\];/gi, [JSON.stringify(options), '];'].join('\n\t'));
 
   // only write the file if something has changed
-  if (newContents !== contents) tree.write(filePath, newContents);
+  if (!hasParserOptions && newContents !== contents) tree.write(filePath, newContents);
 }

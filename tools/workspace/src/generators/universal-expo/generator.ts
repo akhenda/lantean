@@ -4,8 +4,11 @@ import { UniversalExpoGeneratorSchema } from './schema';
 import { generateExpoUniversalApp } from './tasks';
 import { normalizeOptions } from './utils';
 
+import { joinNormalize } from '../../devkit';
+
 import universalGenerator from '../universal/generator';
 import { installAFewUniversalComponents } from '../universal/tasks';
+import { updateEsLintProjectConfig } from '../linting/eslint-config';
 
 /**
  * Sets up a Universal Design System (UDS) using Expo.
@@ -24,7 +27,16 @@ export async function universalExpoGenerator(tree: Tree, schema: UniversalExpoGe
   try {
     readProjectConfiguration(tree, universalLibName);
   } catch (error) {
+    console.error(error?.message);
+
     await universalGenerator(tree, { uiName, libName, skipFormat });
+
+    updateEsLintProjectConfig(tree, (project) => ({
+      files: ['**/*.ts', '**/*.tsx'],
+      languageOptions: {
+        parserOptions: { project: [joinNormalize(project.root, 'tsconfig.*?.json')] },
+      },
+    }));
   }
 
   await generateExpoUniversalApp(tree, options);
