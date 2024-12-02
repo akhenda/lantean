@@ -30,16 +30,16 @@ export async function universalExpoGenerator(tree: Tree, schema: UniversalExpoGe
     console.error(error?.message);
 
     await universalGenerator(tree, { uiName, libName, skipFormat });
-
-    updateEsLintProjectConfig(tree, (project) => ({
-      files: ['**/*.ts', '**/*.tsx'],
-      languageOptions: {
-        parserOptions: { project: [joinNormalize(project.root, 'tsconfig.*?.json')] },
-      },
-    }));
   }
 
   await generateExpoUniversalApp(tree, options);
+
+  updateEsLintProjectConfig(tree, (project) => ({
+    files: ['**/*.ts', '**/*.tsx'],
+    languageOptions: {
+      parserOptions: { project: [joinNormalize(project.root, 'tsconfig.*?.json')] },
+    },
+  }));
 
   await formatFiles(tree);
 

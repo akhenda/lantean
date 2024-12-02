@@ -44,7 +44,8 @@ function addLibFiles(tree: Tree, options: NormalizedSchema) {
     template: '',
   };
 
-  generateFiles(tree, join(__dirname, 'files'), options.projectRoot, templateOptions);
+  generateFiles(tree, join(__dirname, 'files', 'root'), '', templateOptions);
+  generateFiles(tree, join(__dirname, 'files', 'lib'), options.projectRoot, templateOptions);
 }
 
 /**

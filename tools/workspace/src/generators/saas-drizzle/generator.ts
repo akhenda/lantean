@@ -22,6 +22,7 @@ import kvGenerator from '../kv/generator';
 import jobsGenerator from '../jobs/generator';
 import drizzleGenerator from '../db/generator';
 import universalGenerator from '../universal/generator';
+import { installAFewUniversalComponents } from '../universal/tasks';
 import universalExpoGenerator from '../universal-expo/generator';
 import universalNextGenerator from '../universal-next/generator';
 
@@ -66,11 +67,17 @@ export async function saasDrizzleGenerator(tree: Tree, schema: SaasDrizzleGenera
   await jobsGenerator(tree, { name: options.jobsLibName });
   await kvGenerator(tree, { name: options.kvLibName });
   await drizzleGenerator(tree, { name: options.drizzleLibName, loggingLibName, typesLibName, skipFormat });
-  await universalGenerator(tree, {
+
+  const universalGeneratorTasks = await universalGenerator(tree, {
     uiName: options.universalLibUIName,
     libName: options.universalLibLibName,
     skipFormat,
   });
+
+  const {
+    options: { projectName: universalLibName },
+  } = universalGeneratorTasks();
+
   await universalExpoGenerator(tree, {
     name: options.expoAppName,
     displayName: options.expoAppDisplayName,
@@ -88,6 +95,7 @@ export async function saasDrizzleGenerator(tree: Tree, schema: SaasDrizzleGenera
 
   return () => {
     installPackagesTask(tree);
+    installAFewUniversalComponents(universalLibName);
 
     return { options };
   };
