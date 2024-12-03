@@ -6,7 +6,7 @@ import { buildCommand, execPackageManagerCommand } from '../../../utils';
 const runExecutor: PromiseExecutor<
   GluestackComponentAddExecutorSchema
 > = async (options, context) => {
-  if (!context.workspace) return { success: false };
+  if (!context.projectsConfigurations) return { success: false };
 
   return execPackageManagerCommand(
     buildCommand([

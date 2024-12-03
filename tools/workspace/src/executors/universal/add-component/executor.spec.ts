@@ -1,8 +1,8 @@
-import { AddMobileComponentExecutorSchema } from './schema';
+import { UniversalComponentAddExecutorSchema } from './schema';
 import executor from './executor';
 import * as utils from '../../../utils';
 
-const options = {} as AddMobileComponentExecutorSchema;
+const options = {} as UniversalComponentAddExecutorSchema;
 const context = utils.createFakeContext({
   workspaceRoot: '/root',
   cwd: process.cwd(),

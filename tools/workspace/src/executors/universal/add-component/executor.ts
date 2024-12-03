@@ -1,27 +1,25 @@
 import { PromiseExecutor } from '@nx/devkit';
 
-import { AddMobileComponentExecutorSchema } from './schema';
+import { UniversalComponentAddExecutorSchema } from './schema';
 import { buildCommand, execPackageManagerCommand } from '../../../utils';
 
-const runExecutor: PromiseExecutor<AddMobileComponentExecutorSchema> = async (
-  options,
-  context,
-) => {
-  console.log('Executor ran for AddMobileComponent', options);
-  if (!context.workspace) return { success: false };
+const runExecutor: PromiseExecutor<UniversalComponentAddExecutorSchema> = async (options, context) => {
+  console.log('Executor ran for UniversalComponentAdd', { options, context });
+
+  // https://github.com/koliveira15/nx-sonarqube/pull/117/files
+  // https://github.com/nxkit/nxkit/pull/109
+  if (!context.projectsConfigurations) return { success: false };
 
   return execPackageManagerCommand(
     buildCommand([
-      '@react-native-reusables/cli@latest add',
+      '--bun',
+      '@react-native-reusables/cli@latest',
+      'add',
       options.component,
       options.overwrite && '--overwrite',
     ]),
     {},
-    [
-      `cp ./${options.projectRoot}/components.json components.json`,
-      '&&',
-      'TS_NODE_PROJECT=tsconfig.base.json',
-    ],
+    [`cp ./${options.projectRoot}/components.json components.json`, '&&', 'TS_NODE_PROJECT=tsconfig.base.json'],
     ['&&', 'rm components.json'],
   );
 };

@@ -1,4 +1,4 @@
-export interface AddMobileComponentExecutorSchema {
+export interface UniversalComponentAddExecutorSchema {
   component: string;
   overwrite: boolean;
   projectRoot: string;

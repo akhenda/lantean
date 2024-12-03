@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/schema",
   "version": 2,
-  "title": "Mobile Add Component Executor",
-  "description": "Add a Mobile (react-native-reusables) component",
+  "title": "Universal Add Component Executor",
+  "description": "Add a Universal (react-native-reusables) component",
   "type": "object",
   "properties": {
     "component": {

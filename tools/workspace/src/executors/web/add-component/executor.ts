@@ -8,7 +8,7 @@ const runExecutor: PromiseExecutor<WebComponentAddExecutorSchema> = async (
   context,
 ) => {
   console.log('Executor ran for WebComponentAdd', options);
-  if (!context.workspace) return { success: false };
+  if (!context.projectsConfigurations) return { success: false };
 
   return execPackageManagerCommand(
     buildCommand([
